@@ -255,3 +255,73 @@ func TestSzLogExported_IncDecLevel(t *testing.T) {
 		"W:attempt to access out of bounds log level: -1 from: DecLevel",
 	)
 }
+
+func TestSzLogExported_LogRedirects(t *testing.T) {
+	chk := sztest.CaptureLog(t)
+	defer chk.Release()
+
+	szlog.Reset()
+	szlog.SetLevel(szlog.LevelAll)
+
+	szlog.F("f error")
+	szlog.Fatal("fatal error")
+	szlog.Ff("fmt: %s", "ff error")
+	szlog.Fatalf("fmt: %s", "fatalf error")
+
+	szlog.E("e error")
+	szlog.Error("error error") //nolint:dupword // Ok.
+	szlog.Ef("fmt: %s", "ef error")
+	szlog.Errorf("fmt: %s", "errorf error")
+
+	szlog.W("w error")
+	szlog.Warn("warn error")
+	szlog.Wf("fmt: %s", "wf error")
+	szlog.Warnf("fmt: %s", "warnf error")
+
+	szlog.I("i error")
+	szlog.Info("info error")
+	szlog.If("fmt: %s", "if error")
+	szlog.Infof("fmt: %s", "infof error")
+
+	szlog.D("d error")
+	szlog.Debug("debug error")
+	szlog.Df("fmt: %s", "df error")
+	szlog.Debugf("fmt: %s", "debugf error")
+
+	szlog.T("t error")
+	szlog.Trace("trace error")
+	szlog.Tf("fmt: %s", "tf error")
+	szlog.Tracef("fmt: %s", "tracef error")
+
+	chk.Log(
+		"F:f error",
+		"F:fatal error",
+		"F:fmt: ff error",
+		"F:fmt: fatalf error",
+
+		"E:e error",
+		"E:error error",
+		"E:fmt: ef error",
+		"E:fmt: errorf error",
+
+		"W:w error",
+		"W:warn error",
+		"W:fmt: wf error",
+		"W:fmt: warnf error",
+
+		"I:i error",
+		"I:info error",
+		"I:fmt: if error",
+		"I:fmt: infof error",
+
+		"D:d error",
+		"D:debug error",
+		"D:fmt: df error",
+		"D:fmt: debugf error",
+
+		"T:t error",
+		"T:trace error",
+		"T:fmt: tf error",
+		"T:fmt: tracef error",
+	)
+}
