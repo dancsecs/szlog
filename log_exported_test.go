@@ -256,6 +256,7 @@ func TestSzLogExported_IncDecLevel(t *testing.T) {
 	)
 }
 
+//nolint:funlen // Ok.
 func TestSzLogExported_LogRedirects(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
