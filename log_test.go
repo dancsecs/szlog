@@ -340,6 +340,7 @@ func TestCfg_LogLabelLength(t *testing.T) {
 const (
 	cv1 = "-v1"
 	cv2 = "--v2"
+	nv  = "notVerbose"
 	cv3 = "-vvv1x"
 	cv4 = "--vvv2x"
 )
@@ -355,11 +356,12 @@ func testArgs(expectedLevel szlog.LogLevel, args []string) error {
 
 	cArgs = szlog.VerboseAbsorbArgs(args)
 
-	if len(cArgs) != 4 ||
+	if len(cArgs) != 5 ||
 		cArgs[0] != cv1 ||
 		cArgs[1] != cv2 ||
-		cArgs[2] != cv3 ||
-		cArgs[3] != cv4 {
+		cArgs[2] != nv ||
+		cArgs[3] != cv3 ||
+		cArgs[4] != cv4 {
 		//
 		err = fmt.Errorf("%w: %v", errArg, cArgs)
 	} else if szlog.Level() != expectedLevel {
@@ -380,6 +382,7 @@ func TestLog_ArgumentAbsorption(t *testing.T) {
 		testArgs(szlog.LevelNone, []string{
 			cv1,
 			cv2,
+			nv,
 			cv3,
 			cv4,
 		}),
@@ -390,6 +393,7 @@ func TestLog_ArgumentAbsorption(t *testing.T) {
 			"-v",
 			cv1,
 			cv2,
+			nv,
 			cv3,
 			cv4,
 		}),
@@ -401,6 +405,7 @@ func TestLog_ArgumentAbsorption(t *testing.T) {
 			cv1,
 			"--v",
 			cv2,
+			nv,
 			cv3,
 			cv4,
 		}),
@@ -413,6 +418,7 @@ func TestLog_ArgumentAbsorption(t *testing.T) {
 			"--v",
 			cv2,
 			"-vv",
+			nv,
 			cv3,
 			cv4,
 		}),
@@ -425,6 +431,7 @@ func TestLog_ArgumentAbsorption(t *testing.T) {
 			"--v",
 			cv2,
 			"-vv",
+			nv,
 			cv3,
 			"--vv",
 			cv4,
@@ -438,6 +445,7 @@ func TestLog_ArgumentAbsorption(t *testing.T) {
 			"--v",
 			cv2,
 			"-vv",
+			nv,
 			cv3,
 			"--vv",
 			cv4,

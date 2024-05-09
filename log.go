@@ -316,21 +316,25 @@ func (l *Log) VerboseAbsorbArgs(argsIn []string) []string {
 	argsOut := make([]string, 0, len(argsIn))
 
 	for _, rArg := range argsIn {
+		keepArg := true
+
 		if strings.HasPrefix(rArg, "-v") || strings.HasPrefix(rArg, "--v") {
-			keepArg := false
+			keepArg = false
 			cleanArg := strings.TrimLeft(rArg, "-")
 
 			for i, mi := 0, len(cleanArg); i < mi && !keepArg; i++ {
 				keepArg = cleanArg[i] != 'v'
 			}
 
-			if keepArg {
-				argsOut = append(argsOut, rArg)
-			} else {
+			if !keepArg {
 				for range len(cleanArg) {
 					l.IncLevel()
 				}
 			}
+		}
+
+		if keepArg {
+			argsOut = append(argsOut, rArg)
 		}
 	}
 
