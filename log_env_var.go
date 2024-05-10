@@ -31,6 +31,7 @@ const (
 	envLogLevelInfo  = "SZLOG_LEVEL_INFO"
 	envLogLevelDebug = "SZLOG_LEVEL_DEBUG"
 	envLogLevelTrace = "SZLOG_LEVEL_TRACE"
+	envLogLongLabels = "SZLOG_LONG_LABELS"
 )
 
 //nolint:goCheckNoInits // Ok.

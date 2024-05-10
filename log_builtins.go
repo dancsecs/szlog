@@ -205,7 +205,7 @@ func validateLogLevel(area string, rawLevel LogLevel) LogLevel {
 	if rangeError {
 		logWarn(
 			"attempt to access out of bounds log level: ",
-			rawLevel,
+			int(rawLevel), // Convert to int to block LogLevel stringer.
 			" from: ",
 			area,
 		)
