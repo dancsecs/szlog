@@ -26,9 +26,6 @@ type LogFunctionUnformatted func(msg ...any) bool
 // LogFunctionFormatted defines the signature of a formatted log function.
 type LogFunctionFormatted func(msgFmt string, msgArgs ...any) bool
 
-// LogLevel represents the current minium level of message to log.
-type LogLevel int
-
 // Def represents the return value of a function provided to a log
 // function that will only be executed if the message is logged.
 type Def string
@@ -297,6 +294,8 @@ func (l *Log) DecLevel() LogLevel {
 
 // Reset returns all log setting to default startup conditions.
 func (l *Log) Reset() {
+	l.longLabels = getEnvSetting(envLogLongLabels)
+
 	l.disableLevelFatal = getEnvSetting(envLogLevelFatal)
 	l.disableLevelError = getEnvSetting(envLogLevelError)
 	l.disableLevelWarn = getEnvSetting(envLogLevelWarn)

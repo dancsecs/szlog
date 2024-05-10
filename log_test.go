@@ -365,7 +365,7 @@ func testArgs(expectedLevel szlog.LogLevel, args []string) error {
 		//
 		err = fmt.Errorf("%w: %v", errArg, cArgs)
 	} else if szlog.Level() != expectedLevel {
-		err = fmt.Errorf("%w: %d", errLevel, szlog.Level())
+		err = fmt.Errorf("%w: %s", errLevel, szlog.Level().String())
 	}
 
 	return err
