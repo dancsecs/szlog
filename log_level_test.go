@@ -16,7 +16,6 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-//nolint:dupl // Ok.
 package szlog_test
 
 import (
