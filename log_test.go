@@ -314,6 +314,39 @@ func TestCfg_LogError_Trace(t *testing.T) {
 	chk.Log(expLog...)
 }
 
+type tstCloseable struct {
+	err error
+}
+
+func (t tstCloseable) Close() error {
+	return t.err
+}
+
+var errCloseError = errors.New("close error")
+
+func TestSzLog_Close(t *testing.T) {
+	chk := sztest.CaptureLog(t)
+	defer chk.Release()
+
+	szlog.SetLevel(szlog.LevelAll)
+
+	noErrClose := tstCloseable{
+		err: nil,
+	}
+
+	errClose := tstCloseable{
+		err: errCloseError,
+	}
+
+	szlog.Close("no error", noErrClose)
+
+	szlog.Close("with error", errClose)
+
+	chk.Log(
+		"W:with error caused: close error",
+	)
+}
+
 func TestCfg_LogLabelLength(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()

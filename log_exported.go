@@ -18,6 +18,8 @@
 
 package szlog
 
+import "io"
+
 // LongLabels return true if long labels are enabled.
 func LongLabels() bool {
 	return defaultLog.LongLabels()
@@ -187,4 +189,9 @@ func Tf(msgFmt string, msgArgs ...any) bool {
 // Tracef Invokes the default log corresponding method.
 func Tracef(msgFmt string, msgArgs ...any) bool {
 	return defaultLog.Tracef(msgFmt, msgArgs...)
+}
+
+// Close Invokes the default log corresponding method.
+func Close(area string, closeable io.Closer) {
+	defaultLog.Close(area, closeable)
 }

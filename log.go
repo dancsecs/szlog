@@ -18,7 +18,10 @@
 
 package szlog
 
-import "strings"
+import (
+	"io"
+	"strings"
+)
 
 // LogFunctionUnformatted defines the signature of an unformatted log function.
 type LogFunctionUnformatted func(msg ...any) bool
@@ -199,11 +202,11 @@ func (l *Log) Level() LogLevel {
 }
 
 func selectLog(
-	disabled bool,
+	enabled bool,
 	useLong bool,
 	shortLog, longLog LogFunctionUnformatted,
 ) LogFunctionUnformatted {
-	if !disabled {
+	if enabled {
 		if useLong {
 			return longLog
 		}
@@ -215,11 +218,11 @@ func selectLog(
 }
 
 func selectLogf(
-	disabled bool,
+	enabled bool,
 	useLong bool,
 	shortLogf, longLogf LogFunctionFormatted,
 ) LogFunctionFormatted {
-	if !disabled {
+	if enabled {
 		if useLong {
 			return longLogf
 		}
@@ -235,40 +238,40 @@ func (l *Log) SetLevel(newLogLevel LogLevel) LogLevel {
 	oldLogLevel := l.level
 	l.level = validateLogLevel("SetLevel", newLogLevel)
 
-	disable := l.level < LevelFatal || l.disableLevelFatal
-	l.F = selectLog(disable, l.longLabels, logFatal, logLongFatal)
+	l.LogFatal = l.level >= LevelFatal && !l.disableLevelFatal
+	l.F = selectLog(l.LogFatal, l.longLabels, logFatal, logLongFatal)
 	l.Fatal = l.F
-	l.Ff = selectLogf(disable, l.longLabels, logFatalf, logLongFatalf)
+	l.Ff = selectLogf(l.LogFatal, l.longLabels, logFatalf, logLongFatalf)
 	l.Fatalf = l.Ff
 
-	disable = l.level < LevelError || l.disableLevelError
-	l.E = selectLog(disable, l.longLabels, logError, logLongError)
+	l.LogError = l.level >= LevelError && !l.disableLevelError
+	l.E = selectLog(l.LogError, l.longLabels, logError, logLongError)
 	l.Error = l.E
-	l.Ef = selectLogf(disable, l.longLabels, logErrorf, logLongErrorf)
+	l.Ef = selectLogf(l.LogError, l.longLabels, logErrorf, logLongErrorf)
 	l.Errorf = l.Ef
 
-	disable = l.level < LevelWarn || l.disableLevelWarn
-	l.W = selectLog(disable, l.longLabels, logWarn, logLongWarn)
+	l.LogWarn = l.level >= LevelWarn && !l.disableLevelWarn
+	l.W = selectLog(l.LogWarn, l.longLabels, logWarn, logLongWarn)
 	l.Warn = l.W
-	l.Wf = selectLogf(disable, l.longLabels, logWarnf, logLongWarnf)
+	l.Wf = selectLogf(l.LogWarn, l.longLabels, logWarnf, logLongWarnf)
 	l.Warnf = l.Wf
 
-	disable = l.level < LevelInfo || l.disableLevelInfo
-	l.I = selectLog(disable, l.longLabels, logInfo, logLongInfo)
+	l.LogInfo = l.level >= LevelInfo && !l.disableLevelInfo
+	l.I = selectLog(l.LogInfo, l.longLabels, logInfo, logLongInfo)
 	l.Info = l.I
-	l.If = selectLogf(disable, l.longLabels, logInfof, logLongInfof)
+	l.If = selectLogf(l.LogInfo, l.longLabels, logInfof, logLongInfof)
 	l.Infof = l.If
 
-	disable = l.level < LevelDebug || l.disableLevelDebug
-	l.D = selectLog(disable, l.longLabels, logDebug, logLongDebug)
+	l.LogDebug = l.level >= LevelDebug && !l.disableLevelDebug
+	l.D = selectLog(l.LogDebug, l.longLabels, logDebug, logLongDebug)
 	l.Debug = l.D
-	l.Df = selectLogf(disable, l.longLabels, logDebugf, logLongDebugf)
+	l.Df = selectLogf(l.LogDebug, l.longLabels, logDebugf, logLongDebugf)
 	l.Debugf = l.Df
 
-	disable = l.level < LevelTrace || l.disableLevelTrace
-	l.T = selectLog(disable, l.longLabels, logTrace, logLongTrace)
+	l.LogTrace = l.level >= LevelTrace && !l.disableLevelTrace
+	l.T = selectLog(l.LogTrace, l.longLabels, logTrace, logLongTrace)
 	l.Trace = l.T
-	l.Tf = selectLogf(disable, l.longLabels, logTracef, logLongTracef)
+	l.Tf = selectLogf(l.LogTrace, l.longLabels, logTracef, logLongTracef)
 	l.Tracef = l.Tf
 
 	return oldLogLevel
@@ -338,4 +341,14 @@ func (l *Log) VerboseAbsorbArgs(argsIn []string) []string {
 	}
 
 	return argsOut
+}
+
+// Close provides a convenience function to close anything implementing
+// io.Closer and log any error returned as a warning.  Mainly to be used
+// in defer functions.
+func (l *Log) Close(area string, closeable io.Closer) {
+	err := closeable.Close()
+	if err != nil && l.LogWarn {
+		l.Warn(area, " caused: ", err)
+	}
 }
