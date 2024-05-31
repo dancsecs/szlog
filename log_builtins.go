@@ -23,27 +23,11 @@ import (
 	"log"
 )
 
-const (
-	logFatalLabel = "F:"
-	logErrorLabel = "E:"
-	logWarnLabel  = "W:"
-	logInfoLabel  = "I:"
-	logDebugLabel = "D:"
-	logTraceLabel = "T:"
-
-	logLongFatalLabel = "FATAL:"
-	logLongErrorLabel = "ERROR:"
-	logLongWarnLabel  = "WARN:"
-	logLongInfoLabel  = "INFO:"
-	logLongDebugLabel = "DEBUG:"
-	logLongTraceLabel = "TRACE:"
-)
-
 func expandMsg(rawMessages ...any) string {
 	messages := make([]any, len(rawMessages))
 
 	for i, arg := range rawMessages {
-		f, ok := arg.(func() Def)
+		f, ok := arg.(func() Defer)
 		if ok {
 			arg = f() // Use result of delayed parameter.
 		}
@@ -58,7 +42,7 @@ func expandMsgf(fmtMsg string, rawFmtArgs ...any) string {
 	fmtArgs := make([]any, len(rawFmtArgs))
 
 	for i, arg := range rawFmtArgs {
-		f, ok := arg.(func() Def)
+		f, ok := arg.(func() Defer)
 		if ok {
 			arg = f() // Use result of delayed parameter.
 		}
@@ -296,6 +280,8 @@ func validateLogLevel(area string, rawLevel LogLevel) LogLevel {
 	)
 
 	switch {
+	case rawLevel == LevelCustom:
+		level = LevelCustom
 	case rawLevel < LevelNone:
 		level = LevelNone
 		rangeError = true

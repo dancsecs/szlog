@@ -18,26 +18,18 @@
 
 package szlog_test
 
-import (
-	"testing"
+const (
+	logFatalLabel = "F:"
+	logErrorLabel = "E:"
+	logWarnLabel  = "W:"
+	logInfoLabel  = "I:"
+	logDebugLabel = "D:"
+	logTraceLabel = "T:"
 
-	"github.com/dancsecs/szlog"
-	"github.com/dancsecs/sztest"
+	logFatalLongLabel = "FATAL:"
+	logErrorLongLabel = "ERROR:"
+	logWarnLongLabel  = "WARN:"
+	logInfoLongLabel  = "INFO:"
+	logDebugLongLabel = "DEBUG:"
+	logTraceLongLabel = "TRACE:"
 )
-
-func TestSzLog_LogLevel_String(t *testing.T) {
-	chk := sztest.CaptureNothing(t)
-	defer chk.Release()
-
-	chk.Str((szlog.LevelNone - 1).String(), "UNKNOWN:-1")
-	chk.Str((szlog.LevelNone).String(), "NONE")
-	chk.Str((szlog.LevelFatal).String(), "FATAL")
-	chk.Str((szlog.LevelError).String(), "ERROR")
-	chk.Str((szlog.LevelWarn).String(), "WARN")
-	chk.Str((szlog.LevelInfo).String(), "INFO")
-	chk.Str((szlog.LevelDebug).String(), "DEBUG")
-	chk.Str((szlog.LevelTrace).String(), "TRACE")
-	chk.Str((szlog.LevelAll).String(), "ALL")
-	chk.Str((szlog.LevelCustom).String(), "CUSTOM")
-	chk.Str((szlog.LevelAll + 1).String(), "UNKNOWN:8")
-}

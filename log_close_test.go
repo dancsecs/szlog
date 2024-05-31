@@ -19,25 +19,42 @@
 package szlog_test
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/dancsecs/szlog"
 	"github.com/dancsecs/sztest"
 )
 
-func TestSzLog_LogLevel_String(t *testing.T) {
-	chk := sztest.CaptureNothing(t)
+type tstCloseable struct {
+	err error
+}
+
+func (t tstCloseable) Close() error {
+	return t.err
+}
+
+var errCloseError = errors.New("close error")
+
+func TestSzLog_Close(t *testing.T) {
+	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
-	chk.Str((szlog.LevelNone - 1).String(), "UNKNOWN:-1")
-	chk.Str((szlog.LevelNone).String(), "NONE")
-	chk.Str((szlog.LevelFatal).String(), "FATAL")
-	chk.Str((szlog.LevelError).String(), "ERROR")
-	chk.Str((szlog.LevelWarn).String(), "WARN")
-	chk.Str((szlog.LevelInfo).String(), "INFO")
-	chk.Str((szlog.LevelDebug).String(), "DEBUG")
-	chk.Str((szlog.LevelTrace).String(), "TRACE")
-	chk.Str((szlog.LevelAll).String(), "ALL")
-	chk.Str((szlog.LevelCustom).String(), "CUSTOM")
-	chk.Str((szlog.LevelAll + 1).String(), "UNKNOWN:8")
+	szlog.SetLevel(szlog.LevelAll)
+
+	noErrClose := tstCloseable{
+		err: nil,
+	}
+
+	errClose := tstCloseable{
+		err: errCloseError,
+	}
+
+	szlog.Close("no error", noErrClose)
+
+	szlog.Close("with error", errClose)
+
+	chk.Log(
+		"W:with error caused: close error",
+	)
 }

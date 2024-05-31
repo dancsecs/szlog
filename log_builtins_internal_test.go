@@ -21,6 +21,7 @@ package szlog
 
 import (
 	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/dancsecs/sztest"
@@ -35,20 +36,54 @@ func TestLOgBuiltin_ExpandMsg(t *testing.T) {
 	chk := sztest.CaptureNothing(t)
 	defer chk.Release()
 
+	nonDeferredFunc := func() string {
+		return "ab"
+	}
+
+	deferredFunc := func() Defer {
+		return "ab"
+	}
+
+	// Needed to get past compiler blocking displaying the address of a func.
+	printNon := func(a any) string {
+		return fmt.Sprint(a)
+	}
+
 	chk.Str(expandMsg(), "")
 	chk.Str(expandMsg("abc"), "abc")
 	chk.Str(expandMsg("abc", "def"), "abcdef")
-	chk.Str(expandMsg(func() Def { return "abc" }, "def"), "abcdef")
+	chk.Str(
+		expandMsg(nonDeferredFunc, "cd"),
+		printNon(nonDeferredFunc)+"cd",
+	)
+	chk.Str(expandMsg(deferredFunc, "cd"), "abcd")
 }
 
 func TestLogBuiltin_ExpandMsgf(t *testing.T) {
 	chk := sztest.CaptureNothing(t)
 	defer chk.Release()
 
+	nonDeferredFunc := func() string {
+		return "ab"
+	}
+
+	deferredFunc := func() Defer {
+		return "ab"
+	}
+
+	// Needed to get past compiler blocking displaying the address of a func.
+	printNon := func(a any) string {
+		return fmt.Sprint(a)
+	}
+
 	chk.Str(expandMsgf(""), "")
 	chk.Str(expandMsgf("%v", "abc"), "abc")
 	chk.Str(expandMsgf("%v%v", "ab", "cd"), "abcd")
-	chk.Str(expandMsgf("%v%v", func() Def { return "ab" }, "cd"), "abcd")
+	chk.Str(
+		expandMsgf("%v%v", nonDeferredFunc, "cd"),
+		printNon(nonDeferredFunc)+"cd",
+	)
+	chk.Str(expandMsgf("%v%v", deferredFunc, "cd"), "abcd")
 }
 
 func TestLogBuiltin_LogMsg(t *testing.T) {
@@ -296,6 +331,7 @@ func TestLogBuiltin_ValidateLogLevel(t *testing.T) {
 	chk.Int(int(validateLogLevel(tstArea, LevelDebug)), int(LevelDebug))
 	chk.Int(int(validateLogLevel(tstArea, LevelTrace)), int(LevelTrace))
 	chk.Int(int(validateLogLevel(tstArea, LevelAll)), int(LevelAll))
+	chk.Int(int(validateLogLevel(tstArea, LevelCustom)), int(LevelCustom))
 	chk.Int(int(validateLogLevel(tstArea, LevelAll+1)), int(LevelAll))
 
 	chk.Log(

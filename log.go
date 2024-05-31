@@ -18,11 +18,6 @@
 
 package szlog
 
-import (
-	"io"
-	"strings"
-)
-
 // LogFunc defines the signature of an unformatted log function.
 type LogFunc func(msg ...any) bool
 
@@ -35,34 +30,12 @@ type LogErrFunc func(err error, msg ...any) bool
 // LogErrFuncf defines the signature of a formatted error logging function.
 type LogErrFuncf func(err error, msgFmt string, msgArgs ...any) bool
 
-// Def (deferred function) identifies the argument passed to the log function
-// as a deferred function and will only be called and its output added to the
-// log if the level is enabled.  Otherwise the function is not called.
-type Def string
-
-// Available logging levels.
-const (
-	LevelNone LogLevel = iota
-	LevelFatal
-	LevelError
-	LevelWarn
-	LevelInfo
-	LevelDebug
-	LevelTrace
-	LevelAll
-)
-
-// Usage suitable strings for verbose argument absorption.
-const (
-	VerboseFlag     = "-v[v...], --v[v...]"
-	VerboseFlagDesc = "Increase the logging level for each v provided."
-)
-
 // Log represents a szlog logging object.
 type Log struct {
-	envOverride []string
-	level       LogLevel
-	longLabels  bool
+	envOverride           []string
+	level                 LogLevel
+	customLevelsPermitted int
+	longLabels            bool
 
 	disableLevelFatal bool
 	disableLevelError bool
@@ -129,20 +102,6 @@ func SetDefault(newDefaultLog *Log) *Log {
 	return origLog
 }
 
-// LongLabels enables/disables the use of longer labels in log output.
-func (l *Log) LongLabels() bool {
-	return l.longLabels
-}
-
-// SetLongLabels enables/disables the use of longer labels in log output.
-func (l *Log) SetLongLabels(enable bool) bool {
-	orig := l.longLabels
-	l.longLabels = enable
-	l.SetLevel(l.level)
-
-	return orig
-}
-
 // LevelDisabled return true if the  level is disabled.
 //
 //nolint:cyclop // Ok.
@@ -176,6 +135,7 @@ func (l *Log) LevelDisabled(level LogLevel) bool {
 			l.disableLevelInfo &&
 			l.disableLevelDebug &&
 			l.disableLevelTrace
+	case LevelCustom:
 	}
 
 	return result
@@ -210,6 +170,7 @@ func (l *Log) DisableLevel(level LogLevel) {
 		l.disableLevelInfo = true
 		l.disableLevelDebug = true
 		l.disableLevelTrace = true
+	case LevelCustom:
 	}
 
 	l.SetLevel(l.level)
@@ -284,14 +245,70 @@ func selectLogErrf(
 	return noLogErrf
 }
 
+// SetCustomLevels permits the selective enabling of individual levels.
+//
+//nolint:cyclop // Ok.
+func (l *Log) SetCustomLevels(levels ...LogLevel) LogLevel {
+	permittedLevels := enableLevelNone
+
+	for _, level := range levels {
+		switch level {
+		case LevelNone:
+			permittedLevels = enableLevelNone
+		case LevelFatal:
+			permittedLevels |= enabledFatal
+		case LevelError:
+			permittedLevels |= enabledError
+		case LevelWarn:
+			permittedLevels |= enabledWarn
+		case LevelInfo:
+			permittedLevels |= enabledInfo
+		case LevelDebug:
+			permittedLevels |= enabledDebug
+		case LevelTrace:
+			permittedLevels |= enabledTrace
+		case LevelAll:
+			permittedLevels = enableLevelAll
+		case LevelCustom:
+		}
+	}
+
+	l.customLevelsPermitted = permittedLevels
+
+	return l.SetLevel(LevelCustom)
+}
+
 // SetLevel sets the logging level.
 //
-//nolint:funlen // OK.
+//nolint:funlen,cyclop // OK.
 func (l *Log) SetLevel(newLogLevel LogLevel) LogLevel {
 	oldLogLevel := l.level
 	l.level = validateLogLevel("SetLevel", newLogLevel)
 
-	l.LogFatal = l.level >= LevelFatal && !l.disableLevelFatal
+	enable := 0
+
+	switch l.level {
+	case LevelNone:
+		enable = enableLevelNone
+	case LevelFatal:
+		enable = enableLevelFatal
+	case LevelError:
+		enable = enableLevelError
+	case LevelWarn:
+		enable = enableLevelWarn
+	case LevelInfo:
+		enable = enableLevelInfo
+	case LevelDebug:
+		enable = enableLevelDebug
+	case LevelTrace:
+		enable = enableLevelTrace
+	case LevelAll:
+		enable = enableLevelAll
+	case LevelCustom:
+		enable = l.customLevelsPermitted
+	}
+
+	l.LogFatal = enable&enabledFatal > 0 && !l.disableLevelFatal
 	l.F = selectLog(l.LogFatal, l.longLabels, logFatal, logLongFatal)
 	l.Fatal = l.F
 	l.Ff = selectLogf(l.LogFatal, l.longLabels, logFatalf, logLongFatalf)
@@ -305,7 +322,7 @@ func (l *Log) SetLevel(newLogLevel LogLevel) LogLevel {
 	)
 	l.FatalErrf = l.FErrf
 
-	l.LogError = l.level >= LevelError && !l.disableLevelError
+	l.LogError = enable&enabledError > 0 && !l.disableLevelError
 	l.E = selectLog(l.LogError, l.longLabels, logError, logLongError)
 	l.Error = l.E
 	l.Ef = selectLogf(l.LogError, l.longLabels, logErrorf, logLongErrorf)
@@ -319,7 +336,7 @@ func (l *Log) SetLevel(newLogLevel LogLevel) LogLevel {
 	)
 	l.ErrorErrf = l.EErrf
 
-	l.LogWarn = l.level >= LevelWarn && !l.disableLevelWarn
+	l.LogWarn = enable&enabledWarn > 0 && !l.disableLevelWarn
 	l.W = selectLog(l.LogWarn, l.longLabels, logWarn, logLongWarn)
 	l.Warn = l.W
 	l.Wf = selectLogf(l.LogWarn, l.longLabels, logWarnf, logLongWarnf)
@@ -333,7 +350,7 @@ func (l *Log) SetLevel(newLogLevel LogLevel) LogLevel {
 	)
 	l.WarnErrf = l.WErrf
 
-	l.LogInfo = l.level >= LevelInfo && !l.disableLevelInfo
+	l.LogInfo = enable&enabledInfo > 0 && !l.disableLevelInfo
 	l.I = selectLog(l.LogInfo, l.longLabels, logInfo, logLongInfo)
 	l.Info = l.I
 	l.If = selectLogf(l.LogInfo, l.longLabels, logInfof, logLongInfof)
@@ -346,7 +363,7 @@ func (l *Log) SetLevel(newLogLevel LogLevel) LogLevel {
 		l.LogInfo, l.longLabels, logInfoErrf, logLongInfoErrf)
 	l.InfoErrf = l.IErrf
 
-	l.LogDebug = l.level >= LevelDebug && !l.disableLevelDebug
+	l.LogDebug = enable&enabledDebug > 0 && !l.disableLevelDebug
 	l.D = selectLog(l.LogDebug, l.longLabels, logDebug, logLongDebug)
 	l.Debug = l.D
 	l.Df = selectLogf(l.LogDebug, l.longLabels, logDebugf, logLongDebugf)
@@ -360,7 +377,7 @@ func (l *Log) SetLevel(newLogLevel LogLevel) LogLevel {
 	)
 	l.DebugErrf = l.DErrf
 
-	l.LogTrace = l.level >= LevelTrace && !l.disableLevelTrace
+	l.LogTrace = enable&enabledTrace > 0 && !l.disableLevelTrace
 	l.T = selectLog(l.LogTrace, l.longLabels, logTrace, logLongTrace)
 	l.Trace = l.T
 	l.Tf = selectLogf(l.LogTrace, l.longLabels, logTracef, logLongTracef)
@@ -381,7 +398,9 @@ func (l *Log) SetLevel(newLogLevel LogLevel) LogLevel {
 func (l *Log) IncLevel() LogLevel {
 	lastLevel := l.level
 
-	l.SetLevel(validateLogLevel("IncLevel", l.level+1))
+	if lastLevel != LevelCustom {
+		l.SetLevel(validateLogLevel("IncLevel", l.level+1))
+	}
 
 	return lastLevel
 }
@@ -390,7 +409,9 @@ func (l *Log) IncLevel() LogLevel {
 func (l *Log) DecLevel() LogLevel {
 	lastLevel := l.level
 
-	l.SetLevel(validateLogLevel("DecLevel", l.level-1))
+	if lastLevel != LevelCustom {
+		l.SetLevel(validateLogLevel("DecLevel", l.level-1))
+	}
 
 	return lastLevel
 }
@@ -406,49 +427,7 @@ func (l *Log) Reset() {
 	l.disableLevelDebug = getEnvSetting(envLogLevelDebug)
 	l.disableLevelTrace = getEnvSetting(envLogLevelTrace)
 
+	l.customLevelsPermitted = enableLevelError // Later: load from env
+
 	l.SetLevel(getEnvLevel(envLogLevel, LevelError))
-}
-
-// VerboseAbsorbArgs scans an argument list for verbose flags increasing
-// the log level for each verbose flag encountered.  These flags are removed
-// and a cleaned up arg list is returned.  Verbose flags can be a single (or
-// multiple letter 'v's with the corresponding number of log level increments
-// made.
-func (l *Log) VerboseAbsorbArgs(argsIn []string) []string {
-	argsOut := make([]string, 0, len(argsIn))
-
-	for _, rArg := range argsIn {
-		keepArg := true
-
-		if strings.HasPrefix(rArg, "-v") || strings.HasPrefix(rArg, "--v") {
-			keepArg = false
-			cleanArg := strings.TrimLeft(rArg, "-")
-
-			for i, mi := 0, len(cleanArg); i < mi && !keepArg; i++ {
-				keepArg = cleanArg[i] != 'v'
-			}
-
-			if !keepArg {
-				for range len(cleanArg) {
-					l.IncLevel()
-				}
-			}
-		}
-
-		if keepArg {
-			argsOut = append(argsOut, rArg)
-		}
-	}
-
-	return argsOut
-}
-
-// Close provides a convenience function to close anything implementing
-// io.Closer and log any error returned as a warning.  Mainly to be used
-// in defer functions.
-func (l *Log) Close(area string, closeable io.Closer) {
-	err := closeable.Close()
-	if err != nil && l.LogWarn {
-		l.Warn(area, " caused: ", err)
-	}
 }

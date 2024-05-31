@@ -18,12 +18,48 @@
 
 package szlog
 
-import "strconv"
+import (
+	"math"
+	"strconv"
+)
 
 // LogLevel represents the current minium level of message to log.
 type LogLevel int
 
+// Available logging levels.
+const (
+	LevelNone LogLevel = iota
+	LevelFatal
+	LevelError
+	LevelWarn
+	LevelInfo
+	LevelDebug
+	LevelTrace
+	LevelAll
+	LevelCustom = LogLevel(math.MaxInt)
+)
+
+const (
+	enabledFatal = 1 << iota
+	enabledError
+	enabledWarn
+	enabledInfo
+	enabledDebug
+	enabledTrace
+
+	enableLevelNone  = 0
+	enableLevelFatal = enableLevelNone | enabledFatal
+	enableLevelError = enableLevelFatal | enabledError
+	enableLevelWarn  = enableLevelError | enabledWarn
+	enableLevelInfo  = enableLevelWarn | enabledInfo
+	enableLevelDebug = enableLevelInfo | enabledDebug
+	enableLevelTrace = enableLevelDebug | enabledTrace
+	enableLevelAll   = enableLevelTrace
+)
+
 // String implements the Stringer interface.
+//
+//nolint:cyclop // Ok.
 func (ll LogLevel) String() string {
 	switch ll {
 	case LevelNone:
@@ -42,6 +78,8 @@ func (ll LogLevel) String() string {
 		return "TRACE"
 	case LevelAll:
 		return "ALL"
+	case LevelCustom:
+		return "CUSTOM"
 	default:
 		return "UNKNOWN:" + strconv.FormatInt(int64(ll), 10)
 	}

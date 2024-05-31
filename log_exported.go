@@ -50,6 +50,11 @@ func SetLevel(newLogLevel LogLevel) LogLevel {
 	return defaultLog.SetLevel(newLogLevel)
 }
 
+// SetCustomLevels sets the logging level.
+func SetCustomLevels(levels ...LogLevel) LogLevel {
+	return defaultLog.SetCustomLevels(levels...)
+}
+
 // IncLevel permits all logging at the specified level.
 func IncLevel() LogLevel {
 	return defaultLog.IncLevel()
