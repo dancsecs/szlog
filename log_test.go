@@ -68,8 +68,8 @@ func calculation(numbers []float64) string {
 //nolint:cyclop,funlen // Ok.
 func tstWrite(
 	label string,
-	unFmt szlog.LogFunctionUnformatted,
-	fmt szlog.LogFunctionFormatted,
+	unFmt szlog.LogFunc,
+	fmt szlog.LogFuncf,
 ) []string {
 	var res []string
 

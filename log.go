@@ -23,14 +23,21 @@ import (
 	"strings"
 )
 
-// LogFunctionUnformatted defines the signature of an unformatted log function.
-type LogFunctionUnformatted func(msg ...any) bool
+// LogFunc defines the signature of an unformatted log function.
+type LogFunc func(msg ...any) bool
 
-// LogFunctionFormatted defines the signature of a formatted log function.
-type LogFunctionFormatted func(msgFmt string, msgArgs ...any) bool
+// LogFuncf defines the signature of a formatted log function.
+type LogFuncf func(msgFmt string, msgArgs ...any) bool
 
-// Def represents the return value of a function provided to a log
-// function that will only be executed if the message is logged.
+// LogErrFunc defines the signature of an unformatted error logging function.
+type LogErrFunc func(err error, msg ...any) bool
+
+// LogErrFuncf defines the signature of a formatted error logging function.
+type LogErrFuncf func(err error, msgFmt string, msgArgs ...any) bool
+
+// Def (deferred function) identifies the argument passed to the log function
+// as a deferred function and will only be called and its output added to the
+// log if the level is enabled.  Otherwise the function is not called.
 type Def string
 
 // Available logging levels.
@@ -71,18 +78,30 @@ type Log struct {
 	LogDebug bool
 	LogTrace bool
 
-	F, Fatal   LogFunctionUnformatted
-	Ff, Fatalf LogFunctionFormatted
-	E, Error   LogFunctionUnformatted
-	Ef, Errorf LogFunctionFormatted
-	W, Warn    LogFunctionUnformatted
-	Wf, Warnf  LogFunctionFormatted
-	I, Info    LogFunctionUnformatted
-	If, Infof  LogFunctionFormatted
-	D, Debug   LogFunctionUnformatted
-	Df, Debugf LogFunctionFormatted
-	T, Trace   LogFunctionUnformatted
-	Tf, Tracef LogFunctionFormatted
+	F, Fatal         LogFunc
+	FErr, FatalErr   LogErrFunc
+	Ff, Fatalf       LogFuncf
+	FErrf, FatalErrf LogErrFuncf
+	E, Error         LogFunc
+	EErr, ErrorErr   LogErrFunc
+	Ef, Errorf       LogFuncf
+	EErrf, ErrorErrf LogErrFuncf
+	W, Warn          LogFunc
+	WErr, WarnErr    LogErrFunc
+	Wf, Warnf        LogFuncf
+	WErrf, WarnErrf  LogErrFuncf
+	I, Info          LogFunc
+	IErr, InfoErr    LogErrFunc
+	If, Infof        LogFuncf
+	IErrf, InfoErrf  LogErrFuncf
+	D, Debug         LogFunc
+	DErr, DebugErr   LogErrFunc
+	Df, Debugf       LogFuncf
+	DErrf, DebugErrf LogErrFuncf
+	T, Trace         LogFunc
+	TErr, TraceErr   LogErrFunc
+	Tf, Tracef       LogFuncf
+	TErrf, TraceErrf LogErrFuncf
 }
 
 //nolint:goCheckNoGlobals // Default package logger.
@@ -204,8 +223,8 @@ func (l *Log) Level() LogLevel {
 func selectLog(
 	enabled bool,
 	useLong bool,
-	shortLog, longLog LogFunctionUnformatted,
-) LogFunctionUnformatted {
+	shortLog, longLog LogFunc,
+) LogFunc {
 	if enabled {
 		if useLong {
 			return longLog
@@ -220,8 +239,8 @@ func selectLog(
 func selectLogf(
 	enabled bool,
 	useLong bool,
-	shortLogf, longLogf LogFunctionFormatted,
-) LogFunctionFormatted {
+	shortLogf, longLogf LogFuncf,
+) LogFuncf {
 	if enabled {
 		if useLong {
 			return longLogf
@@ -233,7 +252,41 @@ func selectLogf(
 	return noLogf
 }
 
+func selectLogErr(
+	enabled bool,
+	useLong bool,
+	shortLog, longLog LogErrFunc,
+) LogErrFunc {
+	if enabled {
+		if useLong {
+			return longLog
+		}
+
+		return shortLog
+	}
+
+	return noLogErr
+}
+
+func selectLogErrf(
+	enabled bool,
+	useLong bool,
+	shortLogf, longLogf LogErrFuncf,
+) LogErrFuncf {
+	if enabled {
+		if useLong {
+			return longLogf
+		}
+
+		return shortLogf
+	}
+
+	return noLogErrf
+}
+
 // SetLevel sets the logging level.
+//
+//nolint:funlen // OK.
 func (l *Log) SetLevel(newLogLevel LogLevel) LogLevel {
 	oldLogLevel := l.level
 	l.level = validateLogLevel("SetLevel", newLogLevel)
@@ -243,36 +296,83 @@ func (l *Log) SetLevel(newLogLevel LogLevel) LogLevel {
 	l.Fatal = l.F
 	l.Ff = selectLogf(l.LogFatal, l.longLabels, logFatalf, logLongFatalf)
 	l.Fatalf = l.Ff
+	l.FErr = selectLogErr(
+		l.LogFatal, l.longLabels, logFatalErr, logLongFatalErr,
+	)
+	l.FatalErr = l.FErr
+	l.FErrf = selectLogErrf(
+		l.LogFatal, l.longLabels, logFatalErrf, logLongFatalErrf,
+	)
+	l.FatalErrf = l.FErrf
 
 	l.LogError = l.level >= LevelError && !l.disableLevelError
 	l.E = selectLog(l.LogError, l.longLabels, logError, logLongError)
 	l.Error = l.E
 	l.Ef = selectLogf(l.LogError, l.longLabels, logErrorf, logLongErrorf)
 	l.Errorf = l.Ef
+	l.EErr = selectLogErr(
+		l.LogError, l.longLabels, logErrorErr, logLongErrorErr,
+	)
+	l.ErrorErr = l.EErr
+	l.EErrf = selectLogErrf(
+		l.LogError, l.longLabels, logErrorErrf, logLongErrorErrf,
+	)
+	l.ErrorErrf = l.EErrf
 
 	l.LogWarn = l.level >= LevelWarn && !l.disableLevelWarn
 	l.W = selectLog(l.LogWarn, l.longLabels, logWarn, logLongWarn)
 	l.Warn = l.W
 	l.Wf = selectLogf(l.LogWarn, l.longLabels, logWarnf, logLongWarnf)
 	l.Warnf = l.Wf
+	l.WErr = selectLogErr(
+		l.LogWarn, l.longLabels, logWarnErr, logLongWarnErr,
+	)
+	l.WarnErr = l.WErr
+	l.WErrf = selectLogErrf(
+		l.LogWarn, l.longLabels, logWarnErrf, logLongWarnErrf,
+	)
+	l.WarnErrf = l.WErrf
 
 	l.LogInfo = l.level >= LevelInfo && !l.disableLevelInfo
 	l.I = selectLog(l.LogInfo, l.longLabels, logInfo, logLongInfo)
 	l.Info = l.I
 	l.If = selectLogf(l.LogInfo, l.longLabels, logInfof, logLongInfof)
 	l.Infof = l.If
+	l.IErr = selectLogErr(
+		l.LogInfo, l.longLabels, logInfoErr, logLongInfoErr,
+	)
+	l.InfoErr = l.IErr
+	l.IErrf = selectLogErrf(
+		l.LogInfo, l.longLabels, logInfoErrf, logLongInfoErrf)
+	l.InfoErrf = l.IErrf
 
 	l.LogDebug = l.level >= LevelDebug && !l.disableLevelDebug
 	l.D = selectLog(l.LogDebug, l.longLabels, logDebug, logLongDebug)
 	l.Debug = l.D
 	l.Df = selectLogf(l.LogDebug, l.longLabels, logDebugf, logLongDebugf)
 	l.Debugf = l.Df
+	l.DErr = selectLogErr(
+		l.LogDebug, l.longLabels, logDebugErr, logLongDebugErr,
+	)
+	l.DebugErr = l.DErr
+	l.DErrf = selectLogErrf(
+		l.LogDebug, l.longLabels, logDebugErrf, logLongDebugErrf,
+	)
+	l.DebugErrf = l.DErrf
 
 	l.LogTrace = l.level >= LevelTrace && !l.disableLevelTrace
 	l.T = selectLog(l.LogTrace, l.longLabels, logTrace, logLongTrace)
 	l.Trace = l.T
 	l.Tf = selectLogf(l.LogTrace, l.longLabels, logTracef, logLongTracef)
 	l.Tracef = l.Tf
+	l.TErr = selectLogErr(
+		l.LogTrace, l.longLabels, logTraceErr, logLongTraceErr,
+	)
+	l.TraceErr = l.TErr
+	l.TErrf = selectLogErrf(
+		l.LogTrace, l.longLabels, logTraceErrf, logLongTraceErrf,
+	)
+	l.TraceErrf = l.TErrf
 
 	return oldLogLevel
 }

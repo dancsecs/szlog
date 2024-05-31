@@ -264,65 +264,155 @@ func TestSzLogExported_LogRedirects(t *testing.T) {
 	szlog.Reset()
 	szlog.SetLevel(szlog.LevelAll)
 
-	szlog.F("f error")
-	szlog.Fatal("fatal error")
-	szlog.Ff("fmt: %s", "ff error")
-	szlog.Fatalf("fmt: %s", "fatalf error")
+	szlog.F("F message")
+	szlog.Fatal("Fatal message")
+	szlog.Ff("fmt: %s", "Ff message")
+	szlog.Fatalf("fmt: %s", "Fatalf message")
+	//
+	szlog.FErr(errNil, "FErr message NOT DISPLAYED")
+	szlog.FatalErr(errNil, "FatalErr message NOT DISPLAYED")
+	szlog.FErrf(errNil, "fmt: %s", "FErrf message NOT DISPLAYED")
+	szlog.FatalErrf(errNil, "fmt: %s", "FatalErrf message NOT DISPLAYED")
+	//
+	szlog.FErr(errTst, "FErr message displayed")
+	szlog.FatalErr(errTst, "FatalErr message displayed")
+	szlog.FErrf(errTst, "fmt: %s", "FErrf message displayed")
+	szlog.FatalErrf(errTst, "fmt: %s", "FatalErrf message displayed")
 
-	szlog.E("e error")
-	szlog.Error("error error") //nolint:dupword // Ok.
-	szlog.Ef("fmt: %s", "ef error")
-	szlog.Errorf("fmt: %s", "errorf error")
+	szlog.E("E message")
+	szlog.Error("Error message")
+	szlog.Ef("fmt: %s", "Ef message")
+	szlog.Errorf("fmt: %s", "Errorf message")
+	//
+	szlog.EErr(errNil, "EErr message NOT DISPLAYED")
+	szlog.ErrorErr(errNil, "ErrorErr message NOT DISPLAYED")
+	szlog.EErrf(errNil, "fmt: %s", "EErr message NOT DISPLAYED")
+	szlog.ErrorErrf(errNil, "fmt: %s", "ErrorErrf message NOT DISPLAYED")
+	//
+	szlog.EErr(errTst, "EErr message displayed")
+	szlog.ErrorErr(errTst, "ErrorErr message displayed")
+	szlog.EErrf(errTst, "fmt: %s", "EErrf message displayed")
+	szlog.ErrorErrf(errTst, "fmt: %s", "ErrorErrf message displayed")
 
-	szlog.W("w error")
-	szlog.Warn("warn error")
-	szlog.Wf("fmt: %s", "wf error")
-	szlog.Warnf("fmt: %s", "warnf error")
+	szlog.W("W message")
+	szlog.Warn("Warn message")
+	szlog.Wf("fmt: %s", "Wf message")
+	szlog.Warnf("fmt: %s", "Warnf message")
+	//
+	szlog.WErr(errNil, "WErr message NOT DISPLAYED")
+	szlog.WarnErr(errNil, "WarnErr message NOT DISPLAYED")
+	szlog.WErrf(errNil, "fmt: %s", "WErrf message NOT DISPLAYED")
+	szlog.WarnErrf(errNil, "fmt: %s", "WarnErrf message NOT DISPLAYED")
+	//
+	szlog.WErr(errTst, "WErr message displayed")
+	szlog.WarnErr(errTst, "WarnErr message displayed")
+	szlog.WErrf(errTst, "fmt: %s", "WErrf message displayed")
+	szlog.WarnErrf(errTst, "fmt: %s", "WarnErrf message displayed")
 
-	szlog.I("i error")
-	szlog.Info("info error")
-	szlog.If("fmt: %s", "if error")
-	szlog.Infof("fmt: %s", "infof error")
+	szlog.I("I message")
+	szlog.Info("Info message")
+	szlog.If("fmt: %s", "If message")
+	szlog.Infof("fmt: %s", "Infof message")
+	//
+	szlog.IErr(errNil, "IErr message NOT DISPLAYED")
+	szlog.InfoErr(errNil, "InfoErr message NOT DISPLAYED")
+	szlog.IErrf(errNil, "fmt: %s", "IErrf message NOT DISPLAYED")
+	szlog.InfoErrf(errNil, "fmt: %s", "InfoErrf message NOT DISPLAYED")
+	//
+	szlog.IErr(errTst, "IErr message displayed")
+	szlog.InfoErr(errTst, "InfoErr message displayed")
+	szlog.IErrf(errTst, "fmt: %s", "IErrf message displayed")
+	szlog.InfoErrf(errTst, "fmt: %s", "InfoErrf message displayed")
 
-	szlog.D("d error")
-	szlog.Debug("debug error")
-	szlog.Df("fmt: %s", "df error")
-	szlog.Debugf("fmt: %s", "debugf error")
+	szlog.D("D message")
+	szlog.Debug("Debug message")
+	szlog.Df("fmt: %s", "Df message")
+	szlog.Debugf("fmt: %s", "Debugf message")
+	//
+	szlog.DErr(errNil, "DErr message NOT DISPLAYED")
+	szlog.DebugErr(errNil, "DebugErr message NOT DISPLAYED")
+	szlog.DErrf(errNil, "fmt: %s", "DErrf message NOT DISPLAYED")
+	szlog.DebugErrf(errNil, "fmt: %s", "DebugErrf message NOT DISPLAYED")
+	//
+	szlog.DErr(errTst, "DErr message displayed")
+	szlog.DebugErr(errTst, "DebugErr message displayed")
+	szlog.DErrf(errTst, "fmt: %s", "DErrf message displayed")
+	szlog.DebugErrf(errTst, "fmt: %s", "DebugErrf message displayed")
 
-	szlog.T("t error")
-	szlog.Trace("trace error")
-	szlog.Tf("fmt: %s", "tf error")
-	szlog.Tracef("fmt: %s", "tracef error")
+	szlog.T("T message")
+	szlog.Trace("Trace message")
+	szlog.Tf("fmt: %s", "Tf message")
+	szlog.Tracef("fmt: %s", "Tracef message")
+	//
+	szlog.TErr(errNil, "TErr message NOT DISPLAYED")
+	szlog.TraceErr(errNil, "TraceErr message NOT DISPLAYED")
+	szlog.TErrf(errNil, "fmt: %s", "TErrf message NOT DISPLAYED")
+	szlog.TraceErrf(errNil, "fmt: %s", "TraceErrf message NOT DISPLAYED")
+	//
+	szlog.TErr(errTst, "TErr message displayed")
+	szlog.TraceErr(errTst, "TraceErr message displayed")
+	szlog.TErrf(errTst, "fmt: %s", "TErrf message displayed")
+	szlog.TraceErrf(errTst, "fmt: %s", "TraceErrf message displayed")
 
 	chk.Log(
-		"F:f error",
-		"F:fatal error",
-		"F:fmt: ff error",
-		"F:fmt: fatalf error",
+		"F:F message",
+		"F:Fatal message",
+		"F:fmt: Ff message",
+		"F:fmt: Fatalf message",
 
-		"E:e error",
-		"E:error error",
-		"E:fmt: ef error",
-		"E:fmt: errorf error",
+		"F:FErr message displayed",
+		"F:FatalErr message displayed",
+		"F:fmt: FErrf message displayed",
+		"F:fmt: FatalErrf message displayed",
 
-		"W:w error",
-		"W:warn error",
-		"W:fmt: wf error",
-		"W:fmt: warnf error",
+		"E:E message",
+		"E:Error message",
+		"E:fmt: Ef message",
+		"E:fmt: Errorf message",
 
-		"I:i error",
-		"I:info error",
-		"I:fmt: if error",
-		"I:fmt: infof error",
+		"E:EErr message displayed",
+		"E:ErrorErr message displayed",
+		"E:fmt: EErrf message displayed",
+		"E:fmt: ErrorErrf message displayed",
 
-		"D:d error",
-		"D:debug error",
-		"D:fmt: df error",
-		"D:fmt: debugf error",
+		"W:W message",
+		"W:Warn message",
+		"W:fmt: Wf message",
+		"W:fmt: Warnf message",
 
-		"T:t error",
-		"T:trace error",
-		"T:fmt: tf error",
-		"T:fmt: tracef error",
+		"W:WErr message displayed",
+		"W:WarnErr message displayed",
+		"W:fmt: WErrf message displayed",
+		"W:fmt: WarnErrf message displayed",
+
+		"I:I message",
+		"I:Info message",
+		"I:fmt: If message",
+		"I:fmt: Infof message",
+
+		"I:IErr message displayed",
+		"I:InfoErr message displayed",
+		"I:fmt: IErrf message displayed",
+		"I:fmt: InfoErrf message displayed",
+
+		"D:D message",
+		"D:Debug message",
+		"D:fmt: Df message",
+		"D:fmt: Debugf message",
+
+		"D:DErr message displayed",
+		"D:DebugErr message displayed",
+		"D:fmt: DErrf message displayed",
+		"D:fmt: DebugErrf message displayed",
+
+		"T:T message",
+		"T:Trace message",
+		"T:fmt: Tf message",
+		"T:fmt: Tracef message",
+
+		"T:TErr message displayed",
+		"T:TraceErr message displayed",
+		"T:fmt: TErrf message displayed",
+		"T:fmt: TraceErrf message displayed",
 	)
 }
