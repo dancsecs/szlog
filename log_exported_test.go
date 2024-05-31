@@ -26,7 +26,7 @@ import (
 )
 
 //nolint:funlen // Ok.
-func TestSzLogExported_LevelDisabled(t *testing.T) {
+func TestSzLog_Exported_LevelDisabled(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -151,7 +151,7 @@ func TestSzLogExported_LevelDisabled(t *testing.T) {
 	)
 }
 
-func TestSzLogExported_SetLevel(t *testing.T) {
+func TestSzLog_Exported_SetLevel(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -194,7 +194,7 @@ func TestSzLogExported_SetLevel(t *testing.T) {
 	)
 }
 
-func TestSzLogExported_IncDecLevel(t *testing.T) {
+func TestSzLog_Exported_IncDecLevel(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -257,7 +257,7 @@ func TestSzLogExported_IncDecLevel(t *testing.T) {
 }
 
 //nolint:funlen // Ok.
-func TestSzLogExported_LogRedirects(t *testing.T) {
+func TestSzLog_Exported_LogRedirects(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 

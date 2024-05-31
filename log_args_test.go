@@ -67,7 +67,7 @@ func testArgs(expectedLevel szlog.LogLevel, args []string) error {
 }
 
 //nolint:funlen // Ok.
-func TestLog_ArgumentAbsorption(t *testing.T) {
+func TestSzLog_ArgumentAbsorption(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 

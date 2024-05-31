@@ -32,7 +32,7 @@ var (
 	errTst = errors.New("this error will not be displayed")
 )
 
-func TestLOgBuiltin_ExpandMsg(t *testing.T) {
+func TestSzLog_Builtin_ExpandMsg(t *testing.T) {
 	chk := sztest.CaptureNothing(t)
 	defer chk.Release()
 
@@ -59,7 +59,7 @@ func TestLOgBuiltin_ExpandMsg(t *testing.T) {
 	chk.Str(expandMsg(deferredFunc, "cd"), "abcd")
 }
 
-func TestLogBuiltin_ExpandMsgf(t *testing.T) {
+func TestSzLog_Builtin_ExpandMsgf(t *testing.T) {
 	chk := sztest.CaptureNothing(t)
 	defer chk.Release()
 
@@ -86,7 +86,7 @@ func TestLogBuiltin_ExpandMsgf(t *testing.T) {
 	chk.Str(expandMsgf("%v%v", deferredFunc, "cd"), "abcd")
 }
 
-func TestLogBuiltin_LogMsg(t *testing.T) {
+func TestSzLog_Builtin_LogMsg(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -99,7 +99,7 @@ func TestLogBuiltin_LogMsg(t *testing.T) {
 	)
 }
 
-func TestLogBuiltin_NoLog(t *testing.T) {
+func TestSzLog_Builtin_NoLog(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -112,7 +112,7 @@ func TestLogBuiltin_NoLog(t *testing.T) {
 	chk.Log()
 }
 
-func TestLogBuiltin_Fatal(t *testing.T) {
+func TestSzLog_Builtin_Fatal(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -146,7 +146,7 @@ func TestLogBuiltin_Fatal(t *testing.T) {
 	)
 }
 
-func TestLogBuiltin_Error(t *testing.T) {
+func TestSzLog_Builtin_Error(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -180,7 +180,7 @@ func TestLogBuiltin_Error(t *testing.T) {
 	)
 }
 
-func TestLogBuiltin_Warn(t *testing.T) {
+func TestSzLog_Builtin_Warn(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -214,7 +214,7 @@ func TestLogBuiltin_Warn(t *testing.T) {
 	)
 }
 
-func TestLogBuiltin_Info(t *testing.T) {
+func TestSzLog_Builtin_Info(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -248,7 +248,7 @@ func TestLogBuiltin_Info(t *testing.T) {
 	)
 }
 
-func TestLogBuiltin_Debug(t *testing.T) {
+func TestSzLog_Builtin_Debug(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -282,7 +282,7 @@ func TestLogBuiltin_Debug(t *testing.T) {
 	)
 }
 
-func TestLogBuiltin_Trace(t *testing.T) {
+func TestSzLog_Builtin_Trace(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -316,7 +316,7 @@ func TestLogBuiltin_Trace(t *testing.T) {
 	)
 }
 
-func TestLogBuiltin_ValidateLogLevel(t *testing.T) {
+func TestSzLog_Builtin_ValidateLogLevel(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 

@@ -273,7 +273,7 @@ func logAll() {
 	szlog.FatalErrf(errTst, msgFmtErr, "fatal", "message", "szlog.FatalErrf")
 }
 
-func TestLog_All(t *testing.T) {
+func TestSzLog_All(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -292,7 +292,7 @@ func TestLog_All(t *testing.T) {
 	)
 }
 
-func TestLog_AllWithLongLabels(t *testing.T) {
+func TestSzLog_AllWithLongLabels(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -314,7 +314,7 @@ func TestLog_AllWithLongLabels(t *testing.T) {
 	)
 }
 
-func TestLog_LevelFatal(t *testing.T) {
+func TestSzLog_LevelFatal(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -328,7 +328,7 @@ func TestLog_LevelFatal(t *testing.T) {
 	)
 }
 
-func TestLog_LevelNone(t *testing.T) {
+func TestSzLog_LevelNone(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -340,7 +340,7 @@ func TestLog_LevelNone(t *testing.T) {
 	chk.Log()
 }
 
-func TestLog_LevelError(t *testing.T) {
+func TestSzLog_LevelError(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -355,7 +355,7 @@ func TestLog_LevelError(t *testing.T) {
 	)
 }
 
-func TestLog_LevelWarn(t *testing.T) {
+func TestSzLog_LevelWarn(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -371,7 +371,7 @@ func TestLog_LevelWarn(t *testing.T) {
 	)
 }
 
-func TestLog_LevelInfo(t *testing.T) {
+func TestSzLog_LevelInfo(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -388,7 +388,7 @@ func TestLog_LevelInfo(t *testing.T) {
 	)
 }
 
-func TestLog_LevelDebug(t *testing.T) {
+func TestSzLog_LevelDebug(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -406,7 +406,7 @@ func TestLog_LevelDebug(t *testing.T) {
 	)
 }
 
-func TestLog_LevelTrace(t *testing.T) {
+func TestSzLog_LevelTrace(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -425,7 +425,7 @@ func TestLog_LevelTrace(t *testing.T) {
 	)
 }
 
-func TestLog_LevelCustom_None(t *testing.T) {
+func TestSzLog_LevelCustom_None(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -437,7 +437,7 @@ func TestLog_LevelCustom_None(t *testing.T) {
 	chk.Log()
 }
 
-func TestLog_LevelCustom_Trace(t *testing.T) {
+func TestSzLog_LevelCustom_Trace(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -451,7 +451,7 @@ func TestLog_LevelCustom_Trace(t *testing.T) {
 	)
 }
 
-func TestLog_LevelCustom_Debug(t *testing.T) {
+func TestSzLog_LevelCustom_Debug(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -465,7 +465,7 @@ func TestLog_LevelCustom_Debug(t *testing.T) {
 	)
 }
 
-func TestLog_LevelCustom_Info(t *testing.T) {
+func TestSzLog_LevelCustom_Info(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -479,7 +479,7 @@ func TestLog_LevelCustom_Info(t *testing.T) {
 	)
 }
 
-func TestLog_LevelCustom_Warn(t *testing.T) {
+func TestSzLog_LevelCustom_Warn(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -493,7 +493,7 @@ func TestLog_LevelCustom_Warn(t *testing.T) {
 	)
 }
 
-func TestLog_LevelCustom_Error(t *testing.T) {
+func TestSzLog_LevelCustom_Error(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -507,7 +507,7 @@ func TestLog_LevelCustom_Error(t *testing.T) {
 	)
 }
 
-func TestLog_LevelCustom_Fatal(t *testing.T) {
+func TestSzLog_LevelCustom_Fatal(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -521,7 +521,7 @@ func TestLog_LevelCustom_Fatal(t *testing.T) {
 	)
 }
 
-func TestLog_LevelCustom_All(t *testing.T) {
+func TestSzLog_LevelCustom_All(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -540,7 +540,7 @@ func TestLog_LevelCustom_All(t *testing.T) {
 	)
 }
 
-func TestLog_LevelCustom_Fatal_Trace(t *testing.T) {
+func TestSzLog_LevelCustom_Fatal_Trace(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -555,7 +555,7 @@ func TestLog_LevelCustom_Fatal_Trace(t *testing.T) {
 	)
 }
 
-func TestLog_DefaultLogger(t *testing.T) {
+func TestSzLog_DefaultLogger(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 

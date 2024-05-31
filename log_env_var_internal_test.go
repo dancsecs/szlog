@@ -25,7 +25,7 @@ import (
 	"github.com/dancsecs/sztest"
 )
 
-func TestLogEnvVar_getEnvLevel(t *testing.T) {
+func TestSzLog_EnvVar_getEnvLevel(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
@@ -71,7 +71,7 @@ func TestLogEnvVar_getEnvLevel(t *testing.T) {
 	)
 }
 
-func TestLogEnvVar_getEnvSetting(t *testing.T) {
+func TestSzLog_EnvVar_getEnvSetting(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
