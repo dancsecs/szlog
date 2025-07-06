@@ -20,18 +20,17 @@
 Package szlog provides a layer on top of the standard go log package enabling
 multiple levels of logging as follows.
 
--LevelFatal
--LevelError
--LevelWarn
--LevelInfo
--LevelDebug
--LevelTrace
+  - LevelFatal
+  - LevelError
+  - LevelWarn
+  - LevelInfo
+  - LevelDebug
+  - LevelTrace
 
 Once a level is set (It defaults to LevelError) then all messages for that
 level and all levels above it will be processed.  Levels below will not
-be processed.
-
-Further any individual level can be disabled independent of the current log
-level set.
+be processed.  It is also possible to set custom levels where a list of
+levels can be provided.  Finally any individual level can be disabled
+independent of the current log level set.
 */
 package szlog

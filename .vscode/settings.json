@@ -1,4 +1,5 @@
 {
+    "explorer.excludeGitIgnore": true,
     "cSpell.words": [
         "dancsecs",
         "Debugf",
