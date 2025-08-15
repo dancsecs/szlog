@@ -19,7 +19,6 @@
 package szlog
 
 import (
-	"os"
 	"testing"
 
 	"github.com/dancsecs/sztest"
@@ -30,38 +29,35 @@ func TestSzLog_EnvVar_getEnvLevel(t *testing.T) {
 	defer chk.Release()
 
 	testEnvVariable := "SZLOG_TEST_LOG_LEVEL"
-	defer func() {
-		_ = os.Unsetenv(testEnvVariable)
-	}()
 
-	chk.NoErr(os.Unsetenv(testEnvVariable))
+	chk.DelEnv(testEnvVariable)
 	chk.Int(int(getEnvLevel(testEnvVariable, 78)), 78)
 
-	chk.NoErr(os.Setenv(testEnvVariable, "invalidLevel"))
+	chk.SetEnv(testEnvVariable, "invalidLevel")
 	chk.Int(int(getEnvLevel(testEnvVariable, 62)), 62)
 
-	chk.NoErr(os.Setenv(testEnvVariable, "NONE"))
+	chk.SetEnv(testEnvVariable, "NONE")
 	chk.Int(int(getEnvLevel(testEnvVariable, 66)), int(LevelNone))
 
-	chk.NoErr(os.Setenv(testEnvVariable, "FATAL"))
+	chk.SetEnv(testEnvVariable, "FATAL")
 	chk.Int(int(getEnvLevel(testEnvVariable, 66)), int(LevelFatal))
 
-	chk.NoErr(os.Setenv(testEnvVariable, "ERROR"))
+	chk.SetEnv(testEnvVariable, "ERROR")
 	chk.Int(int(getEnvLevel(testEnvVariable, 66)), int(LevelError))
 
-	chk.NoErr(os.Setenv(testEnvVariable, "WARN"))
+	chk.SetEnv(testEnvVariable, "WARN")
 	chk.Int(int(getEnvLevel(testEnvVariable, 66)), int(LevelWarn))
 
-	chk.NoErr(os.Setenv(testEnvVariable, "INFO"))
+	chk.SetEnv(testEnvVariable, "INFO")
 	chk.Int(int(getEnvLevel(testEnvVariable, 66)), int(LevelInfo))
 
-	chk.NoErr(os.Setenv(testEnvVariable, "DEBUG"))
+	chk.SetEnv(testEnvVariable, "DEBUG")
 	chk.Int(int(getEnvLevel(testEnvVariable, 66)), int(LevelDebug))
 
-	chk.NoErr(os.Setenv(testEnvVariable, "TRACE"))
+	chk.SetEnv(testEnvVariable, "TRACE")
 	chk.Int(int(getEnvLevel(testEnvVariable, 66)), int(LevelTrace))
 
-	chk.NoErr(os.Setenv(testEnvVariable, "ALL"))
+	chk.SetEnv(testEnvVariable, "ALL")
 	chk.Int(int(getEnvLevel(testEnvVariable, 66)), int(LevelAll))
 
 	chk.Log(
@@ -76,20 +72,17 @@ func TestSzLog_EnvVar_getEnvSetting(t *testing.T) {
 	defer chk.Release()
 
 	testEnvVariable := "SZLOG_TEST_LOG_LEVEL"
-	defer func() {
-		_ = os.Unsetenv(testEnvVariable)
-	}()
 
-	chk.NoErr(os.Unsetenv(testEnvVariable))
+	chk.DelEnv(testEnvVariable)
 	chk.False(getEnvSetting(testEnvVariable))
 
-	chk.NoErr(os.Setenv(testEnvVariable, "invalidSetting"))
+	chk.SetEnv(testEnvVariable, "invalidSetting")
 	chk.False(getEnvSetting(testEnvVariable))
 
-	chk.NoErr(os.Setenv(testEnvVariable, "DISABLED"))
+	chk.SetEnv(testEnvVariable, "DISABLED")
 	chk.False(getEnvSetting(testEnvVariable))
 
-	chk.NoErr(os.Setenv(testEnvVariable, "ENABLED"))
+	chk.SetEnv(testEnvVariable, "ENABLED")
 	chk.True(getEnvSetting(testEnvVariable))
 
 	chk.Log(
