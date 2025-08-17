@@ -28,37 +28,39 @@ func TestSzLog_EnvVar_getEnvLevel(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
+	tstLog := New(nil)
+
 	testEnvVariable := "SZLOG_TEST_LOG_LEVEL"
 
 	chk.DelEnv(testEnvVariable)
-	chk.Int(int(getEnvLevel(testEnvVariable, 78)), 78)
+	chk.Int(int(tstLog.getEnvLevel(testEnvVariable, 78)), 78)
 
 	chk.SetEnv(testEnvVariable, "invalidLevel")
-	chk.Int(int(getEnvLevel(testEnvVariable, 62)), 62)
+	chk.Int(int(tstLog.getEnvLevel(testEnvVariable, 62)), 62)
 
 	chk.SetEnv(testEnvVariable, "NONE")
-	chk.Int(int(getEnvLevel(testEnvVariable, 66)), int(LevelNone))
+	chk.Int(int(tstLog.getEnvLevel(testEnvVariable, 66)), int(LevelNone))
 
 	chk.SetEnv(testEnvVariable, "FATAL")
-	chk.Int(int(getEnvLevel(testEnvVariable, 66)), int(LevelFatal))
+	chk.Int(int(tstLog.getEnvLevel(testEnvVariable, 66)), int(LevelFatal))
 
 	chk.SetEnv(testEnvVariable, "ERROR")
-	chk.Int(int(getEnvLevel(testEnvVariable, 66)), int(LevelError))
+	chk.Int(int(tstLog.getEnvLevel(testEnvVariable, 66)), int(LevelError))
 
 	chk.SetEnv(testEnvVariable, "WARN")
-	chk.Int(int(getEnvLevel(testEnvVariable, 66)), int(LevelWarn))
+	chk.Int(int(tstLog.getEnvLevel(testEnvVariable, 66)), int(LevelWarn))
 
 	chk.SetEnv(testEnvVariable, "INFO")
-	chk.Int(int(getEnvLevel(testEnvVariable, 66)), int(LevelInfo))
+	chk.Int(int(tstLog.getEnvLevel(testEnvVariable, 66)), int(LevelInfo))
 
 	chk.SetEnv(testEnvVariable, "DEBUG")
-	chk.Int(int(getEnvLevel(testEnvVariable, 66)), int(LevelDebug))
+	chk.Int(int(tstLog.getEnvLevel(testEnvVariable, 66)), int(LevelDebug))
 
 	chk.SetEnv(testEnvVariable, "TRACE")
-	chk.Int(int(getEnvLevel(testEnvVariable, 66)), int(LevelTrace))
+	chk.Int(int(tstLog.getEnvLevel(testEnvVariable, 66)), int(LevelTrace))
 
 	chk.SetEnv(testEnvVariable, "ALL")
-	chk.Int(int(getEnvLevel(testEnvVariable, 66)), int(LevelAll))
+	chk.Int(int(tstLog.getEnvLevel(testEnvVariable, 66)), int(LevelAll))
 
 	chk.Log(
 		"W:szlog initialization: invalid environment override " +
@@ -71,19 +73,21 @@ func TestSzLog_EnvVar_getEnvSetting(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
+	tstLog := New(nil)
+
 	testEnvVariable := "SZLOG_TEST_LOG_LEVEL"
 
 	chk.DelEnv(testEnvVariable)
-	chk.False(getEnvSetting(testEnvVariable))
+	chk.False(tstLog.getEnvSetting(testEnvVariable))
 
 	chk.SetEnv(testEnvVariable, "invalidSetting")
-	chk.False(getEnvSetting(testEnvVariable))
+	chk.False(tstLog.getEnvSetting(testEnvVariable))
 
 	chk.SetEnv(testEnvVariable, "DISABLED")
-	chk.False(getEnvSetting(testEnvVariable))
+	chk.False(tstLog.getEnvSetting(testEnvVariable))
 
 	chk.SetEnv(testEnvVariable, "ENABLED")
-	chk.True(getEnvSetting(testEnvVariable))
+	chk.True(tstLog.getEnvSetting(testEnvVariable))
 
 	chk.Log(
 		"W:szlog initialization: invalid environment override " +

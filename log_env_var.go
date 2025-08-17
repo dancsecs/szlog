@@ -39,15 +39,15 @@ func init() {
 	Reset()
 }
 
-func logEnvErrorMessage(env, envValue, errMsg string) {
-	logWarnf(
+func (l *Log) logEnvErrorMessage(env, envValue, errMsg string) {
+	l.logWarnf(
 		"szlog initialization: invalid environment override %s=%q: %s error",
 		env, envValue, errMsg,
 	)
 }
 
 //nolint:cyclop // Ok.
-func getEnvLevel(env string, value LogLevel) LogLevel {
+func (l *Log) getEnvLevel(env string, value LogLevel) LogLevel {
 	rawEnvLevel, ok := os.LookupEnv(env)
 	if ok {
 		switch strings.ToLower(rawEnvLevel) {
@@ -68,14 +68,14 @@ func getEnvLevel(env string, value LogLevel) LogLevel {
 		case "all":
 			value = LevelAll
 		default:
-			logEnvErrorMessage(env, rawEnvLevel, "unknown log level")
+			l.logEnvErrorMessage(env, rawEnvLevel, "unknown log level")
 		}
 	}
 
 	return value
 }
 
-func getEnvSetting(env string) bool {
+func (l *Log) getEnvSetting(env string) bool {
 	rawEnv, ok := os.LookupEnv(env)
 	enabled := false
 
@@ -85,7 +85,7 @@ func getEnvSetting(env string) bool {
 			enabled = true
 		case "disabled":
 		default:
-			logEnvErrorMessage(env, rawEnv, "unknown log level setting")
+			l.logEnvErrorMessage(env, rawEnv, "unknown log level setting")
 		}
 	}
 

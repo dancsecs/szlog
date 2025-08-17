@@ -108,7 +108,7 @@ func SetDefault(newDefaultLog *Log) *Log {
 func (l *Log) LevelDisabled(level LogLevel) bool {
 	result := true
 
-	switch validateLogLevel("LevelDisabled", level) {
+	switch l.validateLogLevel("LevelDisabled", level) {
 	case LevelNone:
 		result = !(l.disableLevelFatal ||
 			l.disableLevelError ||
@@ -143,7 +143,7 @@ func (l *Log) LevelDisabled(level LogLevel) bool {
 
 // DisableLevel blocks all logging at the specified level.
 func (l *Log) DisableLevel(level LogLevel) {
-	switch validateLogLevel("DisableLevel", level) {
+	switch l.validateLogLevel("DisableLevel", level) {
 	case LevelNone:
 		l.disableLevelFatal = false
 		l.disableLevelError = false
@@ -181,7 +181,7 @@ func (l *Log) Level() LogLevel {
 	return l.level
 }
 
-func selectLog(
+func (l *Log) selectLog(
 	enabled bool,
 	useLong bool,
 	shortLog, longLog LogFunc,
@@ -194,10 +194,10 @@ func selectLog(
 		return shortLog
 	}
 
-	return noLog
+	return l.noLog
 }
 
-func selectLogf(
+func (l *Log) selectLogf(
 	enabled bool,
 	useLong bool,
 	shortLogf, longLogf LogFuncf,
@@ -210,10 +210,10 @@ func selectLogf(
 		return shortLogf
 	}
 
-	return noLogf
+	return l.noLogf
 }
 
-func selectLogErr(
+func (l *Log) selectLogErr(
 	enabled bool,
 	useLong bool,
 	shortLog, longLog LogErrFunc,
@@ -226,10 +226,10 @@ func selectLogErr(
 		return shortLog
 	}
 
-	return noLogErr
+	return l.noLogErr
 }
 
-func selectLogErrf(
+func (l *Log) selectLogErrf(
 	enabled bool,
 	useLong bool,
 	shortLogf, longLogf LogErrFuncf,
@@ -242,7 +242,7 @@ func selectLogErrf(
 		return shortLogf
 	}
 
-	return noLogErrf
+	return l.noLogErrf
 }
 
 // SetCustomLevels permits the selective enabling of individual levels.
@@ -283,7 +283,7 @@ func (l *Log) SetCustomLevels(levels ...LogLevel) LogLevel {
 //nolint:funlen,cyclop // OK.
 func (l *Log) SetLevel(newLogLevel LogLevel) LogLevel {
 	oldLogLevel := l.level
-	l.level = validateLogLevel("SetLevel", newLogLevel)
+	l.level = l.validateLogLevel("SetLevel", newLogLevel)
 
 	enable := 0
 
@@ -309,85 +309,85 @@ func (l *Log) SetLevel(newLogLevel LogLevel) LogLevel {
 	}
 
 	l.LogFatal = enable&enabledFatal > 0 && !l.disableLevelFatal
-	l.F = selectLog(l.LogFatal, l.longLabels, logFatal, logLongFatal)
+	l.F = l.selectLog(l.LogFatal, l.longLabels, l.logFatal, l.logLongFatal)
 	l.Fatal = l.F
-	l.Ff = selectLogf(l.LogFatal, l.longLabels, logFatalf, logLongFatalf)
+	l.Ff = l.selectLogf(l.LogFatal, l.longLabels, l.logFatalf, l.logLongFatalf)
 	l.Fatalf = l.Ff
-	l.FErr = selectLogErr(
-		l.LogFatal, l.longLabels, logFatalErr, logLongFatalErr,
+	l.FErr = l.selectLogErr(
+		l.LogFatal, l.longLabels, l.logFatalErr, l.logLongFatalErr,
 	)
 	l.FatalErr = l.FErr
-	l.FErrf = selectLogErrf(
-		l.LogFatal, l.longLabels, logFatalErrf, logLongFatalErrf,
+	l.FErrf = l.selectLogErrf(
+		l.LogFatal, l.longLabels, l.logFatalErrf, l.logLongFatalErrf,
 	)
 	l.FatalErrf = l.FErrf
 
 	l.LogError = enable&enabledError > 0 && !l.disableLevelError
-	l.E = selectLog(l.LogError, l.longLabels, logError, logLongError)
+	l.E = l.selectLog(l.LogError, l.longLabels, l.logError, l.logLongError)
 	l.Error = l.E
-	l.Ef = selectLogf(l.LogError, l.longLabels, logErrorf, logLongErrorf)
+	l.Ef = l.selectLogf(l.LogError, l.longLabels, l.logErrorf, l.logLongErrorf)
 	l.Errorf = l.Ef
-	l.EErr = selectLogErr(
-		l.LogError, l.longLabels, logErrorErr, logLongErrorErr,
+	l.EErr = l.selectLogErr(
+		l.LogError, l.longLabels, l.logErrorErr, l.logLongErrorErr,
 	)
 	l.ErrorErr = l.EErr
-	l.EErrf = selectLogErrf(
-		l.LogError, l.longLabels, logErrorErrf, logLongErrorErrf,
+	l.EErrf = l.selectLogErrf(
+		l.LogError, l.longLabels, l.logErrorErrf, l.logLongErrorErrf,
 	)
 	l.ErrorErrf = l.EErrf
 
 	l.LogWarn = enable&enabledWarn > 0 && !l.disableLevelWarn
-	l.W = selectLog(l.LogWarn, l.longLabels, logWarn, logLongWarn)
+	l.W = l.selectLog(l.LogWarn, l.longLabels, l.logWarn, l.logLongWarn)
 	l.Warn = l.W
-	l.Wf = selectLogf(l.LogWarn, l.longLabels, logWarnf, logLongWarnf)
+	l.Wf = l.selectLogf(l.LogWarn, l.longLabels, l.logWarnf, l.logLongWarnf)
 	l.Warnf = l.Wf
-	l.WErr = selectLogErr(
-		l.LogWarn, l.longLabels, logWarnErr, logLongWarnErr,
+	l.WErr = l.selectLogErr(
+		l.LogWarn, l.longLabels, l.logWarnErr, l.logLongWarnErr,
 	)
 	l.WarnErr = l.WErr
-	l.WErrf = selectLogErrf(
-		l.LogWarn, l.longLabels, logWarnErrf, logLongWarnErrf,
+	l.WErrf = l.selectLogErrf(
+		l.LogWarn, l.longLabels, l.logWarnErrf, l.logLongWarnErrf,
 	)
 	l.WarnErrf = l.WErrf
 
 	l.LogInfo = enable&enabledInfo > 0 && !l.disableLevelInfo
-	l.I = selectLog(l.LogInfo, l.longLabels, logInfo, logLongInfo)
+	l.I = l.selectLog(l.LogInfo, l.longLabels, l.logInfo, l.logLongInfo)
 	l.Info = l.I
-	l.If = selectLogf(l.LogInfo, l.longLabels, logInfof, logLongInfof)
+	l.If = l.selectLogf(l.LogInfo, l.longLabels, l.logInfof, l.logLongInfof)
 	l.Infof = l.If
-	l.IErr = selectLogErr(
-		l.LogInfo, l.longLabels, logInfoErr, logLongInfoErr,
+	l.IErr = l.selectLogErr(
+		l.LogInfo, l.longLabels, l.logInfoErr, l.logLongInfoErr,
 	)
 	l.InfoErr = l.IErr
-	l.IErrf = selectLogErrf(
-		l.LogInfo, l.longLabels, logInfoErrf, logLongInfoErrf)
+	l.IErrf = l.selectLogErrf(
+		l.LogInfo, l.longLabels, l.logInfoErrf, l.logLongInfoErrf)
 	l.InfoErrf = l.IErrf
 
 	l.LogDebug = enable&enabledDebug > 0 && !l.disableLevelDebug
-	l.D = selectLog(l.LogDebug, l.longLabels, logDebug, logLongDebug)
+	l.D = l.selectLog(l.LogDebug, l.longLabels, l.logDebug, l.logLongDebug)
 	l.Debug = l.D
-	l.Df = selectLogf(l.LogDebug, l.longLabels, logDebugf, logLongDebugf)
+	l.Df = l.selectLogf(l.LogDebug, l.longLabels, l.logDebugf, l.logLongDebugf)
 	l.Debugf = l.Df
-	l.DErr = selectLogErr(
-		l.LogDebug, l.longLabels, logDebugErr, logLongDebugErr,
+	l.DErr = l.selectLogErr(
+		l.LogDebug, l.longLabels, l.logDebugErr, l.logLongDebugErr,
 	)
 	l.DebugErr = l.DErr
-	l.DErrf = selectLogErrf(
-		l.LogDebug, l.longLabels, logDebugErrf, logLongDebugErrf,
+	l.DErrf = l.selectLogErrf(
+		l.LogDebug, l.longLabels, l.logDebugErrf, l.logLongDebugErrf,
 	)
 	l.DebugErrf = l.DErrf
 
 	l.LogTrace = enable&enabledTrace > 0 && !l.disableLevelTrace
-	l.T = selectLog(l.LogTrace, l.longLabels, logTrace, logLongTrace)
+	l.T = l.selectLog(l.LogTrace, l.longLabels, l.logTrace, l.logLongTrace)
 	l.Trace = l.T
-	l.Tf = selectLogf(l.LogTrace, l.longLabels, logTracef, logLongTracef)
+	l.Tf = l.selectLogf(l.LogTrace, l.longLabels, l.logTracef, l.logLongTracef)
 	l.Tracef = l.Tf
-	l.TErr = selectLogErr(
-		l.LogTrace, l.longLabels, logTraceErr, logLongTraceErr,
+	l.TErr = l.selectLogErr(
+		l.LogTrace, l.longLabels, l.logTraceErr, l.logLongTraceErr,
 	)
 	l.TraceErr = l.TErr
-	l.TErrf = selectLogErrf(
-		l.LogTrace, l.longLabels, logTraceErrf, logLongTraceErrf,
+	l.TErrf = l.selectLogErrf(
+		l.LogTrace, l.longLabels, l.logTraceErrf, l.logLongTraceErrf,
 	)
 	l.TraceErrf = l.TErrf
 
@@ -399,7 +399,7 @@ func (l *Log) IncLevel() LogLevel {
 	lastLevel := l.level
 
 	if lastLevel != LevelCustom {
-		l.SetLevel(validateLogLevel("IncLevel", l.level+1))
+		l.SetLevel(l.validateLogLevel("IncLevel", l.level+1))
 	}
 
 	return lastLevel
@@ -410,7 +410,7 @@ func (l *Log) DecLevel() LogLevel {
 	lastLevel := l.level
 
 	if lastLevel != LevelCustom {
-		l.SetLevel(validateLogLevel("DecLevel", l.level-1))
+		l.SetLevel(l.validateLogLevel("DecLevel", l.level-1))
 	}
 
 	return lastLevel
@@ -418,16 +418,16 @@ func (l *Log) DecLevel() LogLevel {
 
 // Reset returns all log setting to default startup conditions.
 func (l *Log) Reset() {
-	l.longLabels = getEnvSetting(envLogLongLabels)
+	l.longLabels = l.getEnvSetting(envLogLongLabels)
 
-	l.disableLevelFatal = getEnvSetting(envLogLevelFatal)
-	l.disableLevelError = getEnvSetting(envLogLevelError)
-	l.disableLevelWarn = getEnvSetting(envLogLevelWarn)
-	l.disableLevelInfo = getEnvSetting(envLogLevelInfo)
-	l.disableLevelDebug = getEnvSetting(envLogLevelDebug)
-	l.disableLevelTrace = getEnvSetting(envLogLevelTrace)
+	l.disableLevelFatal = l.getEnvSetting(envLogLevelFatal)
+	l.disableLevelError = l.getEnvSetting(envLogLevelError)
+	l.disableLevelWarn = l.getEnvSetting(envLogLevelWarn)
+	l.disableLevelInfo = l.getEnvSetting(envLogLevelInfo)
+	l.disableLevelDebug = l.getEnvSetting(envLogLevelDebug)
+	l.disableLevelTrace = l.getEnvSetting(envLogLevelTrace)
 
 	l.customLevelsPermitted = enableLevelError // Later: load from env
 
-	l.SetLevel(getEnvLevel(envLogLevel, LevelError))
+	l.SetLevel(l.getEnvLevel(envLogLevel, LevelError))
 }

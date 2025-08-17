@@ -36,6 +36,8 @@ func TestSzLog_Builtin_ExpandMsg(t *testing.T) {
 	chk := sztest.CaptureNothing(t)
 	defer chk.Release()
 
+	tstLog := New(nil)
+
 	nonDeferredFunc := func() string {
 		return "ab"
 	}
@@ -49,20 +51,22 @@ func TestSzLog_Builtin_ExpandMsg(t *testing.T) {
 		return fmt.Sprint(a)
 	}
 
-	chk.Str(expandMsg(), "")
-	chk.Str(expandMsg("abc"), "abc")
-	chk.Str(expandMsg("abc", "def"), "abcdef")
+	chk.Str(tstLog.expandMsg(), "")
+	chk.Str(tstLog.expandMsg("abc"), "abc")
+	chk.Str(tstLog.expandMsg("abc", "def"), "abcdef")
 	chk.Str(
-		expandMsg(nonDeferredFunc, "cd"),
+		tstLog.expandMsg(nonDeferredFunc, "cd"),
 		printNon(nonDeferredFunc)+"cd",
 	)
-	chk.Str(expandMsg(deferredFunc, "cd"), "abcd")
+	chk.Str(tstLog.expandMsg(deferredFunc, "cd"), "abcd")
 }
 
 func TestSzLog_Builtin_ExpandMsgf(t *testing.T) {
 	chk := sztest.CaptureNothing(t)
 	defer chk.Release()
 
+	tstLog := New(nil)
+
 	nonDeferredFunc := func() string {
 		return "ab"
 	}
@@ -76,22 +80,24 @@ func TestSzLog_Builtin_ExpandMsgf(t *testing.T) {
 		return fmt.Sprint(a)
 	}
 
-	chk.Str(expandMsgf(""), "")
-	chk.Str(expandMsgf("%v", "abc"), "abc")
-	chk.Str(expandMsgf("%v%v", "ab", "cd"), "abcd")
+	chk.Str(tstLog.expandMsgf(""), "")
+	chk.Str(tstLog.expandMsgf("%v", "abc"), "abc")
+	chk.Str(tstLog.expandMsgf("%v%v", "ab", "cd"), "abcd")
 	chk.Str(
-		expandMsgf("%v%v", nonDeferredFunc, "cd"),
+		tstLog.expandMsgf("%v%v", nonDeferredFunc, "cd"),
 		printNon(nonDeferredFunc)+"cd",
 	)
-	chk.Str(expandMsgf("%v%v", deferredFunc, "cd"), "abcd")
+	chk.Str(tstLog.expandMsgf("%v%v", deferredFunc, "cd"), "abcd")
 }
 
 func TestSzLog_Builtin_LogMsg(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
-	chk.True(logMsg("U:", "ab", "cd"))
-	chk.True(logMsgf("F:", "%v%v", "ab", "cd"))
+	tstLog := New(nil)
+
+	chk.True(tstLog.logMsg("U:", "ab", "cd"))
+	chk.True(tstLog.logMsgf("F:", "%v%v", "ab", "cd"))
 
 	chk.Log(
 		"U:abcd",
@@ -103,11 +109,12 @@ func TestSzLog_Builtin_NoLog(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
-	chk.False(noLog("U:", "ab", "cd"))
-	chk.False(noLogf("F:", "%v%v", "ab", "cd"))
+	tstLog := New(nil)
+	chk.False(tstLog.noLog("U:", "ab", "cd"))
+	chk.False(tstLog.noLogf("F:", "%v%v", "ab", "cd"))
 
-	chk.False(noLogErr(errNil, "will not be logged"))
-	chk.False(noLogErrf(errNil, "will not be %s", "logged"))
+	chk.False(tstLog.noLogErr(errNil, "will not be logged"))
+	chk.False(tstLog.noLogErrf(errNil, "will not be %s", "logged"))
 
 	chk.Log()
 }
@@ -116,23 +123,29 @@ func TestSzLog_Builtin_Fatal(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
-	chk.True(logFatal("ab", "cd"))
-	chk.True(logFatalf("fmt:%v%v", "ab", "cd"))
+	tstLog := New(nil)
 
-	chk.True(logLongFatal("ab", "cd"))
-	chk.True(logLongFatalf("fmt:%v%v", "ab", "cd"))
+	chk.True(tstLog.logFatal("ab", "cd"))
+	chk.True(tstLog.logFatalf("fmt:%v%v", "ab", "cd"))
 
-	chk.False(logFatalErr(errNil, "will not be logged"))
-	chk.False(logFatalErrf(errNil, "will not be %s", "logged"))
+	chk.True(tstLog.logLongFatal("ab", "cd"))
+	chk.True(tstLog.logLongFatalf("fmt:%v%v", "ab", "cd"))
 
-	chk.False(logLongFatalErr(errNil, "will not be logged"))
-	chk.False(logLongFatalErrf(errNil, "will not be %s", "logged"))
+	chk.False(tstLog.logFatalErr(errNil, "will not be logged"))
+	chk.False(tstLog.logFatalErrf(errNil, "will not be %s", "logged"))
 
-	chk.True(logFatalErr(errTst, "error ", "not ", "nil"))
-	chk.True(logFatalErrf(errTst, "fmt:%s %s %s", "error", "not", "nil"))
+	chk.False(tstLog.logLongFatalErr(errNil, "will not be logged"))
+	chk.False(tstLog.logLongFatalErrf(errNil, "will not be %s", "logged"))
 
-	chk.True(logLongFatalErr(errTst, "error ", "not ", "nil"))
-	chk.True(logLongFatalErrf(errTst, "fmt:%s %s %s", "error", "not", "nil"))
+	chk.True(tstLog.logFatalErr(errTst, "error ", "not ", "nil"))
+	chk.True(
+		tstLog.logFatalErrf(errTst, "fmt:%s %s %s", "error", "not", "nil"),
+	)
+
+	chk.True(tstLog.logLongFatalErr(errTst, "error ", "not ", "nil"))
+	chk.True(
+		tstLog.logLongFatalErrf(errTst, "fmt:%s %s %s", "error", "not", "nil"),
+	)
 
 	chk.Log(
 		"F:abcd",
@@ -150,23 +163,25 @@ func TestSzLog_Builtin_Error(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
-	chk.True(logError("ab", "cd"))
-	chk.True(logErrorf("fmt:%v%v", "ab", "cd"))
+	tstLog := New(nil)
 
-	chk.True(logLongError("ab", "cd"))
-	chk.True(logLongErrorf("fmt:%v%v", "ab", "cd"))
+	chk.True(tstLog.logError("ab", "cd"))
+	chk.True(tstLog.logErrorf("fmt:%v%v", "ab", "cd"))
 
-	chk.False(logErrorErr(errNil, "will not be logged"))
-	chk.False(logErrorErrf(errNil, "will not be %s", "logged"))
+	chk.True(tstLog.logLongError("ab", "cd"))
+	chk.True(tstLog.logLongErrorf("fmt:%v%v", "ab", "cd"))
 
-	chk.False(logLongErrorErr(errNil, "will not be logged"))
-	chk.False(logLongErrorErrf(errNil, "will not be %s", "logged"))
+	chk.False(tstLog.logErrorErr(errNil, "will not be logged"))
+	chk.False(tstLog.logErrorErrf(errNil, "will not be %s", "logged"))
 
-	chk.True(logErrorErr(errTst, "error ", "not ", "nil"))
-	chk.True(logErrorErrf(errTst, "fmt:%s %s %s", "error", "not", "nil"))
+	chk.False(tstLog.logLongErrorErr(errNil, "will not be logged"))
+	chk.False(tstLog.logLongErrorErrf(errNil, "will not be %s", "logged"))
 
-	chk.True(logLongErrorErr(errTst, "error ", "not ", "nil"))
-	chk.True(logLongErrorErrf(errTst, "fmt:%s %s %s", "error", "not", "nil"))
+	chk.True(tstLog.logErrorErr(errTst, "error ", "not ", "nil"))
+	chk.True(tstLog.logErrorErrf(errTst, "fmt:%s %s %s", "error", "not", "nil"))
+
+	chk.True(tstLog.logLongErrorErr(errTst, "error ", "not ", "nil"))
+	chk.True(tstLog.logLongErrorErrf(errTst, "fmt:%s %s %s", "error", "not", "nil"))
 
 	chk.Log(
 		"E:abcd",
@@ -184,23 +199,25 @@ func TestSzLog_Builtin_Warn(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
-	chk.True(logWarn("ab", "cd"))
-	chk.True(logWarnf("fmt:%v%v", "ab", "cd"))
+	tstLog := New(nil)
 
-	chk.True(logLongWarn("ab", "cd"))
-	chk.True(logLongWarnf("fmt:%v%v", "ab", "cd"))
+	chk.True(tstLog.logWarn("ab", "cd"))
+	chk.True(tstLog.logWarnf("fmt:%v%v", "ab", "cd"))
 
-	chk.False(logWarnErr(errNil, "will not be logged"))
-	chk.False(logWarnErrf(errNil, "will not be %s", "logged"))
+	chk.True(tstLog.logLongWarn("ab", "cd"))
+	chk.True(tstLog.logLongWarnf("fmt:%v%v", "ab", "cd"))
 
-	chk.False(logLongWarnErr(errNil, "will not be logged"))
-	chk.False(logLongWarnErrf(errNil, "will not be %s", "logged"))
+	chk.False(tstLog.logWarnErr(errNil, "will not be logged"))
+	chk.False(tstLog.logWarnErrf(errNil, "will not be %s", "logged"))
 
-	chk.True(logWarnErr(errTst, "error ", "not ", "nil"))
-	chk.True(logWarnErrf(errTst, "fmt:%s %s %s", "error", "not", "nil"))
+	chk.False(tstLog.logLongWarnErr(errNil, "will not be logged"))
+	chk.False(tstLog.logLongWarnErrf(errNil, "will not be %s", "logged"))
 
-	chk.True(logLongWarnErr(errTst, "error ", "not ", "nil"))
-	chk.True(logLongWarnErrf(errTst, "fmt:%s %s %s", "error", "not", "nil"))
+	chk.True(tstLog.logWarnErr(errTst, "error ", "not ", "nil"))
+	chk.True(tstLog.logWarnErrf(errTst, "fmt:%s %s %s", "error", "not", "nil"))
+
+	chk.True(tstLog.logLongWarnErr(errTst, "error ", "not ", "nil"))
+	chk.True(tstLog.logLongWarnErrf(errTst, "fmt:%s %s %s", "error", "not", "nil"))
 
 	chk.Log(
 		"W:abcd",
@@ -218,23 +235,25 @@ func TestSzLog_Builtin_Info(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
-	chk.True(logInfo("ab", "cd"))
-	chk.True(logInfof("fmt:%v%v", "ab", "cd"))
+	tstLog := New(nil)
 
-	chk.True(logLongInfo("ab", "cd"))
-	chk.True(logLongInfof("fmt:%v%v", "ab", "cd"))
+	chk.True(tstLog.logInfo("ab", "cd"))
+	chk.True(tstLog.logInfof("fmt:%v%v", "ab", "cd"))
 
-	chk.False(logInfoErr(errNil, "will not be logged"))
-	chk.False(logInfoErrf(errNil, "will not be %s", "logged"))
+	chk.True(tstLog.logLongInfo("ab", "cd"))
+	chk.True(tstLog.logLongInfof("fmt:%v%v", "ab", "cd"))
 
-	chk.False(logLongInfoErr(errNil, "will not be logged"))
-	chk.False(logLongInfoErrf(errNil, "will not be %s", "logged"))
+	chk.False(tstLog.logInfoErr(errNil, "will not be logged"))
+	chk.False(tstLog.logInfoErrf(errNil, "will not be %s", "logged"))
 
-	chk.True(logInfoErr(errTst, "error ", "not ", "nil"))
-	chk.True(logInfoErrf(errTst, "fmt:%s %s %s", "error", "not", "nil"))
+	chk.False(tstLog.logLongInfoErr(errNil, "will not be logged"))
+	chk.False(tstLog.logLongInfoErrf(errNil, "will not be %s", "logged"))
 
-	chk.True(logLongInfoErr(errTst, "error ", "not ", "nil"))
-	chk.True(logLongInfoErrf(errTst, "fmt:%s %s %s", "error", "not", "nil"))
+	chk.True(tstLog.logInfoErr(errTst, "error ", "not ", "nil"))
+	chk.True(tstLog.logInfoErrf(errTst, "fmt:%s %s %s", "error", "not", "nil"))
+
+	chk.True(tstLog.logLongInfoErr(errTst, "error ", "not ", "nil"))
+	chk.True(tstLog.logLongInfoErrf(errTst, "fmt:%s %s %s", "error", "not", "nil"))
 
 	chk.Log(
 		"I:abcd",
@@ -252,23 +271,25 @@ func TestSzLog_Builtin_Debug(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
-	chk.True(logDebug("ab", "cd"))
-	chk.True(logDebugf("fmt:%v%v", "ab", "cd"))
+	tstLog := New(nil)
 
-	chk.True(logLongDebug("ab", "cd"))
-	chk.True(logLongDebugf("fmt:%v%v", "ab", "cd"))
+	chk.True(tstLog.logDebug("ab", "cd"))
+	chk.True(tstLog.logDebugf("fmt:%v%v", "ab", "cd"))
 
-	chk.False(logDebugErr(errNil, "will not be logged"))
-	chk.False(logDebugErrf(errNil, "will not be %s", "logged"))
+	chk.True(tstLog.logLongDebug("ab", "cd"))
+	chk.True(tstLog.logLongDebugf("fmt:%v%v", "ab", "cd"))
 
-	chk.False(logLongDebugErr(errNil, "will not be logged"))
-	chk.False(logLongDebugErrf(errNil, "will not be %s", "logged"))
+	chk.False(tstLog.logDebugErr(errNil, "will not be logged"))
+	chk.False(tstLog.logDebugErrf(errNil, "will not be %s", "logged"))
 
-	chk.True(logDebugErr(errTst, "error ", "not ", "nil"))
-	chk.True(logDebugErrf(errTst, "fmt:%s %s %s", "error", "not", "nil"))
+	chk.False(tstLog.logLongDebugErr(errNil, "will not be logged"))
+	chk.False(tstLog.logLongDebugErrf(errNil, "will not be %s", "logged"))
 
-	chk.True(logLongDebugErr(errTst, "error ", "not ", "nil"))
-	chk.True(logLongDebugErrf(errTst, "fmt:%s %s %s", "error", "not", "nil"))
+	chk.True(tstLog.logDebugErr(errTst, "error ", "not ", "nil"))
+	chk.True(tstLog.logDebugErrf(errTst, "fmt:%s %s %s", "error", "not", "nil"))
+
+	chk.True(tstLog.logLongDebugErr(errTst, "error ", "not ", "nil"))
+	chk.True(tstLog.logLongDebugErrf(errTst, "fmt:%s %s %s", "error", "not", "nil"))
 
 	chk.Log(
 		"D:abcd",
@@ -286,23 +307,25 @@ func TestSzLog_Builtin_Trace(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
-	chk.True(logTrace("ab", "cd"))
-	chk.True(logTracef("fmt:%v%v", "ab", "cd"))
+	tstLog := New(nil)
 
-	chk.True(logLongTrace("ab", "cd"))
-	chk.True(logLongTracef("fmt:%v%v", "ab", "cd"))
+	chk.True(tstLog.logTrace("ab", "cd"))
+	chk.True(tstLog.logTracef("fmt:%v%v", "ab", "cd"))
 
-	chk.False(logTraceErr(errNil, "will not be logged"))
-	chk.False(logTraceErrf(errNil, "will not be %s", "logged"))
+	chk.True(tstLog.logLongTrace("ab", "cd"))
+	chk.True(tstLog.logLongTracef("fmt:%v%v", "ab", "cd"))
 
-	chk.False(logLongTraceErr(errNil, "will not be logged"))
-	chk.False(logLongTraceErrf(errNil, "will not be %s", "logged"))
+	chk.False(tstLog.logTraceErr(errNil, "will not be logged"))
+	chk.False(tstLog.logTraceErrf(errNil, "will not be %s", "logged"))
 
-	chk.True(logTraceErr(errTst, "error ", "not ", "nil"))
-	chk.True(logTraceErrf(errTst, "fmt:%s %s %s", "error", "not", "nil"))
+	chk.False(tstLog.logLongTraceErr(errNil, "will not be logged"))
+	chk.False(tstLog.logLongTraceErrf(errNil, "will not be %s", "logged"))
 
-	chk.True(logLongTraceErr(errTst, "error ", "not ", "nil"))
-	chk.True(logLongTraceErrf(errTst, "fmt:%s %s %s", "error", "not", "nil"))
+	chk.True(tstLog.logTraceErr(errTst, "error ", "not ", "nil"))
+	chk.True(tstLog.logTraceErrf(errTst, "fmt:%s %s %s", "error", "not", "nil"))
+
+	chk.True(tstLog.logLongTraceErr(errTst, "error ", "not ", "nil"))
+	chk.True(tstLog.logLongTraceErrf(errTst, "fmt:%s %s %s", "error", "not", "nil"))
 
 	chk.Log(
 		"T:abcd",
@@ -322,17 +345,19 @@ func TestSzLog_Builtin_ValidateLogLevel(t *testing.T) {
 
 	const tstArea = "testingArea"
 
-	chk.Int(int(validateLogLevel(tstArea, LevelNone-1)), int(LevelNone))
-	chk.Int(int(validateLogLevel(tstArea, LevelNone)), int(LevelNone))
-	chk.Int(int(validateLogLevel(tstArea, LevelFatal)), int(LevelFatal))
-	chk.Int(int(validateLogLevel(tstArea, LevelError)), int(LevelError))
-	chk.Int(int(validateLogLevel(tstArea, LevelWarn)), int(LevelWarn))
-	chk.Int(int(validateLogLevel(tstArea, LevelInfo)), int(LevelInfo))
-	chk.Int(int(validateLogLevel(tstArea, LevelDebug)), int(LevelDebug))
-	chk.Int(int(validateLogLevel(tstArea, LevelTrace)), int(LevelTrace))
-	chk.Int(int(validateLogLevel(tstArea, LevelAll)), int(LevelAll))
-	chk.Int(int(validateLogLevel(tstArea, LevelCustom)), int(LevelCustom))
-	chk.Int(int(validateLogLevel(tstArea, LevelAll+1)), int(LevelAll))
+	tstLog := New(nil)
+
+	chk.Int(int(tstLog.validateLogLevel(tstArea, LevelNone-1)), int(LevelNone))
+	chk.Int(int(tstLog.validateLogLevel(tstArea, LevelNone)), int(LevelNone))
+	chk.Int(int(tstLog.validateLogLevel(tstArea, LevelFatal)), int(LevelFatal))
+	chk.Int(int(tstLog.validateLogLevel(tstArea, LevelError)), int(LevelError))
+	chk.Int(int(tstLog.validateLogLevel(tstArea, LevelWarn)), int(LevelWarn))
+	chk.Int(int(tstLog.validateLogLevel(tstArea, LevelInfo)), int(LevelInfo))
+	chk.Int(int(tstLog.validateLogLevel(tstArea, LevelDebug)), int(LevelDebug))
+	chk.Int(int(tstLog.validateLogLevel(tstArea, LevelTrace)), int(LevelTrace))
+	chk.Int(int(tstLog.validateLogLevel(tstArea, LevelAll)), int(LevelAll))
+	chk.Int(int(tstLog.validateLogLevel(tstArea, LevelCustom)), int(LevelCustom))
+	chk.Int(int(tstLog.validateLogLevel(tstArea, LevelAll+1)), int(LevelAll))
 
 	chk.Log(
 		"W:attempt to access out of bounds log level: -1 from: testingArea",

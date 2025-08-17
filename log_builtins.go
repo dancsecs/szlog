@@ -23,7 +23,7 @@ import (
 	"log"
 )
 
-func expandMsg(rawMessages ...any) string {
+func (l *Log) expandMsg(rawMessages ...any) string {
 	messages := make([]any, len(rawMessages))
 
 	for i, arg := range rawMessages {
@@ -38,7 +38,7 @@ func expandMsg(rawMessages ...any) string {
 	return fmt.Sprint(messages...)
 }
 
-func expandMsgf(fmtMsg string, rawFmtArgs ...any) string {
+func (l *Log) expandMsgf(fmtMsg string, rawFmtArgs ...any) string {
 	fmtArgs := make([]any, len(rawFmtArgs))
 
 	for i, arg := range rawFmtArgs {
@@ -53,227 +53,227 @@ func expandMsgf(fmtMsg string, rawFmtArgs ...any) string {
 	return fmt.Sprintf(fmtMsg, fmtArgs...)
 }
 
-func logMsg(label string, msg ...any) bool {
-	log.Print(label, expandMsg(msg...))
+func (l *Log) logMsg(label string, msg ...any) bool {
+	log.Print(label, l.expandMsg(msg...))
 
 	return true
 }
 
-func logMsgf(label, msgFmt string, msgArgs ...any) bool {
-	log.Print(label, expandMsgf(msgFmt, msgArgs...))
+func (l *Log) logMsgf(label, msgFmt string, msgArgs ...any) bool {
+	log.Print(label, l.expandMsgf(msgFmt, msgArgs...))
 
 	return true
 }
 
-func noLog(_ ...any) bool {
+func (l *Log) noLog(_ ...any) bool {
 	return false
 }
 
-func noLogErr(_ error, _ ...any) bool {
+func (l *Log) noLogErr(_ error, _ ...any) bool {
 	return false
 }
 
-func noLogf(_ string, _ ...any) bool {
+func (l *Log) noLogf(_ string, _ ...any) bool {
 	return false
 }
 
-func noLogErrf(_ error, _ string, _ ...any) bool {
+func (l *Log) noLogErrf(_ error, _ string, _ ...any) bool {
 	return false
 }
 
-func logFatal(msg ...any) bool {
-	return logMsg(logFatalLabel, msg...)
+func (l *Log) logFatal(msg ...any) bool {
+	return l.logMsg(logFatalLabel, msg...)
 }
 
-func logFatalErr(err error, msg ...any) bool {
-	return err != nil && logMsg(logFatalLabel, msg...)
+func (l *Log) logFatalErr(err error, msg ...any) bool {
+	return err != nil && l.logMsg(logFatalLabel, msg...)
 }
 
-func logFatalf(msgFmt string, msgArgs ...any) bool {
-	return logMsgf(logFatalLabel, msgFmt, msgArgs...)
+func (l *Log) logFatalf(msgFmt string, msgArgs ...any) bool {
+	return l.logMsgf(logFatalLabel, msgFmt, msgArgs...)
 }
 
-func logFatalErrf(err error, msgFmt string, msgArgs ...any) bool {
-	return err != nil && logMsgf(logFatalLabel, msgFmt, msgArgs...)
+func (l *Log) logFatalErrf(err error, msgFmt string, msgArgs ...any) bool {
+	return err != nil && l.logMsgf(logFatalLabel, msgFmt, msgArgs...)
 }
 
-func logLongFatal(msg ...any) bool {
-	return logMsg(logLongFatalLabel, msg...)
+func (l *Log) logLongFatal(msg ...any) bool {
+	return l.logMsg(logLongFatalLabel, msg...)
 }
 
-func logLongFatalErr(err error, msg ...any) bool {
-	return err != nil && logMsg(logLongFatalLabel, msg...)
+func (l *Log) logLongFatalErr(err error, msg ...any) bool {
+	return err != nil && l.logMsg(logLongFatalLabel, msg...)
 }
 
-func logLongFatalf(msgFmt string, msgArgs ...any) bool {
-	return logMsgf(logLongFatalLabel, msgFmt, msgArgs...)
+func (l *Log) logLongFatalf(msgFmt string, msgArgs ...any) bool {
+	return l.logMsgf(logLongFatalLabel, msgFmt, msgArgs...)
 }
 
-func logLongFatalErrf(err error, msgFmt string, msgArgs ...any) bool {
-	return err != nil && logMsgf(logLongFatalLabel, msgFmt, msgArgs...)
+func (l *Log) logLongFatalErrf(err error, msgFmt string, msgArgs ...any) bool {
+	return err != nil && l.logMsgf(logLongFatalLabel, msgFmt, msgArgs...)
 }
 
-func logError(msg ...any) bool {
-	return logMsg(logErrorLabel, msg...)
+func (l *Log) logError(msg ...any) bool {
+	return l.logMsg(logErrorLabel, msg...)
 }
 
-func logErrorErr(err error, msg ...any) bool {
-	return err != nil && logMsg(logErrorLabel, msg...)
+func (l *Log) logErrorErr(err error, msg ...any) bool {
+	return err != nil && l.logMsg(logErrorLabel, msg...)
 }
 
-func logErrorf(msgFmt string, msgArgs ...any) bool {
-	return logMsgf(logErrorLabel, msgFmt, msgArgs...)
+func (l *Log) logErrorf(msgFmt string, msgArgs ...any) bool {
+	return l.logMsgf(logErrorLabel, msgFmt, msgArgs...)
 }
 
-func logErrorErrf(err error, msgFmt string, msgArgs ...any) bool {
-	return err != nil && logMsgf(logErrorLabel, msgFmt, msgArgs...)
+func (l *Log) logErrorErrf(err error, msgFmt string, msgArgs ...any) bool {
+	return err != nil && l.logMsgf(logErrorLabel, msgFmt, msgArgs...)
 }
 
-func logLongError(msg ...any) bool {
-	return logMsg(logLongErrorLabel, msg...)
+func (l *Log) logLongError(msg ...any) bool {
+	return l.logMsg(logLongErrorLabel, msg...)
 }
 
-func logLongErrorErr(err error, msg ...any) bool {
-	return err != nil && logMsg(logLongErrorLabel, msg...)
+func (l *Log) logLongErrorErr(err error, msg ...any) bool {
+	return err != nil && l.logMsg(logLongErrorLabel, msg...)
 }
 
-func logLongErrorf(msgFmt string, msgArgs ...any) bool {
-	return logMsgf(logLongErrorLabel, msgFmt, msgArgs...)
+func (l *Log) logLongErrorf(msgFmt string, msgArgs ...any) bool {
+	return l.logMsgf(logLongErrorLabel, msgFmt, msgArgs...)
 }
 
-func logLongErrorErrf(err error, msgFmt string, msgArgs ...any) bool {
-	return err != nil && logMsgf(logLongErrorLabel, msgFmt, msgArgs...)
+func (l *Log) logLongErrorErrf(err error, msgFmt string, msgArgs ...any) bool {
+	return err != nil && l.logMsgf(logLongErrorLabel, msgFmt, msgArgs...)
 }
 
-func logWarn(msg ...any) bool {
-	return logMsg(logWarnLabel, msg...)
+func (l *Log) logWarn(msg ...any) bool {
+	return l.logMsg(logWarnLabel, msg...)
 }
 
-func logWarnErr(err error, msg ...any) bool {
-	return err != nil && logMsg(logWarnLabel, msg...)
+func (l *Log) logWarnErr(err error, msg ...any) bool {
+	return err != nil && l.logMsg(logWarnLabel, msg...)
 }
 
-func logWarnf(msgFmt string, msgArgs ...any) bool {
-	return logMsgf(logWarnLabel, msgFmt, msgArgs...)
+func (l *Log) logWarnf(msgFmt string, msgArgs ...any) bool {
+	return l.logMsgf(logWarnLabel, msgFmt, msgArgs...)
 }
 
-func logWarnErrf(err error, msgFmt string, msgArgs ...any) bool {
-	return err != nil && logMsgf(logWarnLabel, msgFmt, msgArgs...)
+func (l *Log) logWarnErrf(err error, msgFmt string, msgArgs ...any) bool {
+	return err != nil && l.logMsgf(logWarnLabel, msgFmt, msgArgs...)
 }
 
-func logLongWarn(msg ...any) bool {
-	return logMsg(logLongWarnLabel, msg...)
+func (l *Log) logLongWarn(msg ...any) bool {
+	return l.logMsg(logLongWarnLabel, msg...)
 }
 
-func logLongWarnErr(err error, msg ...any) bool {
-	return err != nil && logMsg(logLongWarnLabel, msg...)
+func (l *Log) logLongWarnErr(err error, msg ...any) bool {
+	return err != nil && l.logMsg(logLongWarnLabel, msg...)
 }
 
-func logLongWarnf(msgFmt string, msgArgs ...any) bool {
-	return logMsgf(logLongWarnLabel, msgFmt, msgArgs...)
+func (l *Log) logLongWarnf(msgFmt string, msgArgs ...any) bool {
+	return l.logMsgf(logLongWarnLabel, msgFmt, msgArgs...)
 }
 
-func logLongWarnErrf(err error, msgFmt string, msgArgs ...any) bool {
-	return err != nil && logMsgf(logLongWarnLabel, msgFmt, msgArgs...)
+func (l *Log) logLongWarnErrf(err error, msgFmt string, msgArgs ...any) bool {
+	return err != nil && l.logMsgf(logLongWarnLabel, msgFmt, msgArgs...)
 }
 
-func logInfo(msg ...any) bool {
-	return logMsg(logInfoLabel, msg...)
+func (l *Log) logInfo(msg ...any) bool {
+	return l.logMsg(logInfoLabel, msg...)
 }
 
-func logInfoErr(err error, msg ...any) bool {
-	return err != nil && logMsg(logInfoLabel, msg...)
+func (l *Log) logInfoErr(err error, msg ...any) bool {
+	return err != nil && l.logMsg(logInfoLabel, msg...)
 }
 
-func logInfof(msgFmt string, msgArgs ...any) bool {
-	return logMsgf(logInfoLabel, msgFmt, msgArgs...)
+func (l *Log) logInfof(msgFmt string, msgArgs ...any) bool {
+	return l.logMsgf(logInfoLabel, msgFmt, msgArgs...)
 }
 
-func logInfoErrf(err error, msgFmt string, msgArgs ...any) bool {
-	return err != nil && logMsgf(logInfoLabel, msgFmt, msgArgs...)
+func (l *Log) logInfoErrf(err error, msgFmt string, msgArgs ...any) bool {
+	return err != nil && l.logMsgf(logInfoLabel, msgFmt, msgArgs...)
 }
 
-func logLongInfo(msg ...any) bool {
-	return logMsg(logLongInfoLabel, msg...)
+func (l *Log) logLongInfo(msg ...any) bool {
+	return l.logMsg(logLongInfoLabel, msg...)
 }
 
-func logLongInfoErr(err error, msg ...any) bool {
-	return err != nil && logMsg(logLongInfoLabel, msg...)
+func (l *Log) logLongInfoErr(err error, msg ...any) bool {
+	return err != nil && l.logMsg(logLongInfoLabel, msg...)
 }
 
-func logLongInfof(msgFmt string, msgArgs ...any) bool {
-	return logMsgf(logLongInfoLabel, msgFmt, msgArgs...)
+func (l *Log) logLongInfof(msgFmt string, msgArgs ...any) bool {
+	return l.logMsgf(logLongInfoLabel, msgFmt, msgArgs...)
 }
 
-func logLongInfoErrf(err error, msgFmt string, msgArgs ...any) bool {
-	return err != nil && logMsgf(logLongInfoLabel, msgFmt, msgArgs...)
+func (l *Log) logLongInfoErrf(err error, msgFmt string, msgArgs ...any) bool {
+	return err != nil && l.logMsgf(logLongInfoLabel, msgFmt, msgArgs...)
 }
 
-func logDebug(msg ...any) bool {
-	return logMsg(logDebugLabel, msg...)
+func (l *Log) logDebug(msg ...any) bool {
+	return l.logMsg(logDebugLabel, msg...)
 }
 
-func logDebugErr(err error, msg ...any) bool {
-	return err != nil && logMsg(logDebugLabel, msg...)
+func (l *Log) logDebugErr(err error, msg ...any) bool {
+	return err != nil && l.logMsg(logDebugLabel, msg...)
 }
 
-func logDebugf(msgFmt string, msgArgs ...any) bool {
-	return logMsgf(logDebugLabel, msgFmt, msgArgs...)
+func (l *Log) logDebugf(msgFmt string, msgArgs ...any) bool {
+	return l.logMsgf(logDebugLabel, msgFmt, msgArgs...)
 }
 
-func logDebugErrf(err error, msgFmt string, msgArgs ...any) bool {
-	return err != nil && logMsgf(logDebugLabel, msgFmt, msgArgs...)
+func (l *Log) logDebugErrf(err error, msgFmt string, msgArgs ...any) bool {
+	return err != nil && l.logMsgf(logDebugLabel, msgFmt, msgArgs...)
 }
 
-func logLongDebug(msg ...any) bool {
-	return logMsg(logLongDebugLabel, msg...)
+func (l *Log) logLongDebug(msg ...any) bool {
+	return l.logMsg(logLongDebugLabel, msg...)
 }
 
-func logLongDebugErr(err error, msg ...any) bool {
-	return err != nil && logMsg(logLongDebugLabel, msg...)
+func (l *Log) logLongDebugErr(err error, msg ...any) bool {
+	return err != nil && l.logMsg(logLongDebugLabel, msg...)
 }
 
-func logLongDebugf(msgFmt string, msgArgs ...any) bool {
-	return logMsgf(logLongDebugLabel, msgFmt, msgArgs...)
+func (l *Log) logLongDebugf(msgFmt string, msgArgs ...any) bool {
+	return l.logMsgf(logLongDebugLabel, msgFmt, msgArgs...)
 }
 
-func logLongDebugErrf(err error, msgFmt string, msgArgs ...any) bool {
-	return err != nil && logMsgf(logLongDebugLabel, msgFmt, msgArgs...)
+func (l *Log) logLongDebugErrf(err error, msgFmt string, msgArgs ...any) bool {
+	return err != nil && l.logMsgf(logLongDebugLabel, msgFmt, msgArgs...)
 }
 
-func logTrace(msg ...any) bool {
-	return logMsg(logTraceLabel, msg...)
+func (l *Log) logTrace(msg ...any) bool {
+	return l.logMsg(logTraceLabel, msg...)
 }
 
-func logTraceErr(err error, msg ...any) bool {
-	return err != nil && logMsg(logTraceLabel, msg...)
+func (l *Log) logTraceErr(err error, msg ...any) bool {
+	return err != nil && l.logMsg(logTraceLabel, msg...)
 }
 
-func logTracef(msgFmt string, msgArgs ...any) bool {
-	return logMsgf(logTraceLabel, msgFmt, msgArgs...)
+func (l *Log) logTracef(msgFmt string, msgArgs ...any) bool {
+	return l.logMsgf(logTraceLabel, msgFmt, msgArgs...)
 }
 
-func logTraceErrf(err error, msgFmt string, msgArgs ...any) bool {
-	return err != nil && logMsgf(logTraceLabel, msgFmt, msgArgs...)
+func (l *Log) logTraceErrf(err error, msgFmt string, msgArgs ...any) bool {
+	return err != nil && l.logMsgf(logTraceLabel, msgFmt, msgArgs...)
 }
 
-func logLongTrace(msg ...any) bool {
-	return logMsg(logLongTraceLabel, msg...)
+func (l *Log) logLongTrace(msg ...any) bool {
+	return l.logMsg(logLongTraceLabel, msg...)
 }
 
-func logLongTraceErr(err error, msg ...any) bool {
-	return err != nil && logMsg(logLongTraceLabel, msg...)
+func (l *Log) logLongTraceErr(err error, msg ...any) bool {
+	return err != nil && l.logMsg(logLongTraceLabel, msg...)
 }
 
-func logLongTracef(msgFmt string, msgArgs ...any) bool {
-	return logMsgf(logLongTraceLabel, msgFmt, msgArgs...)
+func (l *Log) logLongTracef(msgFmt string, msgArgs ...any) bool {
+	return l.logMsgf(logLongTraceLabel, msgFmt, msgArgs...)
 }
 
-func logLongTraceErrf(err error, msgFmt string, msgArgs ...any) bool {
-	return err != nil && logMsgf(logLongTraceLabel, msgFmt, msgArgs...)
+func (l *Log) logLongTraceErrf(err error, msgFmt string, msgArgs ...any) bool {
+	return err != nil && l.logMsgf(logLongTraceLabel, msgFmt, msgArgs...)
 }
 
-func validateLogLevel(area string, rawLevel LogLevel) LogLevel {
+func (l *Log) validateLogLevel(area string, rawLevel LogLevel) LogLevel {
 	var (
 		level      LogLevel
 		rangeError bool
@@ -293,7 +293,7 @@ func validateLogLevel(area string, rawLevel LogLevel) LogLevel {
 	}
 
 	if rangeError {
-		logWarn(
+		l.logWarn(
 			"attempt to access out of bounds log level: ",
 			int(rawLevel), // Convert to int to block LogLevel stringer.
 			" from: ",
