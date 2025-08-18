@@ -35,6 +35,10 @@ func (l *Log) expandMsg(rawMessages ...any) string {
 		messages[i] = arg
 	}
 
+	if l.printer != nil {
+		return l.printer.Sprint(messages...)
+	}
+
 	return fmt.Sprint(messages...)
 }
 
@@ -48,6 +52,10 @@ func (l *Log) expandMsgf(fmtMsg string, rawFmtArgs ...any) string {
 		}
 
 		fmtArgs[i] = arg
+	}
+
+	if l.printer != nil {
+		return l.printer.Sprintf(fmtMsg, fmtArgs...)
 	}
 
 	return fmt.Sprintf(fmtMsg, fmtArgs...)

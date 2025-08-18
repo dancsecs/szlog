@@ -18,6 +18,8 @@
 
 package szlog
 
+import "golang.org/x/text/message"
+
 // LogFunc defines the signature of an unformatted log function.
 type LogFunc func(msg ...any) bool
 
@@ -36,6 +38,7 @@ type Log struct {
 	level                 LogLevel
 	customLevelsPermitted int
 	longLabels            bool
+	printer               *message.Printer
 
 	disableLevelFatal bool
 	disableLevelError bool
