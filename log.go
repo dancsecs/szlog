@@ -183,14 +183,9 @@ func (l *Log) Level() LogLevel {
 
 func (l *Log) selectLog(
 	enabled bool,
-	useLong bool,
-	shortLog, longLog LogFunc,
+	shortLog LogFunc,
 ) LogFunc {
 	if enabled {
-		if useLong {
-			return longLog
-		}
-
 		return shortLog
 	}
 
@@ -199,14 +194,9 @@ func (l *Log) selectLog(
 
 func (l *Log) selectLogf(
 	enabled bool,
-	useLong bool,
-	shortLogf, longLogf LogFuncf,
+	shortLogf LogFuncf,
 ) LogFuncf {
 	if enabled {
-		if useLong {
-			return longLogf
-		}
-
 		return shortLogf
 	}
 
@@ -215,14 +205,9 @@ func (l *Log) selectLogf(
 
 func (l *Log) selectLogErr(
 	enabled bool,
-	useLong bool,
-	shortLog, longLog LogErrFunc,
+	shortLog LogErrFunc,
 ) LogErrFunc {
 	if enabled {
-		if useLong {
-			return longLog
-		}
-
 		return shortLog
 	}
 
@@ -231,14 +216,9 @@ func (l *Log) selectLogErr(
 
 func (l *Log) selectLogErrf(
 	enabled bool,
-	useLong bool,
-	shortLogf, longLogf LogErrFuncf,
+	shortLogf LogErrFuncf,
 ) LogErrFuncf {
 	if enabled {
-		if useLong {
-			return longLogf
-		}
-
 		return shortLogf
 	}
 
@@ -309,86 +289,63 @@ func (l *Log) SetLevel(newLogLevel LogLevel) LogLevel {
 	}
 
 	l.LogFatal = enable&enabledFatal > 0 && !l.disableLevelFatal
-	l.F = l.selectLog(l.LogFatal, l.longLabels, l.logFatal, l.logLongFatal)
+	l.F = l.selectLog(l.LogFatal, l.logFatal)
 	l.Fatal = l.F
-	l.Ff = l.selectLogf(l.LogFatal, l.longLabels, l.logFatalf, l.logLongFatalf)
+	l.Ff = l.selectLogf(l.LogFatal, l.logFatalf)
 	l.Fatalf = l.Ff
-	l.FErr = l.selectLogErr(
-		l.LogFatal, l.longLabels, l.logFatalErr, l.logLongFatalErr,
-	)
+	l.FErr = l.selectLogErr(l.LogFatal, l.logFatalErr)
 	l.FatalErr = l.FErr
-	l.FErrf = l.selectLogErrf(
-		l.LogFatal, l.longLabels, l.logFatalErrf, l.logLongFatalErrf,
-	)
+	l.FErrf = l.selectLogErrf(l.LogFatal, l.logFatalErrf)
 	l.FatalErrf = l.FErrf
 
 	l.LogError = enable&enabledError > 0 && !l.disableLevelError
-	l.E = l.selectLog(l.LogError, l.longLabels, l.logError, l.logLongError)
+	l.E = l.selectLog(l.LogError, l.logError)
 	l.Error = l.E
-	l.Ef = l.selectLogf(l.LogError, l.longLabels, l.logErrorf, l.logLongErrorf)
+	l.Ef = l.selectLogf(l.LogError, l.logErrorf)
 	l.Errorf = l.Ef
-	l.EErr = l.selectLogErr(
-		l.LogError, l.longLabels, l.logErrorErr, l.logLongErrorErr,
-	)
+	l.EErr = l.selectLogErr(l.LogError, l.logErrorErr)
 	l.ErrorErr = l.EErr
-	l.EErrf = l.selectLogErrf(
-		l.LogError, l.longLabels, l.logErrorErrf, l.logLongErrorErrf,
-	)
+	l.EErrf = l.selectLogErrf(l.LogError, l.logErrorErrf)
 	l.ErrorErrf = l.EErrf
 
 	l.LogWarn = enable&enabledWarn > 0 && !l.disableLevelWarn
-	l.W = l.selectLog(l.LogWarn, l.longLabels, l.logWarn, l.logLongWarn)
+	l.W = l.selectLog(l.LogWarn, l.logWarn)
 	l.Warn = l.W
-	l.Wf = l.selectLogf(l.LogWarn, l.longLabels, l.logWarnf, l.logLongWarnf)
+	l.Wf = l.selectLogf(l.LogWarn, l.logWarnf)
 	l.Warnf = l.Wf
-	l.WErr = l.selectLogErr(
-		l.LogWarn, l.longLabels, l.logWarnErr, l.logLongWarnErr,
-	)
+	l.WErr = l.selectLogErr(l.LogWarn, l.logWarnErr)
 	l.WarnErr = l.WErr
-	l.WErrf = l.selectLogErrf(
-		l.LogWarn, l.longLabels, l.logWarnErrf, l.logLongWarnErrf,
-	)
+	l.WErrf = l.selectLogErrf(l.LogWarn, l.logWarnErrf)
 	l.WarnErrf = l.WErrf
 
 	l.LogInfo = enable&enabledInfo > 0 && !l.disableLevelInfo
-	l.I = l.selectLog(l.LogInfo, l.longLabels, l.logInfo, l.logLongInfo)
+	l.I = l.selectLog(l.LogInfo, l.logInfo)
 	l.Info = l.I
-	l.If = l.selectLogf(l.LogInfo, l.longLabels, l.logInfof, l.logLongInfof)
+	l.If = l.selectLogf(l.LogInfo, l.logInfof)
 	l.Infof = l.If
-	l.IErr = l.selectLogErr(
-		l.LogInfo, l.longLabels, l.logInfoErr, l.logLongInfoErr,
-	)
+	l.IErr = l.selectLogErr(l.LogInfo, l.logInfoErr)
 	l.InfoErr = l.IErr
-	l.IErrf = l.selectLogErrf(
-		l.LogInfo, l.longLabels, l.logInfoErrf, l.logLongInfoErrf)
+	l.IErrf = l.selectLogErrf(l.LogInfo, l.logInfoErrf)
 	l.InfoErrf = l.IErrf
 
 	l.LogDebug = enable&enabledDebug > 0 && !l.disableLevelDebug
-	l.D = l.selectLog(l.LogDebug, l.longLabels, l.logDebug, l.logLongDebug)
+	l.D = l.selectLog(l.LogDebug, l.logDebug)
 	l.Debug = l.D
-	l.Df = l.selectLogf(l.LogDebug, l.longLabels, l.logDebugf, l.logLongDebugf)
+	l.Df = l.selectLogf(l.LogDebug, l.logDebugf)
 	l.Debugf = l.Df
-	l.DErr = l.selectLogErr(
-		l.LogDebug, l.longLabels, l.logDebugErr, l.logLongDebugErr,
-	)
+	l.DErr = l.selectLogErr(l.LogDebug, l.logDebugErr)
 	l.DebugErr = l.DErr
-	l.DErrf = l.selectLogErrf(
-		l.LogDebug, l.longLabels, l.logDebugErrf, l.logLongDebugErrf,
-	)
+	l.DErrf = l.selectLogErrf(l.LogDebug, l.logDebugErrf)
 	l.DebugErrf = l.DErrf
 
 	l.LogTrace = enable&enabledTrace > 0 && !l.disableLevelTrace
-	l.T = l.selectLog(l.LogTrace, l.longLabels, l.logTrace, l.logLongTrace)
+	l.T = l.selectLog(l.LogTrace, l.logTrace)
 	l.Trace = l.T
-	l.Tf = l.selectLogf(l.LogTrace, l.longLabels, l.logTracef, l.logLongTracef)
+	l.Tf = l.selectLogf(l.LogTrace, l.logTracef)
 	l.Tracef = l.Tf
-	l.TErr = l.selectLogErr(
-		l.LogTrace, l.longLabels, l.logTraceErr, l.logLongTraceErr,
-	)
+	l.TErr = l.selectLogErr(l.LogTrace, l.logTraceErr)
 	l.TraceErr = l.TErr
-	l.TErrf = l.selectLogErrf(
-		l.LogTrace, l.longLabels, l.logTraceErrf, l.logLongTraceErrf,
-	)
+	l.TErrf = l.selectLogErrf(l.LogTrace, l.logTraceErrf)
 	l.TraceErrf = l.TErrf
 
 	return oldLogLevel

@@ -18,20 +18,35 @@
 
 package szlog
 
-const (
-	logFatalLabel = "F:"
-	logErrorLabel = "E:"
-	logWarnLabel  = "W:"
-	logInfoLabel  = "I:"
-	logDebugLabel = "D:"
-	logTraceLabel = "T:"
+type labelIdx int
 
-	logLongFatalLabel = "FATAL:"
-	logLongErrorLabel = "ERROR:"
-	logLongWarnLabel  = "WARN:"
-	logLongInfoLabel  = "INFO:"
-	logLongDebugLabel = "DEBUG:"
-	logLongTraceLabel = "TRACE:"
+const (
+	labelFatal labelIdx = iota
+	labelError
+	labelWarn
+	labelInfo
+	labelDebug
+	labelTrace
+)
+
+//nolint:goCheckNoGlobals // Package level local lookups.
+var (
+	shortLabel = []string{
+		"F:",
+		"E:",
+		"W:",
+		"I:",
+		"D:",
+		"T:",
+	}
+	longLabel = []string{
+		"FATAL:",
+		"ERROR:",
+		"WARN:",
+		"INFO:",
+		"DEBUG:",
+		"TRACE:",
+	}
 )
 
 // LongLabels enables/disables the use of longer labels in log output.
