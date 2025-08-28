@@ -18,46 +18,18 @@
 
 package szlog
 
-type labelIdx int
-
-const (
-	labelFatal labelIdx = iota
-	labelError
-	labelWarn
-	labelInfo
-	labelDebug
-	labelTrace
+import (
+	"errors"
 )
 
-//nolint:goCheckNoGlobals // Package level local lookups.
+// Exported errors.
 var (
-	shortLabel = []string{
-		"F:",
-		"E:",
-		"W:",
-		"I:",
-		"D:",
-		"T:",
-	}
-	longLabel = []string{
-		"FATAL:",
-		"ERROR:",
-		"WARN:",
-		"INFO:",
-		"DEBUG:",
-		"TRACE:",
-	}
+	ErrUnknownLevel             = errors.New("unknown log level")
+	ErrInvalidLogLevelParse     = errors.New("invalid log level string")
+	ErrAmbiguousVerboseAndQuiet = errors.New("ambiguous verbose and quiet")
+	ErrAmbiguousLogLevel        = errors.New("ambiguous log level")
+	ErrAmbiguousLanguage        = errors.New("ambiguous language")
+	ErrMissingLogLevel          = errors.New("missing log level")
+	ErrMissingLanguage          = errors.New("missing language")
+	ErrInvalidLanguage          = errors.New("invalid language")
 )
-
-// LongLabels enables/disables the use of longer labels in log output.
-func (l *Log) LongLabels() bool {
-	return l.longLabels
-}
-
-// SetLongLabels enables/disables the use of longer labels in log output.
-func (l *Log) SetLongLabels(enable bool) bool {
-	orig := l.longLabels
-	l.longLabels = enable
-
-	return orig
-}

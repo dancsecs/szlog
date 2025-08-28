@@ -18,46 +18,18 @@
 
 package szlog
 
-type labelIdx int
+//nolint:goCheckNoGlobals // Default package logger.
+var defaultLog = New()
 
-const (
-	labelFatal labelIdx = iota
-	labelError
-	labelWarn
-	labelInfo
-	labelDebug
-	labelTrace
-)
-
-//nolint:goCheckNoGlobals // Package level local lookups.
-var (
-	shortLabel = []string{
-		"F:",
-		"E:",
-		"W:",
-		"I:",
-		"D:",
-		"T:",
-	}
-	longLabel = []string{
-		"FATAL:",
-		"ERROR:",
-		"WARN:",
-		"INFO:",
-		"DEBUG:",
-		"TRACE:",
-	}
-)
-
-// LongLabels enables/disables the use of longer labels in log output.
-func (l *Log) LongLabels() bool {
-	return l.longLabels
+// Default Returns the package's default logger.
+func Default() *Log {
+	return defaultLog
 }
 
-// SetLongLabels enables/disables the use of longer labels in log output.
-func (l *Log) SetLongLabels(enable bool) bool {
-	orig := l.longLabels
-	l.longLabels = enable
+// SetDefault sets the package's default logger.
+func SetDefault(newDefaultLog *Log) *Log {
+	origLog := defaultLog
+	defaultLog = newDefaultLog
 
-	return orig
+	return origLog
 }

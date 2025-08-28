@@ -16,48 +16,35 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package szlog
+package szlog_test
 
-type labelIdx int
+import (
+	"testing"
 
-const (
-	labelFatal labelIdx = iota
-	labelError
-	labelWarn
-	labelInfo
-	labelDebug
-	labelTrace
+	"github.com/dancsecs/szlog"
+	"github.com/dancsecs/sztest"
 )
 
-//nolint:goCheckNoGlobals // Package level local lookups.
-var (
-	shortLabel = []string{
-		"F:",
-		"E:",
-		"W:",
-		"I:",
-		"D:",
-		"T:",
-	}
-	longLabel = []string{
-		"FATAL:",
-		"ERROR:",
-		"WARN:",
-		"INFO:",
-		"DEBUG:",
-		"TRACE:",
-	}
-)
+func TestSzLog_DefaultLogger(t *testing.T) {
+	chk := sztest.CaptureLog(t)
+	defer chk.Release()
 
-// LongLabels enables/disables the use of longer labels in log output.
-func (l *Log) LongLabels() bool {
-	return l.longLabels
-}
+	origLog := szlog.Default()
+	tstLog := szlog.New()
 
-// SetLongLabels enables/disables the use of longer labels in log output.
-func (l *Log) SetLongLabels(enable bool) bool {
-	orig := l.longLabels
-	l.longLabels = enable
+	oldLog := szlog.SetDefault(tstLog)
 
-	return orig
+	tstLog2 := szlog.SetDefault(origLog)
+
+	chk.True(oldLog == origLog)
+	chk.True(tstLog == tstLog2)
+	chk.True(szlog.Default() == origLog)
+
+	szlog.Reset()
+
+	logAll()
+	chk.Log(
+		expectedLogSnippet("Error", tstShortLabels),
+		expectedLogSnippet("Fatal", tstShortLabels),
+	)
 }

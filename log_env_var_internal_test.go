@@ -24,74 +24,176 @@ import (
 	"github.com/dancsecs/sztest"
 )
 
-func TestSzLog_EnvVar_getEnvLevel(t *testing.T) {
+func TestSzLog_EnvVar_getEnvLogLevel(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
-	tstLog := New(nil)
+	tstLog := New()
 
-	testEnvVariable := "SZLOG_TEST_LOG_LEVEL"
+	chk.DelEnv(EnvLogLevel)
+	tstLog.setEnvLevel()
+	chk.Int(int(tstLog.Level()), int(LevelError))
 
-	chk.DelEnv(testEnvVariable)
-	chk.Int(int(tstLog.getEnvLevel(testEnvVariable, 78)), 78)
+	chk.SetEnv(EnvLogLevel, "78")
+	tstLog.setEnvLevel()
+	chk.Int(int(tstLog.Level()), int(LevelError))
 
-	chk.SetEnv(testEnvVariable, "invalidLevel")
-	chk.Int(int(tstLog.getEnvLevel(testEnvVariable, 62)), 62)
+	chk.SetEnv(EnvLogLevel, "invalidLevel")
+	tstLog.setEnvLevel()
+	chk.Int(int(tstLog.Level()), int(LevelError))
 
-	chk.SetEnv(testEnvVariable, "NONE")
-	chk.Int(int(tstLog.getEnvLevel(testEnvVariable, 66)), int(LevelNone))
+	chk.SetEnv(EnvLogLevel, "NONE")
+	tstLog.setEnvLevel()
+	chk.Int(int(tstLog.Level()), int(LevelNone))
 
-	chk.SetEnv(testEnvVariable, "FATAL")
-	chk.Int(int(tstLog.getEnvLevel(testEnvVariable, 66)), int(LevelFatal))
+	chk.SetEnv(EnvLogLevel, "FATAL")
+	tstLog.setEnvLevel()
+	chk.Int(int(tstLog.Level()), int(LevelFatal))
 
-	chk.SetEnv(testEnvVariable, "ERROR")
-	chk.Int(int(tstLog.getEnvLevel(testEnvVariable, 66)), int(LevelError))
+	chk.SetEnv(EnvLogLevel, "ERROR")
+	tstLog.setEnvLevel()
+	chk.Int(int(tstLog.Level()), int(LevelError))
 
-	chk.SetEnv(testEnvVariable, "WARN")
-	chk.Int(int(tstLog.getEnvLevel(testEnvVariable, 66)), int(LevelWarn))
+	chk.SetEnv(EnvLogLevel, "WARN")
+	tstLog.setEnvLevel()
+	chk.Int(int(tstLog.Level()), int(LevelWarn))
 
-	chk.SetEnv(testEnvVariable, "INFO")
-	chk.Int(int(tstLog.getEnvLevel(testEnvVariable, 66)), int(LevelInfo))
+	chk.SetEnv(EnvLogLevel, "INFO")
+	tstLog.setEnvLevel()
+	chk.Int(int(tstLog.Level()), int(LevelInfo))
 
-	chk.SetEnv(testEnvVariable, "DEBUG")
-	chk.Int(int(tstLog.getEnvLevel(testEnvVariable, 66)), int(LevelDebug))
+	chk.SetEnv(EnvLogLevel, "DEBUG")
+	tstLog.setEnvLevel()
+	chk.Int(int(tstLog.Level()), int(LevelDebug))
 
-	chk.SetEnv(testEnvVariable, "TRACE")
-	chk.Int(int(tstLog.getEnvLevel(testEnvVariable, 66)), int(LevelTrace))
+	chk.SetEnv(EnvLogLevel, "TRACE")
+	tstLog.setEnvLevel()
+	chk.Int(int(tstLog.Level()), int(LevelTrace))
 
-	chk.SetEnv(testEnvVariable, "ALL")
-	chk.Int(int(tstLog.getEnvLevel(testEnvVariable, 66)), int(LevelAll))
+	chk.SetEnv(EnvLogLevel, "ALL")
+	tstLog.setEnvLevel()
+	chk.Int(int(tstLog.Level()), int(LevelAll))
 
 	chk.Log(
-		"W:szlog initialization: invalid environment override " +
-			"SZLOG_TEST_LOG_LEVEL=\"invalidLevel\": " +
-			"unknown log level error",
+		"W:szlog initialization: invalid environment override "+
+			"SZLOG_LEVEL=\"78\": "+
+			"invalid log level string: unknown log level: '78'",
+		"W:szlog initialization: invalid environment override "+
+			"SZLOG_LEVEL=\"invalidLevel\": "+
+			"invalid log level string: "+
+			"unknown log level: 'invalidLevel'",
 	)
 }
 
-func TestSzLog_EnvVar_getEnvSetting(t *testing.T) {
+func TestSzLog_EnvVar_getEnvVerbose(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
-	tstLog := New(nil)
+	tstLog := New()
 
-	testEnvVariable := "SZLOG_TEST_LOG_LEVEL"
+	chk.DelEnv(EnvVerbose)
+	tstLog.setEnvVerbose()
+	chk.Int(tstLog.Verbose(), 0)
 
-	chk.DelEnv(testEnvVariable)
-	chk.False(tstLog.getEnvSetting(testEnvVariable))
+	chk.SetEnv(EnvVerbose, "invalidSetting")
+	tstLog.setEnvVerbose()
+	chk.Int(tstLog.Verbose(), 0)
 
-	chk.SetEnv(testEnvVariable, "invalidSetting")
-	chk.False(tstLog.getEnvSetting(testEnvVariable))
+	chk.SetEnv(EnvVerbose, "QUIET")
+	tstLog.setEnvVerbose()
+	chk.Int(tstLog.Verbose(), -1)
 
-	chk.SetEnv(testEnvVariable, "DISABLED")
-	chk.False(tstLog.getEnvSetting(testEnvVariable))
+	chk.SetEnv(EnvVerbose, "0")
+	tstLog.setEnvVerbose()
+	chk.Int(tstLog.Verbose(), 0)
 
-	chk.SetEnv(testEnvVariable, "ENABLED")
-	chk.True(tstLog.getEnvSetting(testEnvVariable))
+	chk.SetEnv(EnvVerbose, "1")
+	tstLog.setEnvVerbose()
+	chk.Int(tstLog.Verbose(), 1)
+
+	chk.SetEnv(EnvVerbose, "2")
+	tstLog.setEnvVerbose()
+	chk.Int(tstLog.Verbose(), 2)
+
+	chk.SetEnv(EnvVerbose, "3")
+	tstLog.setEnvVerbose()
+	chk.Int(tstLog.Verbose(), 3)
+
+	chk.SetEnv(EnvVerbose, "4")
+	tstLog.setEnvVerbose()
+	chk.Int(tstLog.Verbose(), 4)
+
+	chk.SetEnv(EnvVerbose, "5")
+	tstLog.setEnvVerbose()
+	chk.Int(tstLog.Verbose(), 5)
+
+	chk.SetEnv(EnvVerbose, "6")
+	tstLog.setEnvVerbose()
+	chk.Int(tstLog.Verbose(), 0)
+
+	chk.Log(
+		"W:szlog initialization: invalid environment override "+
+			"SZLOG_VERBOSE=\"invalidSetting\": "+
+			"unknown verbose level (must be one of: "+
+			"'QUIET', '0', '1', '2', '3', '4', '5'"+
+			")",
+		"W:szlog initialization: invalid environment override "+
+			"SZLOG_VERBOSE=\"6\": "+
+			"unknown verbose level (must be one of: "+
+			"'QUIET', '0', '1', '2', '3', '4', '5'"+
+			")",
+	)
+}
+
+func TestSzLog_EnvVar_getEnvLanguage(t *testing.T) {
+	chk := sztest.CaptureLog(t)
+	defer chk.Release()
+
+	tstLog := New()
+
+	chk.DelEnv(EnvLogLanguage)
+	tstLog.setEnvLanguage()
+	chk.Str(tstLog.Language(), "")
+
+	chk.SetEnv(EnvLogLanguage, "en")
+	tstLog.setEnvLanguage()
+	chk.Str(tstLog.Language(), "en")
+
+	chk.SetEnv(EnvLogLanguage, "unknown")
+	tstLog.setEnvLanguage()
+	chk.Str(tstLog.Language(), "")
 
 	chk.Log(
 		"W:szlog initialization: invalid environment override " +
-			"SZLOG_TEST_LOG_LEVEL=\"invalidSetting\": " +
-			"unknown log level setting error",
+			"SZLOG_LANGUAGE=\"unknown\": invalid language: 'unknown'",
+	)
+}
+
+func TestSzLog_EnvVar_getEnvLongLabels(t *testing.T) {
+	chk := sztest.CaptureLog(t)
+	defer chk.Release()
+
+	tstLog := New()
+
+	chk.DelEnv(EnvLogLongLabels)
+	tstLog.setEnvLabelLength()
+	chk.False(tstLog.LongLabels())
+
+	chk.SetEnv(EnvLogLongLabels, "SHORT")
+	tstLog.setEnvLabelLength()
+	chk.False(tstLog.LongLabels())
+
+	chk.SetEnv(EnvLogLongLabels, "LONG")
+	tstLog.setEnvLabelLength()
+	chk.True(tstLog.LongLabels())
+
+	chk.SetEnv(EnvLogLongLabels, "unknown")
+	tstLog.setEnvLabelLength()
+	chk.True(tstLog.LongLabels())
+
+	chk.Log(
+		"WARN:szlog initialization: invalid environment override " +
+			"SZLOG_LONG_LABELS=\"unknown\": " +
+			"unknown label length (must be 'SHORT' or 'LONG')",
 	)
 }

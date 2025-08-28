@@ -48,6 +48,7 @@
         "exportloopref",
         "forbidigo",
         "forcetypeassert",
+        "formatprintf",
         "funlen",
         "gci",
         "ginkgolinter",
@@ -118,6 +119,7 @@
         "staticcheck",
         "structcheck", // Deprecated
         "stylecheck",
+        "szout",
         "tagalign",
         "tagliatelle",
         "tenv",

@@ -30,16 +30,6 @@ func SetLongLabels(enabled bool) bool {
 	return defaultLog.SetLongLabels(enabled)
 }
 
-// LevelDisabled returns true if the  level is disabled.
-func LevelDisabled(level LogLevel) bool {
-	return defaultLog.LevelDisabled(level)
-}
-
-// DisableLevel blocks all logging at the specified level.
-func DisableLevel(level LogLevel) {
-	defaultLog.DisableLevel(level)
-}
-
 // Level return the current logging level.
 func Level() LogLevel {
 	return defaultLog.Level()
@@ -70,10 +60,40 @@ func Reset() {
 	defaultLog.Reset()
 }
 
-// VerboseAbsorbArgs increases log level according to how many verbose flags
+// AbsorbArgs increases log level according to how many verbose flags
 // encountered.
-func VerboseAbsorbArgs(argsIn []string) []string {
-	return defaultLog.VerboseAbsorbArgs(argsIn)
+func AbsorbArgs(argsIn []string) ([]string, error) {
+	return defaultLog.AbsorbArgs(argsIn)
+}
+
+// LogFatal returns true if fatal messages are being logged.
+func LogFatal() bool {
+	return defaultLog.LogFatal
+}
+
+// LogError returns true if error messages are being logged.
+func LogError() bool {
+	return defaultLog.LogError
+}
+
+// LogWarn returns true if warning messages are being logged.
+func LogWarn() bool {
+	return defaultLog.LogWarn
+}
+
+// LogInfo returns true if information messages are being logged.
+func LogInfo() bool {
+	return defaultLog.LogInfo
+}
+
+// LogDebug returns true if debug messages are being logged.
+func LogDebug() bool {
+	return defaultLog.LogDebug
+}
+
+// LogTrace returns true if tracing messages are being logged.
+func LogTrace() bool {
+	return defaultLog.LogTrace
 }
 
 // F Invokes the default log corresponding method.
@@ -81,19 +101,9 @@ func F(msg ...any) bool {
 	return defaultLog.F(msg...)
 }
 
-// FErr Invokes the default log corresponding method.
-func FErr(err error, msg ...any) bool {
-	return defaultLog.FErr(err, msg...)
-}
-
 // Fatal Invokes the default log corresponding method.
 func Fatal(msg ...any) bool {
 	return defaultLog.Fatal(msg...)
-}
-
-// FatalErr Invokes the default log corresponding method.
-func FatalErr(err error, msg ...any) bool {
-	return defaultLog.FatalErr(err, msg...)
 }
 
 // Ff Invokes the default log corresponding method.
@@ -101,19 +111,9 @@ func Ff(msgFmt string, msgArgs ...any) bool {
 	return defaultLog.Ff(msgFmt, msgArgs...)
 }
 
-// FErrf Invokes the default log corresponding method.
-func FErrf(err error, msgFmt string, msgArgs ...any) bool {
-	return defaultLog.FErrf(err, msgFmt, msgArgs...)
-}
-
 // Fatalf Invokes the default log corresponding method.
 func Fatalf(msgFmt string, msgArgs ...any) bool {
 	return defaultLog.Fatalf(msgFmt, msgArgs...)
-}
-
-// FatalErrf Invokes the default log corresponding method.
-func FatalErrf(err error, msgFmt string, msgArgs ...any) bool {
-	return defaultLog.FatalErrf(err, msgFmt, msgArgs...)
 }
 
 // E Invokes the default log corresponding method.
@@ -121,19 +121,9 @@ func E(msg ...any) bool {
 	return defaultLog.E(msg...)
 }
 
-// EErr Invokes the default log corresponding method.
-func EErr(err error, msg ...any) bool {
-	return defaultLog.EErr(err, msg...)
-}
-
 // Error Invokes the default log corresponding method.
 func Error(msg ...any) bool {
 	return defaultLog.Error(msg...)
-}
-
-// ErrorErr Invokes the default log corresponding method.
-func ErrorErr(err error, msg ...any) bool {
-	return defaultLog.ErrorErr(err, msg...)
 }
 
 // Ef Invokes the default log corresponding method.
@@ -141,19 +131,9 @@ func Ef(msgFmt string, msgArgs ...any) bool {
 	return defaultLog.Ef(msgFmt, msgArgs...)
 }
 
-// EErrf Invokes the default log corresponding method.
-func EErrf(err error, msgFmt string, msgArgs ...any) bool {
-	return defaultLog.EErrf(err, msgFmt, msgArgs...)
-}
-
 // Errorf Invokes the default log corresponding method.
 func Errorf(msgFmt string, msgArgs ...any) bool {
 	return defaultLog.Errorf(msgFmt, msgArgs...)
-}
-
-// ErrorErrf Invokes the default log corresponding method.
-func ErrorErrf(err error, msgFmt string, msgArgs ...any) bool {
-	return defaultLog.ErrorErrf(err, msgFmt, msgArgs...)
 }
 
 // W Invokes the default log corresponding method.
@@ -161,19 +141,9 @@ func W(msg ...any) bool {
 	return defaultLog.W(msg...)
 }
 
-// WErr Invokes the default log corresponding method.
-func WErr(err error, msg ...any) bool {
-	return defaultLog.WErr(err, msg...)
-}
-
 // Warn Invokes the default log corresponding method.
 func Warn(msg ...any) bool {
 	return defaultLog.Warn(msg...)
-}
-
-// WarnErr Invokes the default log corresponding method.
-func WarnErr(err error, msg ...any) bool {
-	return defaultLog.WarnErr(err, msg...)
 }
 
 // Wf Invokes the default log corresponding method.
@@ -181,19 +151,9 @@ func Wf(msgFmt string, msgArgs ...any) bool {
 	return defaultLog.Wf(msgFmt, msgArgs...)
 }
 
-// WErrf Invokes the default log corresponding method.
-func WErrf(err error, msgFmt string, msgArgs ...any) bool {
-	return defaultLog.WErrf(err, msgFmt, msgArgs...)
-}
-
 // Warnf Invokes the default log corresponding method.
 func Warnf(msgFmt string, msgArgs ...any) bool {
 	return defaultLog.Warnf(msgFmt, msgArgs...)
-}
-
-// WarnErrf Invokes the default log corresponding method.
-func WarnErrf(err error, msgFmt string, msgArgs ...any) bool {
-	return defaultLog.WarnErrf(err, msgFmt, msgArgs...)
 }
 
 // I Invokes the default log corresponding method.
@@ -201,19 +161,9 @@ func I(msg ...any) bool {
 	return defaultLog.I(msg...)
 }
 
-// IErr Invokes the default log corresponding method.
-func IErr(err error, msg ...any) bool {
-	return defaultLog.IErr(err, msg...)
-}
-
 // Info Invokes the default log corresponding method.
 func Info(msg ...any) bool {
 	return defaultLog.Info(msg...)
-}
-
-// InfoErr Invokes the default log corresponding method.
-func InfoErr(err error, msg ...any) bool {
-	return defaultLog.InfoErr(err, msg...)
 }
 
 // If Invokes the default log corresponding method.
@@ -221,19 +171,9 @@ func If(msgFmt string, msgArgs ...any) bool {
 	return defaultLog.If(msgFmt, msgArgs...)
 }
 
-// IErrf Invokes the default log corresponding method.
-func IErrf(err error, msgFmt string, msgArgs ...any) bool {
-	return defaultLog.IErrf(err, msgFmt, msgArgs...)
-}
-
 // Infof Invokes the default log corresponding method.
 func Infof(msgFmt string, msgArgs ...any) bool {
 	return defaultLog.Infof(msgFmt, msgArgs...)
-}
-
-// InfoErrf Invokes the default log corresponding method.
-func InfoErrf(err error, msgFmt string, msgArgs ...any) bool {
-	return defaultLog.InfoErrf(err, msgFmt, msgArgs...)
 }
 
 // D Invokes the default log corresponding method.
@@ -241,19 +181,9 @@ func D(msg ...any) bool {
 	return defaultLog.D(msg...)
 }
 
-// DErr Invokes the default log corresponding method.
-func DErr(err error, msg ...any) bool {
-	return defaultLog.DErr(err, msg...)
-}
-
 // Debug Invokes the default log corresponding method.
 func Debug(msg ...any) bool {
 	return defaultLog.Debug(msg...)
-}
-
-// DebugErr Invokes the default log corresponding method.
-func DebugErr(err error, msg ...any) bool {
-	return defaultLog.DebugErr(err, msg...)
 }
 
 // Df Invokes the default log corresponding method.
@@ -261,19 +191,9 @@ func Df(msgFmt string, msgArgs ...any) bool {
 	return defaultLog.Df(msgFmt, msgArgs...)
 }
 
-// DErrf Invokes the default log corresponding method.
-func DErrf(err error, msgFmt string, msgArgs ...any) bool {
-	return defaultLog.DErrf(err, msgFmt, msgArgs...)
-}
-
 // Debugf Invokes the default log corresponding method.
 func Debugf(msgFmt string, msgArgs ...any) bool {
 	return defaultLog.Debugf(msgFmt, msgArgs...)
-}
-
-// DebugErrf Invokes the default log corresponding method.
-func DebugErrf(err error, msgFmt string, msgArgs ...any) bool {
-	return defaultLog.DebugErrf(err, msgFmt, msgArgs...)
 }
 
 // T Invokes the default log corresponding method.
@@ -281,19 +201,9 @@ func T(msg ...any) bool {
 	return defaultLog.T(msg...)
 }
 
-// TErr Invokes the default log corresponding method.
-func TErr(err error, msg ...any) bool {
-	return defaultLog.TErr(err, msg...)
-}
-
 // Trace Invokes the default log corresponding method.
 func Trace(msg ...any) bool {
 	return defaultLog.Trace(msg...)
-}
-
-// TraceErr Invokes the default log corresponding method.
-func TraceErr(err error, msg ...any) bool {
-	return defaultLog.TraceErr(err, msg...)
 }
 
 // Tf Invokes the default log corresponding method.
@@ -301,22 +211,152 @@ func Tf(msgFmt string, msgArgs ...any) bool {
 	return defaultLog.Tf(msgFmt, msgArgs...)
 }
 
-// TErrf Invokes the default log corresponding method.
-func TErrf(err error, msgFmt string, msgArgs ...any) bool {
-	return defaultLog.TErrf(err, msgFmt, msgArgs...)
-}
-
 // Tracef Invokes the default log corresponding method.
 func Tracef(msgFmt string, msgArgs ...any) bool {
 	return defaultLog.Tracef(msgFmt, msgArgs...)
 }
 
-// TraceErrf Invokes the default log corresponding method.
-func TraceErrf(err error, msgFmt string, msgArgs ...any) bool {
-	return defaultLog.TraceErrf(err, msgFmt, msgArgs...)
-}
-
 // Close Invokes the default log corresponding method.
 func Close(area string, closeable io.Closer) {
 	defaultLog.Close(area, closeable)
+}
+
+// Verbose returns the current verbose level.
+func Verbose() VerboseLevel {
+	return defaultLog.Verbose()
+}
+
+// SetVerbose sets the default verbose level.
+func SetVerbose(level VerboseLevel) VerboseLevel {
+	return defaultLog.SetVerbose(level)
+}
+
+// Local returns the current language local string.
+func Local() string {
+	return defaultLog.Language()
+}
+
+// SetLanguage set the default local language formatting.
+func SetLanguage(language string) error {
+	return defaultLog.SetLanguage(language)
+}
+
+// S0 Invokes the default verbose corresponding method.
+func S0(msg ...any) bool {
+	return defaultLog.S0(msg...)
+}
+
+// S1 Invokes the default verbose corresponding method.
+func S1(msg ...any) bool {
+	return defaultLog.S1(msg...)
+}
+
+// S2 Invokes the default verbose corresponding method.
+func S2(msg ...any) bool {
+	return defaultLog.S2(msg...)
+}
+
+// S3 Invokes the default verbose corresponding method.
+func S3(msg ...any) bool {
+	return defaultLog.S3(msg...)
+}
+
+// S4 Invokes the default verbose corresponding method.
+func S4(msg ...any) bool {
+	return defaultLog.S4(msg...)
+}
+
+// S5 Invokes the default verbose corresponding method.
+func S5(msg ...any) bool {
+	return defaultLog.S5(msg...)
+}
+
+// Say0 Invokes the default verbose corresponding method.
+func Say0(msg ...any) bool {
+	return defaultLog.Say0(msg...)
+}
+
+// Say1 Invokes the default verbose corresponding method.
+func Say1(msg ...any) bool {
+	return defaultLog.Say1(msg...)
+}
+
+// Say2 Invokes the default verbose corresponding method.
+func Say2(msg ...any) bool {
+	return defaultLog.Say2(msg...)
+}
+
+// Say3 Invokes the default verbose corresponding method.
+func Say3(msg ...any) bool {
+	return defaultLog.Say3(msg...)
+}
+
+// Say4 Invokes the default verbose corresponding method.
+func Say4(msg ...any) bool {
+	return defaultLog.Say4(msg...)
+}
+
+// Say5 Invokes the default verbose corresponding method.
+func Say5(msg ...any) bool {
+	return defaultLog.Say5(msg...)
+}
+
+// S0f Invokes the default verbose corresponding method.
+func S0f(msgFmt string, msgArgs ...any) bool {
+	return defaultLog.S0f(msgFmt, msgArgs...)
+}
+
+// S1f Invokes the default verbose corresponding method.
+func S1f(msgFmt string, msgArgs ...any) bool {
+	return defaultLog.S1f(msgFmt, msgArgs...)
+}
+
+// S2f Invokes the default verbose corresponding method.
+func S2f(msgFmt string, msgArgs ...any) bool {
+	return defaultLog.S2f(msgFmt, msgArgs...)
+}
+
+// S3f Invokes the default verbose corresponding method.
+func S3f(msgFmt string, msgArgs ...any) bool {
+	return defaultLog.S3f(msgFmt, msgArgs...)
+}
+
+// S4f Invokes the default verbose corresponding method.
+func S4f(msgFmt string, msgArgs ...any) bool {
+	return defaultLog.S4f(msgFmt, msgArgs...)
+}
+
+// S5f Invokes the default verbose corresponding method.
+func S5f(msgFmt string, msgArgs ...any) bool {
+	return defaultLog.S5f(msgFmt, msgArgs...)
+}
+
+// Say0f Invokes the default verbose corresponding method.
+func Say0f(msgFmt string, msgArgs ...any) bool {
+	return defaultLog.Say0f(msgFmt, msgArgs...)
+}
+
+// Say1f Invokes the default verbose corresponding method.
+func Say1f(msgFmt string, msgArgs ...any) bool {
+	return defaultLog.Say1f(msgFmt, msgArgs...)
+}
+
+// Say2f Invokes the default verbose corresponding method.
+func Say2f(msgFmt string, msgArgs ...any) bool {
+	return defaultLog.Say2f(msgFmt, msgArgs...)
+}
+
+// Say3f Invokes the default verbose corresponding method.
+func Say3f(msgFmt string, msgArgs ...any) bool {
+	return defaultLog.Say3f(msgFmt, msgArgs...)
+}
+
+// Say4f Invokes the default verbose corresponding method.
+func Say4f(msgFmt string, msgArgs ...any) bool {
+	return defaultLog.Say4f(msgFmt, msgArgs...)
+}
+
+// Say5f Invokes the default verbose corresponding method.
+func Say5f(msgFmt string, msgArgs ...any) bool {
+	return defaultLog.Say5f(msgFmt, msgArgs...)
 }

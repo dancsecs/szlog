@@ -19,45 +19,72 @@
 package szlog
 
 import (
-	"strings"
+	"fmt"
 )
 
-// Usage suitable strings for verbose argument absorption.
-const (
-	VerboseFlag     = "-v[v...], --v[v...]"
-	VerboseFlagDesc = "Increase the logging level for each v provided."
-)
+// VerboseLevel represents when to block output.
+type VerboseLevel = int
 
-// VerboseAbsorbArgs scans an argument list for verbose flags increasing
-// the log level for each verbose flag encountered.  These flags are removed
-// and a cleaned up arg list is returned.  Verbose flags can be a single (or
-// multiple letter 'v's with the corresponding number of log level increments
-// made.
-func (l *Log) VerboseAbsorbArgs(argsIn []string) []string {
-	argsOut := make([]string, 0, len(argsIn))
+// Verbose returns the current verbose level.
+func (l *Log) Verbose() VerboseLevel {
+	return l.verboseLevel
+}
 
-	for _, rArg := range argsIn {
-		keepArg := true
+// SetVerbose set the level of output to permit.
+func (l *Log) SetVerbose(newLevel VerboseLevel) VerboseLevel {
+	origLevel := l.verboseLevel
 
-		if strings.HasPrefix(rArg, "-v") || strings.HasPrefix(rArg, "--v") {
-			keepArg = false
-			cleanArg := strings.TrimLeft(rArg, "-")
+	l.S0 = l.selectLog(newLevel > -1, l.vPrint)
+	l.Say0 = l.S0
+	l.S0f = l.selectLogf(newLevel > -1, l.vPrintf)
+	l.Say0f = l.S0f
 
-			for i, mi := 0, len(cleanArg); i < mi && !keepArg; i++ {
-				keepArg = cleanArg[i] != 'v'
-			}
+	l.S1 = l.selectLog(newLevel > 0, l.vPrint)
+	l.Say1 = l.S1
+	l.S1f = l.selectLogf(newLevel > 0, l.vPrintf)
+	l.Say1f = l.S1f
 
-			if !keepArg {
-				for range len(cleanArg) {
-					l.IncLevel()
-				}
-			}
-		}
+	l.S2 = l.selectLog(newLevel > 1, l.vPrint)
+	l.Say2 = l.S2
+	l.S2f = l.selectLogf(newLevel > 1, l.vPrintf)
+	l.Say2f = l.S2f
 
-		if keepArg {
-			argsOut = append(argsOut, rArg)
-		}
+	l.S3 = l.selectLog(newLevel > 2, l.vPrint) //nolint:mnd // Ok.
+	l.Say3 = l.S3
+	l.S3f = l.selectLogf(newLevel > 2, l.vPrintf) //nolint:mnd // Ok.
+	l.Say3f = l.S3f
+
+	l.S4 = l.selectLog(newLevel > 3, l.vPrint) //nolint:mnd // Ok.
+	l.Say4 = l.S4
+	l.S4f = l.selectLogf(newLevel > 3, l.vPrintf) //nolint:mnd // Ok.
+	l.Say4f = l.S4f
+
+	l.S5 = l.selectLog(newLevel > 4, l.vPrint) //nolint:mnd // Ok.
+	l.Say5 = l.S5
+	l.S5f = l.selectLogf(newLevel > 4, l.vPrintf) //nolint:mnd // Ok.
+	l.Say5f = l.S5f
+
+	l.verboseLevel = newLevel
+
+	return origLevel
+}
+
+func (l *Log) vPrint(msg ...any) bool {
+	if l.printer != nil {
+		_, _ = l.printer.Fprint(l.stdout, msg...)
+	} else {
+		_, _ = fmt.Fprint(l.stdout, msg...)
 	}
 
-	return argsOut
+	return true
+}
+
+func (l *Log) vPrintf(msgFmt string, msgArgs ...any) bool {
+	if l.printer != nil {
+		_, _ = l.printer.Fprintf(l.stdout, msgFmt, msgArgs...)
+	} else {
+		_, _ = fmt.Fprintf(l.stdout, msgFmt, msgArgs...)
+	}
+
+	return true
 }

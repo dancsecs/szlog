@@ -23,15 +23,12 @@ import (
 	"strings"
 )
 
+// Environment variable default overrides.
 const (
-	envLogLevel      = "SZLOG_LEVEL"
-	envLogLevelFatal = "SZLOG_LEVEL_FATAL"
-	envLogLevelError = "SZLOG_LEVEL_ERROR"
-	envLogLevelWarn  = "SZLOG_LEVEL_WARN"
-	envLogLevelInfo  = "SZLOG_LEVEL_INFO"
-	envLogLevelDebug = "SZLOG_LEVEL_DEBUG"
-	envLogLevelTrace = "SZLOG_LEVEL_TRACE"
-	envLogLongLabels = "SZLOG_LONG_LABELS"
+	EnvLogLevel      = "SZLOG_LEVEL"
+	EnvLogLanguage   = "SZLOG_LANGUAGE"
+	EnvVerbose       = "SZLOG_VERBOSE"
+	EnvLogLongLabels = "SZLOG_LONG_LABELS"
 )
 
 //nolint:goCheckNoInits // Ok.
@@ -41,53 +38,95 @@ func init() {
 
 func (l *Log) logEnvErrorMessage(env, envValue, errMsg string) {
 	l.logWarnf(
-		"szlog initialization: invalid environment override %s=%q: %s error",
+		"szlog initialization: invalid environment override %s=%q: %s",
 		env, envValue, errMsg,
 	)
 }
 
-//nolint:cyclop // Ok.
-func (l *Log) getEnvLevel(env string, value LogLevel) LogLevel {
-	rawEnvLevel, ok := os.LookupEnv(env)
+func (l *Log) setEnvVerbose() {
+	var lvl VerboseLevel
+
+	rawVerbose, ok := os.LookupEnv(EnvVerbose)
+
 	if ok {
-		switch strings.ToLower(rawEnvLevel) {
-		case "none":
-			value = LevelNone
-		case "fatal":
-			value = LevelFatal
-		case "error":
-			value = LevelError
-		case "info":
-			value = LevelInfo
-		case "warn":
-			value = LevelWarn
-		case "debug":
-			value = LevelDebug
-		case "trace":
-			value = LevelTrace
-		case "all":
-			value = LevelAll
+		switch strings.ToLower(rawVerbose) {
+		case "quiet":
+			lvl = -1
+		case "0":
+			lvl = 0
+		case "1":
+			lvl = 1
+		case "2":
+			lvl = 2
+		case "3":
+			lvl = 3
+		case "4":
+			lvl = 4
+		case "5":
+			lvl = 5
 		default:
-			l.logEnvErrorMessage(env, rawEnvLevel, "unknown log level")
+			l.logEnvErrorMessage(
+				EnvVerbose,
+				rawVerbose,
+				"unknown verbose level (must be one of: "+
+					"'QUIET', '0', '1', '2', '3', '4', '5'"+
+					")",
+			)
 		}
 	}
 
-	return value
+	l.SetVerbose(lvl)
 }
 
-func (l *Log) getEnvSetting(env string) bool {
-	rawEnv, ok := os.LookupEnv(env)
-	enabled := false
+func (l *Log) setEnvLanguage() {
+	rawLanguage, ok := os.LookupEnv(EnvLogLanguage)
 
 	if ok {
-		switch strings.ToLower(rawEnv) {
-		case "enabled":
-			enabled = true
-		case "disabled":
-		default:
-			l.logEnvErrorMessage(env, rawEnv, "unknown log level setting")
+		err := l.SetLanguage(rawLanguage)
+		if err != nil {
+			l.logEnvErrorMessage(
+				EnvLogLanguage,
+				rawLanguage,
+				err.Error(),
+			)
 		}
+	} else {
+		_ = l.SetLanguage("")
 	}
+}
 
-	return enabled
+func (l *Log) setEnvLevel() {
+	rawEnvLevel, ok := os.LookupEnv(EnvLogLevel)
+	if ok {
+		err := l.parseAndSetLevel(rawEnvLevel, LevelError)
+		if err != nil {
+			l.logEnvErrorMessage(
+				EnvLogLevel,
+				rawEnvLevel,
+				err.Error(),
+			)
+		}
+	} else {
+		l.SetLevel(LevelError)
+	}
+}
+
+func (l *Log) setEnvLabelLength() {
+	rawLabelLength, ok := os.LookupEnv(EnvLogLongLabels)
+
+	if ok {
+		switch strings.ToLower(rawLabelLength) {
+		case "short":
+			l.SetLongLabels(false)
+		case "long":
+			l.SetLongLabels(true)
+		default:
+			l.logEnvErrorMessage(
+				EnvLogLongLabels,
+				rawLabelLength,
+				"unknown label length (must be 'SHORT' or 'LONG')")
+		}
+	} else {
+		l.SetLongLabels(false)
+	}
 }
