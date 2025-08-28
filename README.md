@@ -41,14 +41,14 @@ the standard log while adding:
   - efficient function swapping so disabled functions are minimal
 
   - local formatting through the Go text package by setting a locale string
-    ("en", "fr", etc.)
+    ("en", "en-CA", "fr", etc.)
 
 ## Overview
 
 Szout offers two independent families of output functions:
 
   - Logging functions: Fatal, Error, Warn, Info, Debug, Trace
-  - Verbosity functions: Say0–Say4 and Say0f–Say4f
+  - Verbosity functions: Say0–Say5 and Say0f–Say5f
 
 Logging and verbosity are separate systems. Logging functions categorize
 messages by severity, while verbosity functions emit step-by-step or
@@ -58,6 +58,19 @@ Each function is a variable member that may be swapped at runtime. When
 disabled, a function is replaced with a no-op and incurs minimal runtime cost.
 When enabled, the function points to an optimized writer.
 
+## Defaults
+
+Settings have defaults which can be overridden by an environment variable or
+by a command line argument.
+
+    |             |             | Environment       |                      |
+    | Area        | Default     | Variable          | Argument             |
+    | :---------- | :---------- | :---------------- | :------------------- |
+    | LongLabels  | false       | SZLOG_LONG_LABELS | --long-labels        |
+    | LogLevel    | LevelError  | SZLOG_LEVEL       | --log <level>        |
+    | Language    | ""          | SZLOG_LANGUAGE    | --language <local>   |
+    | Verbose     | 0           | SZLOG_VERBOSE     | -v | --v | --verbose |
+
 ## Deferred Evaluation
 
 Arguments can be wrapped in a func() DEFER, where DEFER is a string type.
@@ -65,8 +78,9 @@ Deferred functions are only invoked if the target output function is enabled.
 This avoids the cost of constructing expensive strings or reports that would
 otherwise be discarded.
 
-    szout.Info("Report:\n", func() szout.DEFER { return generateReport()
-    })
+        szout.Info("Report:\n", func() szout.DEFER {
+        return generateReport()
+        })
 
 If Info logging is disabled, generateReport is never executed.
 
