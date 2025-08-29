@@ -63,13 +63,13 @@ When enabled, the function points to an optimized writer.
 Settings have defaults which can be overridden by an environment variable or
 by a command line argument.
 
-|             |             | Environment       |                      |
-| Area        | Default     | Variable          | Argument             |
-| :---------- | :---------- | :---------------- | :------------------- |
-| LongLabels  | false       | SZLOG_LONG_LABELS | --long-labels        |
-| LogLevel    | LevelError  | SZLOG_LEVEL       | --log <level>        |
-| Language    | ""          | SZLOG_LANGUAGE    | --language <local>   |
-| Verbose     | 0           | SZLOG_VERBOSE     | -v | --v | --verbose |
+    |             |             | Environment       |                      |
+    | Area        | Default     | Variable          | Argument             |
+    | :---------- | :---------- | :---------------- | :------------------- |
+    | LongLabels  | false       | SZLOG_LONG_LABELS | --long-labels        |
+    | LogLevel    | LevelError  | SZLOG_LEVEL       | --log <level>        |
+    | Language    | ""          | SZLOG_LANGUAGE    | --language <local>   |
+    | Verbose     | 0           | SZLOG_VERBOSE     | -v | --v | --verbose |
 
 ## Deferred Evaluation
 
