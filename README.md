@@ -78,9 +78,13 @@ Deferred functions are only invoked if the target output function is enabled.
 This avoids the cost of constructing expensive strings or reports that would
 otherwise be discarded.
 
+```go
+
     szout.Info("Report:\n", func() szout.DEFER {
       return generateReport()
     })
+
+```
 
 If Info logging is disabled, generateReport is never executed.
 
@@ -105,17 +109,21 @@ translation.
 
 ## Quick Start
 
-    import "github.com/dancsecs/szout"
+```go
 
-    func main() {
-      szout.Info("Application starting\n")
+      import "github.com/dancsecs/szout"
 
-      szout.Say1("Loading configuration\n")
+        func main() {
+          szout.Info("Application starting\n")
 
-      szout.Info("Report:\n", func() szout.DEFER {
-        return longRunningReport()
-      })
-    }
+          szout.Say1("Loading configuration\n")
+
+          szout.Info("Report:\n", func() szout.DEFER {
+            return longRunningReport()
+          })
+        }
+
+```
 
 NOTE: If Info logging is disabled, longRunningReport() is never executed.
 <!--- gotomd::End::doc::./package -->
