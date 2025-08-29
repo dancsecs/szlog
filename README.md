@@ -111,17 +111,17 @@ translation.
 
 ```go
 
-      import "github.com/dancsecs/szout"
+    import "github.com/dancsecs/szout"
 
-        func main() {
-          szout.Info("Application starting\n")
+    func main() {
+      szout.Info("Application starting\n")
 
-          szout.Say1("Loading configuration\n")
+      szout.Say1("Loading configuration\n")
 
-          szout.Info("Report:\n", func() szout.DEFER {
-            return longRunningReport()
-          })
-        }
+      szout.Info("Report:\n", func() szout.DEFER {
+        return longRunningReport()
+      })
+    }
 
 ```
 
