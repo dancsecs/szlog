@@ -55,7 +55,7 @@ package-level functions for simple, global logging.
 An instance can be created as follows:
 ```go
 
-// New creates a new log object.
+// New returns a new Log instance with default settings.
 func New() *Log
 
 ```
@@ -65,7 +65,7 @@ with the Reset method as follows:
 
 ```go
 
-// Reset returns all log setting to default startup conditions.
+// Reset restores all log settings to their default values.
 func (l *Log) Reset()
 func Reset()
 
@@ -159,12 +159,13 @@ that are processed with the program function:
 
 ```go
 
-// AbsorbArgs scans an argument list for verbose flags increasing
-// the log level for each verbose flag encountered.  These flags are removed
-// and a cleaned up arg list is returned.  Verbose flags can be a single (or
-// multiple letter 'v's with the corresponding number of log level increments
-// made.  If an error is encountered it is returned with the original
-// unchanged argument slice.
+// AbsorbArgs scans the provided argument list for logging-related flags.
+// It updates the log configuration (LogLevel, verbosity, quiet mode,
+// LongLabels, and Language) based on the flags encountered. Recognized
+// flags are removed, and the cleaned argument slice is returned.
+// Multiple `-v` flags increment verbosity accordingly. If conflicting
+// or invalid flags are found (e.g., combining `-v` with `--quiet`),
+// an error is returned along with the original arguments.
 func (l *Log) AbsorbArgs(argsIn []string) ([]string, error)
 func AbsorbArgs(argsIn []string) ([]string, error)
 
@@ -323,5 +324,8 @@ This project is dedicated to Reem.
 Your brilliance, courage, and quiet strength continue to inspire me.
 Every line is written in gratitude for the light and hope you brought into my
 life.
+
+NOTE: Documentation reviewed and polished with the assistance of ChatGPT from
+OpenAI.
 */
 package szlog

@@ -39,12 +39,13 @@ const (
 	LanguageFlagDesc = "Sets the local language used for formatting."
 )
 
-// AbsorbArgs scans an argument list for verbose flags increasing
-// the log level for each verbose flag encountered.  These flags are removed
-// and a cleaned up arg list is returned.  Verbose flags can be a single (or
-// multiple letter 'v's with the corresponding number of log level increments
-// made.  If an error is encountered it is returned with the original
-// unchanged argument slice.
+// AbsorbArgs scans the provided argument list for logging-related flags.
+// It updates the log configuration (LogLevel, verbosity, quiet mode,
+// LongLabels, and Language) based on the flags encountered. Recognized
+// flags are removed, and the cleaned argument slice is returned.
+// Multiple `-v` flags increment verbosity accordingly. If conflicting
+// or invalid flags are found (e.g., combining `-v` with `--quiet`),
+// an error is returned along with the original arguments.
 //
 //nolint:gocognit,cyclop,funlen // OK.
 func (l *Log) AbsorbArgs(argsIn []string) ([]string, error) {
@@ -129,6 +130,14 @@ func (l *Log) AbsorbArgs(argsIn []string) ([]string, error) {
 
 				continue
 			}
+		}
+
+		if rArg == "--Reem" {
+			defer func() {
+				l.Say0(dedication)
+			}()
+
+			continue
 		}
 
 		argsOut = append(argsOut, rArg)

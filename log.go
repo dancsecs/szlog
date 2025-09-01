@@ -76,7 +76,7 @@ type Log struct {
 	S5f, Say5f LogFuncf
 }
 
-// New creates a new log object.
+// New returns a new Log instance with default settings.
 func New() *Log {
 	l := new(Log)
 	l.Reset()
@@ -84,7 +84,7 @@ func New() *Log {
 	return l
 }
 
-// Reset returns all log setting to default startup conditions.
+// Reset restores all log settings to their default values.
 func (l *Log) Reset() {
 	l.setEnvLabelLength()
 	l.setEnvLevel()

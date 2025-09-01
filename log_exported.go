@@ -55,7 +55,7 @@ func DecLevel() LogLevel {
 	return defaultLog.DecLevel()
 }
 
-// Reset returns all log setting to default startup conditions.
+// Reset restores all log settings to their default values.
 func Reset() {
 	defaultLog.Reset()
 }
@@ -67,8 +67,13 @@ func SetStdout(newWriter io.Writer) {
 	defaultLog.SetStdout(newWriter)
 }
 
-// AbsorbArgs increases log level according to how many verbose flags
-// encountered.
+// AbsorbArgs scans the provided argument list for logging-related flags.
+// It updates the log configuration (LogLevel, verbosity, quiet mode,
+// LongLabels, and Language) based on the flags encountered. Recognized
+// flags are removed, and the cleaned argument slice is returned.
+// Multiple `-v` flags increment verbosity accordingly. If conflicting
+// or invalid flags are found (e.g., combining `-v` with `--quiet`),
+// an error is returned along with the original arguments.
 func AbsorbArgs(argsIn []string) ([]string, error) {
 	return defaultLog.AbsorbArgs(argsIn)
 }
