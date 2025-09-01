@@ -270,7 +270,8 @@ If Info logging is disabled, generateReport is never executed.
 
 Szout maintains its own output pointer for verbosity, defaulting to os.Stdout
 and can be redirected to any io.Writer using SetStdout. Logging output is
-controlled through the built in log package.
+controlled through the built in log package and may be redirected using that
+package..
 
 ## Localization
 
