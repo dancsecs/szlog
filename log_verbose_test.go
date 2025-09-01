@@ -20,6 +20,7 @@
 package szlog_test
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"testing"
@@ -82,11 +83,11 @@ func testArgs(
 				expectedVerbose,
 				szlog.Verbose(),
 			)
-		case szlog.Local() != expectedLanguage:
+		case szlog.Language() != expectedLanguage:
 			err = fmt.Errorf(
 				"%w: Want: %s Got: %s", errLanguage,
 				expectedLanguage,
-				szlog.Local(),
+				szlog.Language(),
 			)
 		}
 	}
@@ -1046,5 +1047,35 @@ func TestSzLog_Verbose_V5(t *testing.T) {
 		"A Short Local Formatted Test: 2,345",
 		"A Long Local Test: 3,456",
 		"A Long Local Formatted Test: 4,567",
+	)
+}
+
+func TestSzLog_SetStdout(t *testing.T) {
+	chk := sztest.CaptureLogAndStdout(t)
+	defer chk.Release()
+
+	szlog.Reset()
+
+	szlog.Say0("This should go to os.Stdout before change\n")
+
+	var testOutput bytes.Buffer
+
+	szlog.SetStdout(&testOutput)
+
+	szlog.Say0("This should go to bytes.Buffer")
+
+	chk.ByteSlice(
+		testOutput.Bytes(),
+		[]byte("This should go to bytes.Buffer"),
+	)
+
+	szlog.SetStdout(nil)
+
+	szlog.Say0("This should go to os.Stdout after change\n")
+
+	chk.Log()
+	chk.Stdout(
+		"This should go to os.Stdout before change",
+		"This should go to os.Stdout after change",
 	)
 }

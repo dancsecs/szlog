@@ -43,7 +43,8 @@ const (
 // the log level for each verbose flag encountered.  These flags are removed
 // and a cleaned up arg list is returned.  Verbose flags can be a single (or
 // multiple letter 'v's with the corresponding number of log level increments
-// made.
+// made.  If an error is encountered it is returned with the original
+// unchanged argument slice.
 //
 //nolint:gocognit,cyclop,funlen // OK.
 func (l *Log) AbsorbArgs(argsIn []string) ([]string, error) {

@@ -49,7 +49,7 @@ var (
 	}
 )
 
-// LongLabels enables/disables the use of longer labels in log output.
+// LongLabels returns true if long labels are currently enabled..
 func (l *Log) LongLabels() bool {
 	return l.longLabels
 }

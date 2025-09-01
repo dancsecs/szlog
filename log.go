@@ -20,7 +20,6 @@ package szlog
 
 import (
 	"io"
-	"os"
 
 	"golang.org/x/text/message"
 )
@@ -91,5 +90,5 @@ func (l *Log) Reset() {
 	l.setEnvLevel()
 	l.setEnvLanguage()
 	l.setEnvVerbose()
-	l.stdout = os.Stdout
+	l.SetStdout(nil)
 }

@@ -26,38 +26,29 @@ import (
 	"github.com/dancsecs/sztest"
 )
 
-// Test versions of labels.
-const (
-	logFatalLabel = "F:"
-	logErrorLabel = "E:"
-	logWarnLabel  = "W:"
-	logInfoLabel  = "I:"
-	logDebugLabel = "D:"
-	logTraceLabel = "T:"
-
-	logFatalLongLabel = "FATAL:"
-	logErrorLongLabel = "ERROR:"
-	logWarnLongLabel  = "WARN:"
-	logInfoLongLabel  = "INFO:"
-	logDebugLongLabel = "DEBUG:"
-	logTraceLongLabel = "TRACE:"
-)
-
-func TestSzLog_Labels(t *testing.T) {
+func TestSzLog_Language(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
 
 	tstOut := szlog.New()
 
-	chk.False(tstOut.LongLabels())
+	chk.Str(tstOut.Language(), "")
 
-	chk.False(tstOut.SetLongLabels(true))
+	chk.NoErr(tstOut.SetLanguage("en"))
 
-	chk.True(tstOut.LongLabels())
+	chk.Str(tstOut.Language(), "en")
 
-	chk.True(tstOut.SetLongLabels(false))
+	chk.Err(
+		tstOut.SetLanguage("unknown-language"),
+		chk.ErrChain(
+			szlog.ErrInvalidLanguage,
+			"'unknown-language'",
+		),
+	)
 
-	chk.False(tstOut.LongLabels())
+	chk.NoErr(tstOut.SetLanguage(""))
+
+	chk.Str(tstOut.Language(), "")
 
 	chk.Log()
 }

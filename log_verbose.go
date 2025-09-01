@@ -20,10 +20,23 @@ package szlog
 
 import (
 	"fmt"
+	"io"
+	"os"
 )
 
 // VerboseLevel represents when to block output.
 type VerboseLevel = int
+
+// SetStdout changes the io.Writer used by verbose output functions.  A nil
+// writer will result in the default os.Stdout being used.  To cut off all
+// verbose output see the --quiet argument of SetVerbose(-1).
+func (l *Log) SetStdout(newWriter io.Writer) {
+	if newWriter == nil {
+		l.stdout = os.Stdout
+	} else {
+		l.stdout = newWriter
+	}
+}
 
 // Verbose returns the current verbose level.
 func (l *Log) Verbose() VerboseLevel {

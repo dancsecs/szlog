@@ -60,6 +60,13 @@ func Reset() {
 	defaultLog.Reset()
 }
 
+// SetStdout changes the io.Writer used by verbose output functions.  A nil
+// writer will result in the default os.Stdout being used.  To cut off all
+// verbose output see the --quiet argument of SetVerbose(-1).
+func SetStdout(newWriter io.Writer) {
+	defaultLog.SetStdout(newWriter)
+}
+
 // AbsorbArgs increases log level according to how many verbose flags
 // encountered.
 func AbsorbArgs(argsIn []string) ([]string, error) {
@@ -231,8 +238,8 @@ func SetVerbose(level VerboseLevel) VerboseLevel {
 	return defaultLog.SetVerbose(level)
 }
 
-// Local returns the current language local string.
-func Local() string {
+// Language returns the current language local string.
+func Language() string {
 	return defaultLog.Language()
 }
 
