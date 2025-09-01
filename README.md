@@ -95,9 +95,9 @@ and status messages:
     | Warn      | W, Warn        | Plain warnings needing attention        |
     |           | Wf, Warnf      | Formatted warnings needing attention    |
     | Info      | I, Info        | Plain progress and status info          |
-    |           | If, Infof         | Formatted progress and status info      |
-    | Debug        | D, Debug       | Plain developer-focused diagnostics     |
-    |             | Df, Debugf     | Formatted developer-focused diagnostics |
+    |           | If, Infof      | Formatted progress and status info      |
+    | Debug     | D, Debug       | Plain developer-focused diagnostics     |
+    |           | Df, Debugf     | Formatted developer-focused diagnostics |
     | Trace     | T, Trace         | Plain detailed program flow             |
     |           | Tf, Tracef     | Formatted detailed program flow         |
     +-----------+----------------+-----------------------------------------+
