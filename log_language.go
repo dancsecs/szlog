@@ -7,13 +7,15 @@ import (
 	"golang.org/x/text/message"
 )
 
-// Language return the current local language string.
+// Language returns the current language setting used for localized formatting.
+// An empty string indicates no localization is applied.
 func (l *Log) Language() string {
 	return l.language
 }
 
-// SetLanguage creates a printer that attempts to format data in a local
-// manner. Pass an empty "" string to stop local formatting.
+// SetLanguage updates the language used for localized formatting.
+// Passing an empty string ("") disables localization. It returns any
+// error encountered while setting the language.
 func (l *Log) SetLanguage(langStr string) error {
 	var (
 		languageTag language.Tag

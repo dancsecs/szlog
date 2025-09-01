@@ -22,9 +22,9 @@ import (
 	"io"
 )
 
-// Close provides a convenience function to close anything implementing
-// io.Closer and log any error returned as a warning.  Mainly to be used
-// in defer functions.
+// Close is a convenience method for safely closing any io.Closer.
+// If an error occurs during Close, it is logged as a warning.
+// This method is primarily intended for use in defer statements.
 func (l *Log) Close(area string, closeable io.Closer) {
 	err := closeable.Close()
 	if err != nil && l.LogWarn {

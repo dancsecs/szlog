@@ -21,12 +21,13 @@ package szlog
 //nolint:goCheckNoGlobals // Default package logger.
 var defaultLog = New()
 
-// Default Returns the package's default logger.
+// Default returns the package's current default logger.
 func Default() *Log {
 	return defaultLog
 }
 
-// SetDefault sets the package's default logger.
+// SetDefault replaces the package's default logger with the provided one.
+// It returns the previous default logger.
 func SetDefault(newDefaultLog *Log) *Log {
 	origLog := defaultLog
 	defaultLog = newDefaultLog

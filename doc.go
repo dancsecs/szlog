@@ -27,7 +27,7 @@ the standard log while adding:
   - six independent verbosity levels (Say0–Say4 with Say0f–Say4f for
     formatting) with settable output defaulting to ```os.Stdout```
 
-  - lazy evaluation with ```func() DEFER```` so expensive values are only
+  - lazy evaluation with `func() DEFER` so expensive values are only
     computed when needed
 
   - efficient function swapping so disabled functions are minimal
@@ -37,12 +37,16 @@ the standard log while adding:
 
 ## Overview
 
-Szout provides two separate independent families of output functions.  Each
-function is a variable member that may be swapped at runtime. When disabled,
-a function is replaced with a no-op and incurs minimal runtime cost. When
-enabled, the function points to an optimized writer.  Each function mirrors
-standard fmt and log package function Print and Printf.  Two versions of each
-function is supplied with long and short identifiers.
+A lightweight logging and verbosity framework for Go that extends the standard
+library with structured levels, verbosity control, and deferred evaluation.
+Logging levels target structured diagnostic messages, while verbosity levels
+are designed for user-facing or progress output
+
+Each output function is a variable member that may be swapped at runtime. When
+disabled, a function is replaced with a no-op and incurs minimal runtime cost.
+When enabled, the function points to an optimized writer.  Each function
+mirrors standard fmt and log package function Print and Printf.  Two versions
+of each function is supplied with long and short identifiers.
 
 It further offers two ways to output messages. For full control, create a *Log
 instance with New(), giving you an independent logger with its own output,
@@ -53,6 +57,7 @@ instance-based loggers when you need separate configurations, or rely on the
 package-level functions for simple, global logging.
 
 An instance can be created as follows:
+
 ```go
 
 // New returns a new Log instance with default settings.
@@ -68,6 +73,19 @@ with the Reset method as follows:
 // Reset restores all log settings to their default values.
 func (l *Log) Reset()
 func Reset()
+
+```
+
+The builtin default logger may be accessed/replaced with:
+
+```go
+
+// Default returns the package's current default logger.
+func Default() *Log
+
+// SetDefault replaces the package's default logger with the provided one.
+// It returns the previous default logger.
+func SetDefault(newDefaultLog *Log) *Log
 
 ```
 
@@ -103,11 +121,11 @@ a io.Writer defaulting to os.Stdout.
 The verbose output functions provide fine-grained control over program
 messaging through six levels: Say0…Say5 and their formatted counterparts
 Say0f…Say5f. Level 0 represents the default program output, active when no
-verbosity flags are given or when explicitly set with SetVerbosity(0).
+verbosity flags are given or when explicitly set with SetVerbose(0).
 Increasing levels (1–5) are enabled by supplying additional verbosity flags or
-calling SetVerbosity(1..5), progressively revealing more detailed output. All
+calling SetVerbose(1..5), progressively revealing more detailed output. All
 verbose functions respect the global setting: output is suppressed entirely
-when --quiet is specified or SetVerbosity(-1) is used, ensuring even default
+when --quiet is specified or SetVerbose(-1) is used, ensuring even default
 level 0 messages are silenced.
 
 	+-----------+----------------+-----------------------------------------+
@@ -124,7 +142,7 @@ level 0 messages are silenced.
 	| 4         | S4, Say4       | Plain highly detailed messages          |
 	|           | S4f, Say4f     | Formatted highly detailed messages      |
 	| 5         | S5, Say5       | Plain maximum verbosity                 |
-	|           | S4f, Say4f     | Formatted maximum verbosity             |
+	|           | S5f, Say5f     | Formatted maximum verbosity             |
 	+-----------+----------------+-----------------------------------------+
 
 ## Settings
@@ -186,8 +204,6 @@ functions.
 	| LogLevel    | Level()                              |
 	|             | SetLevel(newLogLevel LogLevel)       |
 	|             | SetCustomLevels(levels ...LogLevel)  |
-	|             | IncLevel()                           |
-	|             | DecLevel()                           |
 	| Verbose     | Verbose()                            |
 	|             | SetVerbose(level VerboseLevel)       |
 	|             | SetStdout(newWriter io.Writer)       |
@@ -197,54 +213,57 @@ implemented as follows:
 
 ```go
 
-// Language return the current local language string.
+// Language returns the current language setting used for localized formatting.
+// An empty string indicates no localization is applied.
 func (l *Log) Language() string
 func Language() string
 
-// SetLanguage creates a printer that attempts to format data in a local
-// manner. Pass an empty "" string to stop local formatting.
+// SetLanguage updates the language used for localized formatting.
+// Passing an empty string ("") disables localization. It returns any
+// error encountered while setting the language.
 func (l *Log) SetLanguage(langStr string) error
 func SetLanguage(language string) error
 
-// LongLabels returns true if long labels are currently enabled..
+// LongLabels reports whether long labels (FATAL, ERROR, WARN, INFO, DEBUG,
+// TRACE) are currently enabled instead of their short forms (F, E, W, I, D,
+// T).
 func (l *Log) LongLabels() bool
 func LongLabels() bool
 
-// SetLongLabels enables/disables the use of longer labels in log output.
+// SetLongLabels enables or disables long labels in log output. When disabled,
+// short labels (F, E, W, I, D, T) are used instead. It returns the previous
+// setting.
 func (l *Log) SetLongLabels(enable bool) bool
 func SetLongLabels(enabled bool) bool
 
-// Level return the current logging level.
+// Level reports the logger's current logging level.
 func (l *Log) Level() LogLevel
 func Level() LogLevel
 
-// SetLevel sets the logging level.
+// SetLevel updates the logger's logging level. Valid values include
+// LevelNone, LevelFatal, LevelError, LevelWarn, LevelInfo, LevelDebug,
+// LevelTrace, and LevelAll.
 func (l *Log) SetLevel(newLogLevel LogLevel) LogLevel
 func SetLevel(newLogLevel LogLevel) LogLevel
 
-// SetCustomLevels permits the selective enabling of individual levels.
+// SetCustomLevels enables a custom combination of individual levels.
+// LevelNone, LevelAll, and LevelCustom are ignored. Internally, this
+// always results in LevelCustom being applied.
 func (l *Log) SetCustomLevels(levels ...LogLevel) LogLevel
 func SetCustomLevels(levels ...LogLevel) LogLevel
 
-// IncLevel permits all logging at the specified level.
-func (l *Log) IncLevel() LogLevel
-func IncLevel() LogLevel
-
-// DecLevel permits all logging at the specified level.
-func (l *Log) DecLevel() LogLevel
-func DecLevel() LogLevel
-
-// Verbose returns the current verbose level.
+// Verbose reports the logger's current verbosity level.
 func (l *Log) Verbose() VerboseLevel
 func Verbose() VerboseLevel
 
-// SetVerbose set the level of output to permit.
+// SetVerbose adjusts the verbosity level (-1 through 5). Level -1 silences
+// all output, while higher levels progressively enable more detail.
 func (l *Log) SetVerbose(newLevel VerboseLevel) VerboseLevel
 func SetVerbose(level VerboseLevel) VerboseLevel
 
-// SetStdout changes the io.Writer used by verbose output functions.  A nil
-// writer will result in the default os.Stdout being used.  To cut off all
-// verbose output see the --quiet argument of SetVerbose(-1).
+// SetStdout sets the io.Writer used for verbose output. Passing nil restores
+// the default os.Stdout. To suppress all verbose output, use --quiet or
+// call SetVerbose(-1).
 func (l *Log) SetStdout(newWriter io.Writer) {
 func SetStdout(newWriter io.Writer) {
 
@@ -257,9 +276,12 @@ string type. Deferred functions are only invoked if the target output function
 is enabled. This avoids the cost of constructing expensive strings or reports
 that would otherwise be discarded.
 
+This pattern makes it safe to pass in expensive computations without worrying
+about wasted work if the message is suppressed.
+
 ```go
 
-	szout.Info("Report:\n", func() szout.DEFER {
+	szlog.Info("Report:\n", func() szlog.DEFER {
 	  return generateReport()
 	})
 
@@ -284,9 +306,9 @@ translation.
 
 ```go
 
-// Close provides a convenience function to close anything implementing
-// io.Closer and log any error returned as a warning.  Mainly to be used
-// in defer functions.
+// Close is a convenience method for safely closing any io.Closer.
+// If an error occurs during Close, it is logged as a warning.
+// This method is primarily intended for use in defer statements.
 func (l *Log) Close(area string, closeable io.Closer)
 func Close(area string, closeable io.Closer)
 
@@ -302,14 +324,14 @@ func Close(area string, closeable io.Closer)
 
 ```go
 
-	import "github.com/dancsecs/szout"
+	import "github.com/dancsecs/szlog"
 
 	func main() {
-	  szout.Info("Application starting\n")
+	  szlog.Info("Application starting\n")
 
-	  szout.Say1("Loading configuration\n")
+	  szlog.Say1("Loading configuration\n")
 
-	  szout.Info("Report:\n", func() szout.DEFER {
+	  szlog.Info("Report:\n", func() szlog.DEFER {
 	    return longRunningReport()
 	  })
 	}

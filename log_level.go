@@ -25,10 +25,11 @@ import (
 	"strings"
 )
 
-// LogLevel represents the current minium level of message to log.
+// LogLevel defines the minimum severity of messages that will be logged.
 type LogLevel int
 
-// Available logging levels.
+// Standard log levels in order of increasing verbosity. LevelCustom is a
+// special case used internally to represent user-defined combinations.
 const (
 	LevelNone LogLevel = iota
 	LevelFatal
@@ -87,7 +88,9 @@ func (ll LogLevel) String() string {
 	}
 }
 
-// LogLevelFromString converts a string to a LogLevel.
+// LogLevelFromString parses a string into a LogLevel. Recognized values
+// include: none, fatal, error, warn, info, debug, trace, all, and custom.
+// Matching is case-insensitive.
 //
 //nolint:cyclop   // Ok.
 func LogLevelFromString(raw string) (LogLevel, error) {
@@ -165,7 +168,9 @@ func (l *Log) parseAndSetLevel(raw string, defLevel LogLevel) error {
 	return fmt.Errorf("%w: %w", ErrInvalidLogLevelParse, err)
 }
 
-// SetLevel sets the logging level.
+// SetLevel updates the logger's logging level. Valid values include
+// LevelNone, LevelFatal, LevelError, LevelWarn, LevelInfo, LevelDebug,
+// LevelTrace, and LevelAll.
 //
 //nolint:funlen //Ok.
 func (l *Log) SetLevel(newLogLevel LogLevel) LogLevel {
@@ -234,29 +239,7 @@ func (l *Log) SetLevel(newLogLevel LogLevel) LogLevel {
 	return oldLogLevel
 }
 
-// IncLevel permits all logging at the specified level.
-func (l *Log) IncLevel() LogLevel {
-	lastLevel := l.level
-
-	if lastLevel != LevelCustom {
-		l.SetLevel(l.validateLogLevel("IncLevel", l.level+1))
-	}
-
-	return lastLevel
-}
-
-// DecLevel permits all logging at the specified level.
-func (l *Log) DecLevel() LogLevel {
-	lastLevel := l.level
-
-	if lastLevel != LevelCustom {
-		l.SetLevel(l.validateLogLevel("DecLevel", l.level-1))
-	}
-
-	return lastLevel
-}
-
-// Level return the current logging level.
+// Level reports the logger's current logging level.
 func (l *Log) Level() LogLevel {
 	return l.level
 }
@@ -283,7 +266,9 @@ func (l *Log) selectLogf(
 	return l.noLogf
 }
 
-// SetCustomLevels permits the selective enabling of individual levels.
+// SetCustomLevels enables a custom combination of individual levels.
+// LevelNone, LevelAll, and LevelCustom are ignored. Internally, this
+// always results in LevelCustom being applied.
 //
 //nolint:cyclop // Ok.
 func (l *Log) SetCustomLevels(levels ...LogLevel) LogLevel {

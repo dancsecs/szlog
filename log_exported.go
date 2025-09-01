@@ -20,39 +20,37 @@ package szlog
 
 import "io"
 
-// LongLabels return true if long labels are enabled.
+// LongLabels reports whether long labels (FATAL, ERROR, WARN, INFO, DEBUG,
+// TRACE) are currently enabled instead of their short forms (F, E, W, I, D,
+// T).
 func LongLabels() bool {
 	return defaultLog.LongLabels()
 }
 
-// SetLongLabels return true if long labels are enabled.
+// SetLongLabels enables or disables long labels in log output. When disabled,
+// short labels (F, E, W, I, D, T) are used instead. It returns the previous
+// setting.
 func SetLongLabels(enabled bool) bool {
 	return defaultLog.SetLongLabels(enabled)
 }
 
-// Level return the current logging level.
+// Level reports the logger's current logging level.
 func Level() LogLevel {
 	return defaultLog.Level()
 }
 
-// SetLevel sets the logging level.
+// SetLevel updates the logger's logging level. Valid values include
+// LevelNone, LevelFatal, LevelError, LevelWarn, LevelInfo, LevelDebug,
+// LevelTrace, and LevelAll.
 func SetLevel(newLogLevel LogLevel) LogLevel {
 	return defaultLog.SetLevel(newLogLevel)
 }
 
-// SetCustomLevels sets the logging level.
+// SetCustomLevels enables a custom combination of individual levels.
+// LevelNone, LevelAll, and LevelCustom are ignored. Internally, this
+// always results in LevelCustom being applied.
 func SetCustomLevels(levels ...LogLevel) LogLevel {
 	return defaultLog.SetCustomLevels(levels...)
-}
-
-// IncLevel permits all logging at the specified level.
-func IncLevel() LogLevel {
-	return defaultLog.IncLevel()
-}
-
-// DecLevel permits all logging at the specified level.
-func DecLevel() LogLevel {
-	return defaultLog.DecLevel()
 }
 
 // Reset restores all log settings to their default values.
@@ -60,9 +58,9 @@ func Reset() {
 	defaultLog.Reset()
 }
 
-// SetStdout changes the io.Writer used by verbose output functions.  A nil
-// writer will result in the default os.Stdout being used.  To cut off all
-// verbose output see the --quiet argument of SetVerbose(-1).
+// SetStdout sets the io.Writer used for verbose output. Passing nil restores
+// the default os.Stdout. To suppress all verbose output, use --quiet or
+// call SetVerbose(-1).
 func SetStdout(newWriter io.Writer) {
 	defaultLog.SetStdout(newWriter)
 }
@@ -228,27 +226,33 @@ func Tracef(msgFmt string, msgArgs ...any) bool {
 	return defaultLog.Tracef(msgFmt, msgArgs...)
 }
 
-// Close Invokes the default log corresponding method.
+// Close is a convenience method for safely closing any io.Closer.
+// If an error occurs during Close, it is logged as a warning.
+// This method is primarily intended for use in defer statements.
 func Close(area string, closeable io.Closer) {
 	defaultLog.Close(area, closeable)
 }
 
-// Verbose returns the current verbose level.
+// Verbose reports the logger's current verbosity level.
 func Verbose() VerboseLevel {
 	return defaultLog.Verbose()
 }
 
-// SetVerbose sets the default verbose level.
+// SetVerbose adjusts the verbosity level (-1 through 5). Level -1 silences
+// all output, while higher levels progressively enable more detail.
 func SetVerbose(level VerboseLevel) VerboseLevel {
 	return defaultLog.SetVerbose(level)
 }
 
-// Language returns the current language local string.
+// Language returns the current language setting used for localized formatting.
+// An empty string indicates no localization is applied.
 func Language() string {
 	return defaultLog.Language()
 }
 
-// SetLanguage set the default local language formatting.
+// SetLanguage updates the language used for localized formatting.
+// Passing an empty string ("") disables localization. It returns any
+// error encountered while setting the language.
 func SetLanguage(language string) error {
 	return defaultLog.SetLanguage(language)
 }

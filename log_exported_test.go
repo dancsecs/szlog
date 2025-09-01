@@ -66,68 +66,6 @@ func TestSzLog_Exported_SetLevel(t *testing.T) {
 	)
 }
 
-func TestSzLog_Exported_IncDecLevel(t *testing.T) {
-	chk := sztest.CaptureLog(t)
-	defer chk.Release()
-
-	szlog.SetLevel(szlog.LevelNone)
-
-	chk.Int(int(szlog.Level()), int(szlog.LevelNone))
-
-	chk.Int(int(szlog.IncLevel()), int(szlog.LevelNone))
-	chk.Int(int(szlog.Level()), int(szlog.LevelFatal))
-
-	chk.Int(int(szlog.IncLevel()), int(szlog.LevelFatal))
-	chk.Int(int(szlog.Level()), int(szlog.LevelError))
-
-	chk.Int(int(szlog.IncLevel()), int(szlog.LevelError))
-	chk.Int(int(szlog.Level()), int(szlog.LevelWarn))
-
-	chk.Int(int(szlog.IncLevel()), int(szlog.LevelWarn))
-	chk.Int(int(szlog.Level()), int(szlog.LevelInfo))
-
-	chk.Int(int(szlog.IncLevel()), int(szlog.LevelInfo))
-	chk.Int(int(szlog.Level()), int(szlog.LevelDebug))
-
-	chk.Int(int(szlog.IncLevel()), int(szlog.LevelDebug))
-	chk.Int(int(szlog.Level()), int(szlog.LevelTrace))
-
-	chk.Int(int(szlog.IncLevel()), int(szlog.LevelTrace))
-	chk.Int(int(szlog.Level()), int(szlog.LevelAll))
-
-	chk.Int(int(szlog.IncLevel()), int(szlog.LevelAll))
-	chk.Int(int(szlog.Level()), int(szlog.LevelAll))
-
-	chk.Int(int(szlog.DecLevel()), int(szlog.LevelAll))
-	chk.Int(int(szlog.Level()), int(szlog.LevelTrace))
-
-	chk.Int(int(szlog.DecLevel()), int(szlog.LevelTrace))
-	chk.Int(int(szlog.Level()), int(szlog.LevelDebug))
-
-	chk.Int(int(szlog.DecLevel()), int(szlog.LevelDebug))
-	chk.Int(int(szlog.Level()), int(szlog.LevelInfo))
-
-	chk.Int(int(szlog.DecLevel()), int(szlog.LevelInfo))
-	chk.Int(int(szlog.Level()), int(szlog.LevelWarn))
-
-	chk.Int(int(szlog.DecLevel()), int(szlog.LevelWarn))
-	chk.Int(int(szlog.Level()), int(szlog.LevelError))
-
-	chk.Int(int(szlog.DecLevel()), int(szlog.LevelError))
-	chk.Int(int(szlog.Level()), int(szlog.LevelFatal))
-
-	chk.Int(int(szlog.DecLevel()), int(szlog.LevelFatal))
-	chk.Int(int(szlog.Level()), int(szlog.LevelNone))
-
-	chk.Int(int(szlog.DecLevel()), int(szlog.LevelNone))
-	chk.Int(int(szlog.Level()), int(szlog.LevelNone))
-
-	chk.Log(
-		"W:attempt to access out of bounds log level: 8 from: IncLevel",
-		"W:attempt to access out of bounds log level: -1 from: DecLevel",
-	)
-}
-
 //nolint:funlen // Ok.
 func TestSzLog_Exported_LogRedirects(t *testing.T) {
 	chk := sztest.CaptureLog(t)

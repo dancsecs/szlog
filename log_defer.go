@@ -18,8 +18,7 @@
 
 package szlog
 
-// Defer (deferred function) identifies the argument passed to the log
-// function as a deferred function and will only be called and its output
-// added to the log if the level is enabled.  Otherwise the function is not
-// called.
+// Defer marks a function argument for deferred evaluation. The function
+// is only executed and its result logged if the current log level permits;
+// otherwise, it is skipped entirely.
 type Defer string

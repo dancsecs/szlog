@@ -49,12 +49,16 @@ var (
 	}
 )
 
-// LongLabels returns true if long labels are currently enabled..
+// LongLabels reports whether long labels (FATAL, ERROR, WARN, INFO, DEBUG,
+// TRACE) are currently enabled instead of their short forms (F, E, W, I, D,
+// T).
 func (l *Log) LongLabels() bool {
 	return l.longLabels
 }
 
-// SetLongLabels enables/disables the use of longer labels in log output.
+// SetLongLabels enables or disables long labels in log output. When disabled,
+// short labels (F, E, W, I, D, T) are used instead. It returns the previous
+// setting.
 func (l *Log) SetLongLabels(enable bool) bool {
 	orig := l.longLabels
 	l.longLabels = enable

@@ -24,12 +24,13 @@ import (
 	"os"
 )
 
-// VerboseLevel represents when to block output.
+// VerboseLevel indicates how much non-essential output is allowed.
+// Levels range from -1 (silent) to 5 (most verbose).
 type VerboseLevel = int
 
-// SetStdout changes the io.Writer used by verbose output functions.  A nil
-// writer will result in the default os.Stdout being used.  To cut off all
-// verbose output see the --quiet argument of SetVerbose(-1).
+// SetStdout sets the io.Writer used for verbose output. Passing nil restores
+// the default os.Stdout. To suppress all verbose output, use --quiet or
+// call SetVerbose(-1).
 func (l *Log) SetStdout(newWriter io.Writer) {
 	if newWriter == nil {
 		l.stdout = os.Stdout
@@ -38,12 +39,13 @@ func (l *Log) SetStdout(newWriter io.Writer) {
 	}
 }
 
-// Verbose returns the current verbose level.
+// Verbose reports the logger's current verbosity level.
 func (l *Log) Verbose() VerboseLevel {
 	return l.verboseLevel
 }
 
-// SetVerbose set the level of output to permit.
+// SetVerbose adjusts the verbosity level (-1 through 5). Level -1 silences
+// all output, while higher levels progressively enable more detail.
 func (l *Log) SetVerbose(newLevel VerboseLevel) VerboseLevel {
 	origLevel := l.verboseLevel
 
