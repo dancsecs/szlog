@@ -90,7 +90,7 @@ and status messages:
 	|           | If, Infof      | Formatted progress and status info      |
 	| Debug     | D, Debug       | Plain developer-focused diagnostics     |
 	|           | Df, Debugf     | Formatted developer-focused diagnostics |
-	| Trace     | T, Trace	     | Plain detailed program flow             |
+	| Trace     | T, Trace       | Plain detailed program flow             |
 	|           | Tf, Tracef     | Formatted detailed program flow         |
 	+-----------+----------------+-----------------------------------------+
 
