@@ -1,6 +1,6 @@
 /*
    Szerszam logging library: szlog.
-   Copyright (C) 2024  Leslie Dancsecs
+   Copyright (C) 2024-2025  Leslie Dancsecs
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ the standard log while adding:
     Error, Warn, Info, Debug, Trace with Fatalf, Errorf, Warnf, Infof, Debugf,
     Tracef for formatting) layered on top of the standard log package
 
-  - six independent verbosity levels (Say0–Say4 with Say0f–Say4f for
+  - six independent verbosity levels (Say0–Say5 with Say0f–Say5f for
     formatting) with settable output defaulting to ```os.Stdout```
 
   - lazy evaluation with `func() DEFER` so expensive values are only
@@ -291,14 +291,14 @@ If Info logging is disabled, generateReport is never executed.
 
 ## Output Control
 
-Szout maintains its own output pointer for verbosity, defaulting to os.Stdout
+Szlog maintains its own output pointer for verbosity, defaulting to os.Stdout
 and can be redirected to any io.Writer using SetStdout. Logging output is
 controlled through the built in log package and may be redirected using that
 package..
 
 ## Localization
 
-Szout can bind to the Go text package for message localization. SetLanguage
+Szlog can bind to the Go text package for message localization. SetLanguage
 accepts a locale string such as "en" or "fr" to select the appropriate
 translation.
 
@@ -327,9 +327,19 @@ func Close(area string, closeable io.Closer)
 	import "github.com/dancsecs/szlog"
 
 	func main() {
+	  var configFileName string
+
+	  args,err:= szlog.AbsorbArgs(os.args) // Set verbose and log level.
+
+	  if len(args) != 2 {  // Ignore extra args.
+	    configFileName = "default.cfg
+	  } else {
+	    configFileName = args[1]
+	  }
+
 	  szlog.Info("Application starting\n")
 
-	  szlog.Say1("Loading configuration\n")
+	  szlog.Say0f("Processing configuration: %s\n",configFileName)
 
 	  szlog.Info("Report:\n", func() szlog.DEFER {
 	    return longRunningReport()

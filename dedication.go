@@ -1,6 +1,6 @@
 /*
    Szerszam alarm manager: szalarm.
-   Copyright (C) 2024  Leslie Dancsecs
+   Copyright (C) 2024-2025  Leslie Dancsecs
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -18,15 +18,9 @@
 
 package szlog
 
-const dedication = `
+import (
+	_ "embed"
+)
 
-*****************************************************************************
-**                                                                         **
-** This project is dedicated to Reem.                                      **
-** Your brilliance, courage, and quiet strength continue to inspire me.    **
-** Every line is written in gratitude for the light and hope you brought   **
-** into my life.                                                           **
-**                                                                         **
-*****************************************************************************
-
-`
+//go:embed dedication.txt
+var dedication string

@@ -1,6 +1,6 @@
 /*
    Szerszam alarm manager: szalarm.
-   Copyright (C) 2024  Leslie Dancsecs
+   Copyright (C) 2024-2025  Leslie Dancsecs
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -620,34 +620,4 @@ func TestSzLog_VerboseArgumentAbsorption(t *testing.T) {
 	)
 
 	chk.Log()
-}
-
-func TestSzLog_LogLevelArgumentAbsorptionDedication(t *testing.T) {
-	chk := sztest.CaptureLogAndStdout(t)
-	defer chk.Release()
-
-	chk.NoErr(
-		testArgs(szlog.LevelError, 0, "", []string{
-			cv1,
-			cv2,
-			nov,
-			cv3,
-			cv4,
-			"--Reem",
-		}),
-	)
-
-	const dedication = `
-*****************************************************************************
-**                                                                         **
-** This project is dedicated to Reem.                                      **
-** Your brilliance, courage, and quiet strength continue to inspire me.    **
-** Every line is written in gratitude for the light and hope you brought   **
-** into my life.                                                           **
-**                                                                         **
-*****************************************************************************
-`
-
-	chk.Log()
-	chk.Stdout(dedication)
 }

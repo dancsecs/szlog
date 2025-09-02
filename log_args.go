@@ -1,6 +1,6 @@
 /*
    Szerszam logging library: szlog.
-   Copyright (C) 2024  Leslie Dancsecs
+   Copyright (C) 2024-2025  Leslie Dancsecs
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -132,13 +132,13 @@ func (l *Log) AbsorbArgs(argsIn []string) ([]string, error) {
 			}
 		}
 
-		if rArg == "--Reem" {
-			defer func() {
-				l.Say0(dedication)
-			}()
+		// if rArg == "--Reem" {
+		// 	defer func() {
+		// 		l.Say0(dedication)
+		// 	}()
 
-			continue
-		}
+		// 	continue
+		// }
 
 		argsOut = append(argsOut, rArg)
 	}
