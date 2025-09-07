@@ -3,7 +3,8 @@
     "cSpell.words": [
         "dancsecs",
         "Debugf",
-        "Errf",
+        "Errorf",
+        "Fatalf",
         "Funcf",
         "gotomd",
         "Infof",

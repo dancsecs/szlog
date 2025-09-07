@@ -358,12 +358,16 @@ func Close(area string, closeable io.Closer)
 
 NOTE: If Info logging is disabled, longRunningReport() is never executed.
 
+---
+
 ## Dedication
 
 This project is dedicated to Reem.
 Your brilliance, courage, and quiet strength continue to inspire me.
 Every line is written in gratitude for the light and hope you brought into my
 life.
+
+---
 
 NOTE: Documentation reviewed and polished with the assistance of ChatGPT from
 OpenAI.

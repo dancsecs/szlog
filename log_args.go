@@ -132,14 +132,6 @@ func (l *Log) AbsorbArgs(argsIn []string) ([]string, error) {
 			}
 		}
 
-		// if rArg == "--Reem" {
-		// 	defer func() {
-		// 		l.Say0(dedication)
-		// 	}()
-
-		// 	continue
-		// }
-
 		argsOut = append(argsOut, rArg)
 	}
 
