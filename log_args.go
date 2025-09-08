@@ -48,14 +48,10 @@ const (
 // flags are removed, and the cleaned argument slice is returned.
 // Multiple `-v` flags increment verbosity accordingly. If conflicting
 // or invalid flags are found (e.g., combining `-v` with `--quiet`),
-// an error is returned along with the original arguments.  Optionally
-// a function that registers argument flags and their description can
-// be provided (usually for usage information.)
+// an error is returned along with the original arguments.
 //
 //nolint:gocognit,cyclop,funlen // OK.
-func (l *Log) AbsorbArgs(
-	argsIn []string, registerArgs func(string, string),
-) ([]string, error) {
+func (l *Log) AbsorbArgs(argsIn []string) ([]string, error) {
 	err := error(nil)
 	captureLogLevel := false
 	captureLanguage := false
@@ -64,14 +60,6 @@ func (l *Log) AbsorbArgs(
 	longLabelsSet := false
 	vCount := VerboseLevel(0)
 	argsOut := make([]string, 0, len(argsIn))
-
-	if registerArgs != nil {
-		registerArgs(VerboseFlag, VerboseFlagDesc)
-		registerArgs(QuietFlag, QuietFlagDesc)
-		registerArgs(LogLevelFlag, LogLevelFlagDesc)
-		registerArgs(LanguageFlag, LanguageFlagDesc)
-		registerArgs(LongLabelFlag, LongLabelFlagDesc)
-	}
 
 	for _, rArg := range argsIn {
 		if err != nil {
@@ -182,4 +170,14 @@ func (l *Log) AbsorbArgs(
 	}
 
 	return argsIn, err
+}
+
+// ArgUsageInfo invokes the provided callback function for all the arguments
+// szlog processes.  (Used to provide the usage information).
+func (l *Log) ArgUsageInfo(registerArgs func(string, string)) {
+	registerArgs(VerboseFlag, VerboseFlagDesc)
+	registerArgs(QuietFlag, QuietFlagDesc)
+	registerArgs(LogLevelFlag, LogLevelFlagDesc)
+	registerArgs(LanguageFlag, LanguageFlagDesc)
+	registerArgs(LongLabelFlag, LongLabelFlagDesc)
 }

@@ -61,7 +61,7 @@ func testArgs(
 	szlog.Reset()
 	szlog.SetLevel(szlog.LevelNone)
 
-	cArgs, err = szlog.AbsorbArgs(args, nil)
+	cArgs, err = szlog.AbsorbArgs(args)
 
 	if err == nil {
 		switch {
@@ -108,7 +108,7 @@ func TestSzLog_LanguageArgumentAbsorption(t *testing.T) {
 	defer chk.Release()
 	defer szlog.Reset()
 
-	cleanedArgs, err := szlog.AbsorbArgs(nil, nil)
+	cleanedArgs, err := szlog.AbsorbArgs(nil)
 	chk.NoErr(err)
 	chk.Int(len(cleanedArgs), 0)
 
@@ -178,7 +178,7 @@ func TestSzLog_LogLevelArgumentAbsorption(t *testing.T) {
 	defer chk.Release()
 	defer szlog.Reset()
 
-	cleanedArgs, err := szlog.AbsorbArgs(nil, nil)
+	cleanedArgs, err := szlog.AbsorbArgs(nil)
 	chk.NoErr(err)
 	chk.Int(len(cleanedArgs), 0)
 
@@ -512,7 +512,7 @@ func TestSzLog_VerboseArgumentAbsorption(t *testing.T) {
 	defer chk.Release()
 	defer szlog.Reset()
 
-	cleanedArgs, err := szlog.AbsorbArgs(nil, nil)
+	cleanedArgs, err := szlog.AbsorbArgs(nil)
 	chk.NoErr(err)
 	chk.Int(len(cleanedArgs), 0)
 
@@ -640,9 +640,7 @@ func TestSzLog_LongLabelsArgumentAbsorption(t *testing.T) {
 	defer chk.Release()
 	defer szlog.Reset()
 
-	cleanedArgs, err := szlog.AbsorbArgs(nil, func(flag, desc string) {
-		log.Printf("%s: %s", flag, desc)
-	})
+	cleanedArgs, err := szlog.AbsorbArgs(nil)
 	chk.NoErr(err)
 	chk.Int(len(cleanedArgs), 0)
 
@@ -671,6 +669,17 @@ func TestSzLog_LongLabelsArgumentAbsorption(t *testing.T) {
 			"--long-labels",
 		}),
 	)
+
+	chk.Log()
+}
+
+func TestSzLog_UsageInfo(t *testing.T) {
+	chk := sztest.CaptureLog(t)
+	defer chk.Release()
+
+	szlog.ArgUsageInfo(func(flag, desc string) {
+		log.Printf("%s: %s", flag, desc)
+	})
 
 	chk.Log(
 		"-v[v...] | --v[v...] | --verbose: "+

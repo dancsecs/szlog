@@ -181,7 +181,7 @@ Settings may also be specified in command line arguments
     | Verbose     | -v[v...] | --v[v...] | --verbose | --quiet    |
     +-------------+-----------------------------------------------+
 
-that are processed with the program function:
+that are processed with the program functions:
 
 ```go
 
@@ -191,11 +191,20 @@ that are processed with the program function:
 // flags are removed, and the cleaned argument slice is returned.
 // Multiple `-v` flags increment verbosity accordingly. If conflicting
 // or invalid flags are found (e.g., combining `-v` with `--quiet`),
-// an error is returned along with the original arguments.  Optionally
-// a function that registers argument flags and their description can
-// be provided (usually for usage information.)
+// an error is returned along with the original arguments.
 func (l *Log) AbsorbArgs(argsIn []string) ([]string, error)
 func AbsorbArgs(argsIn []string) ([]string, error)
+
+```
+
+while usage information may be gathered with the program functions:
+
+```go
+
+// ArgUsageInfo invokes the provided callback function for all the arguments
+// szlog processes.  (Used to provide the usage information).
+func (l *Log) ArgUsageInfo(registerArgs func(string, string))
+func ArgUsageInfo(registerArgs func(string, string))
 
 ```
 
