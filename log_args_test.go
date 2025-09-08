@@ -582,7 +582,7 @@ func TestSzLog_VerboseArgumentAbsorption(t *testing.T) {
 		testArgs(szlog.LevelError, 2, "", false, []string{
 			"-v",
 			cv1,
-			"--v",
+			"-v",
 			cv2,
 			nov,
 			cv3,
@@ -594,7 +594,7 @@ func TestSzLog_VerboseArgumentAbsorption(t *testing.T) {
 		testArgs(szlog.LevelError, 4, "", false, []string{
 			"-v",
 			cv1,
-			"--v",
+			"--verbose",
 			cv2,
 			"-vv",
 			nov,
@@ -607,12 +607,13 @@ func TestSzLog_VerboseArgumentAbsorption(t *testing.T) {
 		testArgs(szlog.LevelError, 6, "", false, []string{
 			"-v",
 			cv1,
-			"--v",
+			"--verbose",
 			cv2,
 			"-vv",
 			nov,
 			cv3,
-			"--vv",
+			"--verbose",
+			"--verbose",
 			cv4,
 		}),
 	)
@@ -621,12 +622,12 @@ func TestSzLog_VerboseArgumentAbsorption(t *testing.T) {
 		testArgs(szlog.LevelError, 7, "", false, []string{
 			"-v",
 			cv1,
-			"--v",
+			"--verbose",
 			cv2,
 			"-vv",
 			nov,
 			cv3,
-			"--vv",
+			"-vv",
 			cv4,
 			"--verbose",
 		}),
@@ -682,8 +683,8 @@ func TestSzLog_UsageInfo(t *testing.T) {
 	})
 
 	chk.Log(
-		"-v[v...] | --v[v...] | --verbose: "+
-			"Increase the logging level for each v provided.",
+		"-v[v...] | --verbose: "+
+			"Increase the verbose level for each v provided.",
 		"--quiet: "+
 			"Sets the verbose level to -1 squashing all (non-logged) output.",
 		"--log <level | (levels)>: "+

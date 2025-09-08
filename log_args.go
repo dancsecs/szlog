@@ -24,8 +24,8 @@ import (
 
 // Usage suitable strings for verbose argument absorption.
 const (
-	VerboseFlag     = "-v[v...] | --v[v...] | --verbose"
-	VerboseFlagDesc = "Increase the logging level for each v provided."
+	VerboseFlag     = "-v[v...] | --verbose"
+	VerboseFlagDesc = "Increase the verbose level for each v provided."
 
 	QuietFlag     = "--quiet"
 	QuietFlagDesc = "Sets the verbose level to -1 squashing all " +
@@ -113,11 +113,11 @@ func (l *Log) AbsorbArgs(argsIn []string) ([]string, error) {
 			continue
 		}
 
-		if strings.HasPrefix(rArg, "-v") || strings.HasPrefix(rArg, "--v") {
-			if rArg == "--verbose" {
-				rArg = "-v"
-			}
+		if rArg == "--verbose" {
+			rArg = "-v"
+		}
 
+		if strings.HasPrefix(rArg, "-v") {
 			isVerbose := true
 			cleanArg := strings.TrimLeft(rArg, "-")
 
