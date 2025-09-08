@@ -683,15 +683,15 @@ func TestSzLog_UsageInfo(t *testing.T) {
 	})
 
 	chk.Log(
-		"-v[v...] | --verbose: "+
+		"[-v | --verbose ...]: "+
 			"Increase the verbose level for each v provided.",
-		"--quiet: "+
+		"[--quiet]: "+
 			"Sets the verbose level to -1 squashing all (non-logged) output.",
-		"--log <level | (levels)>: "+
+		"[--log <level | (levels)>]: "+
 			"Set the level to log (or a custom combination of levels).",
-		"--language: "+
+		"[--language <lang>]: "+
 			"Sets the local language used for formatting.",
-		"--long-labels: "+
+		"[--long-labels]: "+
 			"Use long labels in log output.",
 	)
 }

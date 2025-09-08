@@ -24,21 +24,21 @@ import (
 
 // Usage suitable strings for verbose argument absorption.
 const (
-	VerboseFlag     = "-v[v...] | --verbose"
+	VerboseFlag     = "[-v | --verbose ...]"
 	VerboseFlagDesc = "Increase the verbose level for each v provided."
 
-	QuietFlag     = "--quiet"
+	QuietFlag     = "[--quiet]"
 	QuietFlagDesc = "Sets the verbose level to -1 squashing all " +
 		"(non-logged) output."
 
-	LogLevelFlag     = "--log <level | (levels)>"
+	LogLevelFlag     = "[--log <level | (levels)>]"
 	LogLevelFlagDesc = "Set the level to log (or a custom combination of " +
 		"levels)."
 
-	LanguageFlag     = "--language"
+	LanguageFlag     = "[--language <lang>]"
 	LanguageFlagDesc = "Sets the local language used for formatting."
 
-	LongLabelFlag     = "--long-labels"
+	LongLabelFlag     = "[--long-labels]"
 	LongLabelFlagDesc = "Use long labels in log output."
 )
 
