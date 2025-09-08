@@ -71,9 +71,13 @@ func SetStdout(newWriter io.Writer) {
 // flags are removed, and the cleaned argument slice is returned.
 // Multiple `-v` flags increment verbosity accordingly. If conflicting
 // or invalid flags are found (e.g., combining `-v` with `--quiet`),
-// an error is returned along with the original arguments.
-func AbsorbArgs(argsIn []string) ([]string, error) {
-	return defaultLog.AbsorbArgs(argsIn)
+// an error is returned along with the original arguments.  Optionally
+// a function that registers argument flags and their description can
+// be provided (usually for usage information.)
+func AbsorbArgs(
+	argsIn []string, registerArgs func(string, string),
+) ([]string, error) {
+	return defaultLog.AbsorbArgs(argsIn, registerArgs)
 }
 
 // LogFatal returns true if fatal messages are being logged.

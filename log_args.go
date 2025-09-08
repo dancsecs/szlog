@@ -27,16 +27,19 @@ const (
 	VerboseFlag     = "-v[v...] | --v[v...] | --verbose"
 	VerboseFlagDesc = "Increase the logging level for each v provided."
 
-	LogLevelFlag     = "--log <level | (levels)>"
-	LogLevelFlagDesc = "Set the level to log (or a custom combination of " +
-		"levels)"
-
 	QuietFlag     = "--quiet"
 	QuietFlagDesc = "Sets the verbose level to -1 squashing all " +
-		"(non-logged) output"
+		"(non-logged) output."
+
+	LogLevelFlag     = "--log <level | (levels)>"
+	LogLevelFlagDesc = "Set the level to log (or a custom combination of " +
+		"levels)."
 
 	LanguageFlag     = "--language"
 	LanguageFlagDesc = "Sets the local language used for formatting."
+
+	LongLabelFlag     = "--long-labels"
+	LongLabelFlagDesc = "Use long labels in log output."
 )
 
 // AbsorbArgs scans the provided argument list for logging-related flags.
@@ -45,17 +48,30 @@ const (
 // flags are removed, and the cleaned argument slice is returned.
 // Multiple `-v` flags increment verbosity accordingly. If conflicting
 // or invalid flags are found (e.g., combining `-v` with `--quiet`),
-// an error is returned along with the original arguments.
+// an error is returned along with the original arguments.  Optionally
+// a function that registers argument flags and their description can
+// be provided (usually for usage information.)
 //
 //nolint:gocognit,cyclop,funlen // OK.
-func (l *Log) AbsorbArgs(argsIn []string) ([]string, error) {
+func (l *Log) AbsorbArgs(
+	argsIn []string, registerArgs func(string, string),
+) ([]string, error) {
 	err := error(nil)
 	captureLogLevel := false
 	captureLanguage := false
 	logLevelSet := false
 	languageSet := false
+	longLabelsSet := false
 	vCount := VerboseLevel(0)
 	argsOut := make([]string, 0, len(argsIn))
+
+	if registerArgs != nil {
+		registerArgs(VerboseFlag, VerboseFlagDesc)
+		registerArgs(QuietFlag, QuietFlagDesc)
+		registerArgs(LogLevelFlag, LogLevelFlagDesc)
+		registerArgs(LanguageFlag, LanguageFlagDesc)
+		registerArgs(LongLabelFlag, LongLabelFlagDesc)
+	}
 
 	for _, rArg := range argsIn {
 		if err != nil {
@@ -130,6 +146,17 @@ func (l *Log) AbsorbArgs(argsIn []string) ([]string, error) {
 
 				continue
 			}
+		}
+
+		if rArg == "--long-labels" {
+			if longLabelsSet {
+				err = ErrAmbiguousLongLabels
+			} else {
+				longLabelsSet = true
+				l.SetLongLabels(true)
+			}
+
+			continue
 		}
 
 		argsOut = append(argsOut, rArg)

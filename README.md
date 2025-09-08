@@ -191,7 +191,9 @@ that are processed with the program function:
 // flags are removed, and the cleaned argument slice is returned.
 // Multiple `-v` flags increment verbosity accordingly. If conflicting
 // or invalid flags are found (e.g., combining `-v` with `--quiet`),
-// an error is returned along with the original arguments.
+// an error is returned along with the original arguments.  Optionally
+// a function that registers argument flags and their description can
+// be provided (usually for usage information.)
 func (l *Log) AbsorbArgs(argsIn []string) ([]string, error)
 func AbsorbArgs(argsIn []string) ([]string, error)
 
@@ -337,7 +339,7 @@ func Close(area string, closeable io.Closer)
     func main() {
       var configFileName string
 
-      args,err:= szlog.AbsorbArgs(os.args) // Set verbose and log level.
+      args,err:= szlog.AbsorbArgs(os.args,nil) // Set verbose and log level.
 
       if len(args) != 2 {  // Ignore extra args.
         configFileName = "default.cfg

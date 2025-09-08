@@ -29,6 +29,7 @@ var (
 	ErrAmbiguousVerboseAndQuiet = errors.New("ambiguous verbose and quiet")
 	ErrAmbiguousLogLevel        = errors.New("ambiguous log level")
 	ErrAmbiguousLanguage        = errors.New("ambiguous language")
+	ErrAmbiguousLongLabels      = errors.New("ambiguous long labels")
 	ErrMissingLogLevel          = errors.New("missing log level")
 	ErrMissingLanguage          = errors.New("missing language")
 	ErrInvalidLanguage          = errors.New("invalid language")

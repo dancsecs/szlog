@@ -22,6 +22,7 @@ package szlog_test
 import (
 	"errors"
 	"fmt"
+	"log"
 	"testing"
 
 	"github.com/dancsecs/szlog"
@@ -37,10 +38,11 @@ const (
 )
 
 var (
-	errArg      = errors.New("unexpected cleaned args")
-	errLevel    = errors.New("unexpected szlog level")
-	errVerbose  = errors.New("unexpected verbose level")
-	errLanguage = errors.New("unexpected language local")
+	errArg        = errors.New("unexpected cleaned args")
+	errLevel      = errors.New("unexpected szlog level")
+	errVerbose    = errors.New("unexpected verbose level")
+	errLanguage   = errors.New("unexpected language local")
+	errLongLabels = errors.New("unexpected long labels")
 )
 
 //nolint:cyclop // Ok.
@@ -48,6 +50,7 @@ func testArgs(
 	expectedLevel szlog.LogLevel,
 	expectedVerbose szlog.VerboseLevel,
 	expectedLanguage string,
+	expectedLongLabels bool,
 	args []string,
 ) error {
 	var (
@@ -58,7 +61,7 @@ func testArgs(
 	szlog.Reset()
 	szlog.SetLevel(szlog.LevelNone)
 
-	cArgs, err = szlog.AbsorbArgs(args)
+	cArgs, err = szlog.AbsorbArgs(args, nil)
 
 	if err == nil {
 		switch {
@@ -88,6 +91,12 @@ func testArgs(
 				expectedLanguage,
 				szlog.Language(),
 			)
+		case szlog.LongLabels() != expectedLongLabels:
+			err = fmt.Errorf(
+				"%w: Want: %t Got: %t", errLongLabels,
+				expectedLongLabels,
+				szlog.LongLabels(),
+			)
 		}
 	}
 
@@ -97,13 +106,14 @@ func testArgs(
 func TestSzLog_LanguageArgumentAbsorption(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
+	defer szlog.Reset()
 
-	cleanedArgs, err := szlog.AbsorbArgs(nil)
+	cleanedArgs, err := szlog.AbsorbArgs(nil, nil)
 	chk.NoErr(err)
 	chk.Int(len(cleanedArgs), 0)
 
 	chk.Err(
-		testArgs(szlog.LevelError, 0, "", []string{
+		testArgs(szlog.LevelError, 0, "", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -115,7 +125,7 @@ func TestSzLog_LanguageArgumentAbsorption(t *testing.T) {
 	)
 
 	chk.Err(
-		testArgs(szlog.LevelError, 0, "", []string{
+		testArgs(szlog.LevelError, 0, "", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -128,7 +138,7 @@ func TestSzLog_LanguageArgumentAbsorption(t *testing.T) {
 	)
 
 	chk.NoErr(
-		testArgs(szlog.LevelError, 0, "", []string{
+		testArgs(szlog.LevelError, 0, "", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -139,7 +149,7 @@ func TestSzLog_LanguageArgumentAbsorption(t *testing.T) {
 	)
 
 	chk.NoErr(
-		testArgs(szlog.LevelError, 0, "en", []string{
+		testArgs(szlog.LevelError, 0, "en", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -150,7 +160,7 @@ func TestSzLog_LanguageArgumentAbsorption(t *testing.T) {
 	)
 
 	chk.NoErr(
-		testArgs(szlog.LevelError, 0, "fr", []string{
+		testArgs(szlog.LevelError, 0, "fr", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -166,13 +176,14 @@ func TestSzLog_LanguageArgumentAbsorption(t *testing.T) {
 func TestSzLog_LogLevelArgumentAbsorption(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
+	defer szlog.Reset()
 
-	cleanedArgs, err := szlog.AbsorbArgs(nil)
+	cleanedArgs, err := szlog.AbsorbArgs(nil, nil)
 	chk.NoErr(err)
 	chk.Int(len(cleanedArgs), 0)
 
 	chk.Err(
-		testArgs(szlog.LevelError, 0, "", []string{
+		testArgs(szlog.LevelError, 0, "", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -184,7 +195,7 @@ func TestSzLog_LogLevelArgumentAbsorption(t *testing.T) {
 	)
 
 	chk.Err(
-		testArgs(szlog.LevelError, 0, "", []string{
+		testArgs(szlog.LevelError, 0, "", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -200,7 +211,7 @@ func TestSzLog_LogLevelArgumentAbsorption(t *testing.T) {
 	)
 
 	chk.Err(
-		testArgs(szlog.LevelError, 0, "", []string{
+		testArgs(szlog.LevelError, 0, "", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -216,7 +227,7 @@ func TestSzLog_LogLevelArgumentAbsorption(t *testing.T) {
 	)
 
 	chk.Err(
-		testArgs(szlog.LevelError, 0, "", []string{
+		testArgs(szlog.LevelError, 0, "", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -231,7 +242,7 @@ func TestSzLog_LogLevelArgumentAbsorption(t *testing.T) {
 	)
 
 	chk.NoErr(
-		testArgs(szlog.LevelFatal, 0, "", []string{
+		testArgs(szlog.LevelFatal, 0, "", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -242,7 +253,7 @@ func TestSzLog_LogLevelArgumentAbsorption(t *testing.T) {
 	)
 
 	chk.NoErr(
-		testArgs(szlog.LevelNone, 0, "", []string{
+		testArgs(szlog.LevelNone, 0, "", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -253,7 +264,7 @@ func TestSzLog_LogLevelArgumentAbsorption(t *testing.T) {
 	)
 
 	chk.NoErr(
-		testArgs(szlog.LevelError, 0, "", []string{
+		testArgs(szlog.LevelError, 0, "", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -264,7 +275,7 @@ func TestSzLog_LogLevelArgumentAbsorption(t *testing.T) {
 	)
 
 	chk.NoErr(
-		testArgs(szlog.LevelWarn, 0, "", []string{
+		testArgs(szlog.LevelWarn, 0, "", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -275,7 +286,7 @@ func TestSzLog_LogLevelArgumentAbsorption(t *testing.T) {
 	)
 
 	chk.NoErr(
-		testArgs(szlog.LevelInfo, 0, "", []string{
+		testArgs(szlog.LevelInfo, 0, "", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -286,7 +297,7 @@ func TestSzLog_LogLevelArgumentAbsorption(t *testing.T) {
 	)
 
 	chk.NoErr(
-		testArgs(szlog.LevelDebug, 0, "", []string{
+		testArgs(szlog.LevelDebug, 0, "", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -297,7 +308,7 @@ func TestSzLog_LogLevelArgumentAbsorption(t *testing.T) {
 	)
 
 	chk.NoErr(
-		testArgs(szlog.LevelTrace, 0, "", []string{
+		testArgs(szlog.LevelTrace, 0, "", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -308,7 +319,7 @@ func TestSzLog_LogLevelArgumentAbsorption(t *testing.T) {
 	)
 
 	chk.NoErr(
-		testArgs(szlog.LevelAll, 0, "", []string{
+		testArgs(szlog.LevelAll, 0, "", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -324,9 +335,10 @@ func TestSzLog_LogLevelArgumentAbsorption(t *testing.T) {
 func TestSzLog_CustomLogLevelArgumentAbsorption(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
+	defer szlog.Reset()
 
 	chk.Err(
-		testArgs(szlog.LevelCustom, 0, "", []string{
+		testArgs(szlog.LevelCustom, 0, "", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -342,7 +354,7 @@ func TestSzLog_CustomLogLevelArgumentAbsorption(t *testing.T) {
 	)
 
 	chk.Err(
-		testArgs(szlog.LevelCustom, 0, "", []string{
+		testArgs(szlog.LevelCustom, 0, "", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -358,7 +370,7 @@ func TestSzLog_CustomLogLevelArgumentAbsorption(t *testing.T) {
 	)
 
 	chk.Err(
-		testArgs(szlog.LevelCustom, 0, "", []string{
+		testArgs(szlog.LevelCustom, 0, "", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -374,7 +386,7 @@ func TestSzLog_CustomLogLevelArgumentAbsorption(t *testing.T) {
 	)
 
 	chk.NoErr(
-		testArgs(szlog.LevelCustom, 0, "", []string{
+		testArgs(szlog.LevelCustom, 0, "", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -391,7 +403,7 @@ func TestSzLog_CustomLogLevelArgumentAbsorption(t *testing.T) {
 	chk.True(szlog.LogTrace())
 
 	chk.NoErr(
-		testArgs(szlog.LevelCustom, 0, "", []string{
+		testArgs(szlog.LevelCustom, 0, "", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -408,7 +420,7 @@ func TestSzLog_CustomLogLevelArgumentAbsorption(t *testing.T) {
 	chk.False(szlog.LogTrace())
 
 	chk.NoErr(
-		testArgs(szlog.LevelCustom, 0, "", []string{
+		testArgs(szlog.LevelCustom, 0, "", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -425,7 +437,7 @@ func TestSzLog_CustomLogLevelArgumentAbsorption(t *testing.T) {
 	chk.False(szlog.LogTrace())
 
 	chk.NoErr(
-		testArgs(szlog.LevelCustom, 0, "", []string{
+		testArgs(szlog.LevelCustom, 0, "", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -442,7 +454,7 @@ func TestSzLog_CustomLogLevelArgumentAbsorption(t *testing.T) {
 	chk.False(szlog.LogTrace())
 
 	chk.NoErr(
-		testArgs(szlog.LevelCustom, 0, "", []string{
+		testArgs(szlog.LevelCustom, 0, "", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -459,7 +471,7 @@ func TestSzLog_CustomLogLevelArgumentAbsorption(t *testing.T) {
 	chk.False(szlog.LogTrace())
 
 	chk.NoErr(
-		testArgs(szlog.LevelCustom, 0, "", []string{
+		testArgs(szlog.LevelCustom, 0, "", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -476,7 +488,7 @@ func TestSzLog_CustomLogLevelArgumentAbsorption(t *testing.T) {
 	chk.False(szlog.LogTrace())
 
 	chk.NoErr(
-		testArgs(szlog.LevelCustom, 0, "", []string{
+		testArgs(szlog.LevelCustom, 0, "", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -498,13 +510,14 @@ func TestSzLog_CustomLogLevelArgumentAbsorption(t *testing.T) {
 func TestSzLog_VerboseArgumentAbsorption(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
+	defer szlog.Reset()
 
-	cleanedArgs, err := szlog.AbsorbArgs(nil)
+	cleanedArgs, err := szlog.AbsorbArgs(nil, nil)
 	chk.NoErr(err)
 	chk.Int(len(cleanedArgs), 0)
 
 	chk.Err(
-		testArgs(szlog.LevelError, -1, "", []string{
+		testArgs(szlog.LevelError, -1, "", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -519,7 +532,7 @@ func TestSzLog_VerboseArgumentAbsorption(t *testing.T) {
 	)
 
 	chk.Err(
-		testArgs(szlog.LevelError, -1, "", []string{
+		testArgs(szlog.LevelError, -1, "", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -534,7 +547,7 @@ func TestSzLog_VerboseArgumentAbsorption(t *testing.T) {
 	)
 
 	chk.NoErr(
-		testArgs(szlog.LevelError, -1, "", []string{
+		testArgs(szlog.LevelError, -1, "", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -545,7 +558,7 @@ func TestSzLog_VerboseArgumentAbsorption(t *testing.T) {
 	)
 
 	chk.NoErr(
-		testArgs(szlog.LevelError, 0, "", []string{
+		testArgs(szlog.LevelError, 0, "", false, []string{
 			cv1,
 			cv2,
 			nov,
@@ -555,7 +568,7 @@ func TestSzLog_VerboseArgumentAbsorption(t *testing.T) {
 	)
 
 	chk.NoErr(
-		testArgs(szlog.LevelError, 1, "", []string{
+		testArgs(szlog.LevelError, 1, "", false, []string{
 			"-v",
 			cv1,
 			cv2,
@@ -566,7 +579,7 @@ func TestSzLog_VerboseArgumentAbsorption(t *testing.T) {
 	)
 
 	chk.NoErr(
-		testArgs(szlog.LevelError, 2, "", []string{
+		testArgs(szlog.LevelError, 2, "", false, []string{
 			"-v",
 			cv1,
 			"--v",
@@ -578,7 +591,7 @@ func TestSzLog_VerboseArgumentAbsorption(t *testing.T) {
 	)
 
 	chk.NoErr(
-		testArgs(szlog.LevelError, 4, "", []string{
+		testArgs(szlog.LevelError, 4, "", false, []string{
 			"-v",
 			cv1,
 			"--v",
@@ -591,7 +604,7 @@ func TestSzLog_VerboseArgumentAbsorption(t *testing.T) {
 	)
 
 	chk.NoErr(
-		testArgs(szlog.LevelError, 6, "", []string{
+		testArgs(szlog.LevelError, 6, "", false, []string{
 			"-v",
 			cv1,
 			"--v",
@@ -605,7 +618,7 @@ func TestSzLog_VerboseArgumentAbsorption(t *testing.T) {
 	)
 
 	chk.NoErr(
-		testArgs(szlog.LevelError, 7, "", []string{
+		testArgs(szlog.LevelError, 7, "", false, []string{
 			"-v",
 			cv1,
 			"--v",
@@ -620,4 +633,50 @@ func TestSzLog_VerboseArgumentAbsorption(t *testing.T) {
 	)
 
 	chk.Log()
+}
+
+func TestSzLog_LongLabelsArgumentAbsorption(t *testing.T) {
+	chk := sztest.CaptureLog(t)
+	defer chk.Release()
+	defer szlog.Reset()
+
+	cleanedArgs, err := szlog.AbsorbArgs(nil, func(flag, desc string) {
+		log.Printf("%s: %s", flag, desc)
+	})
+	chk.NoErr(err)
+	chk.Int(len(cleanedArgs), 0)
+
+	chk.Err(
+		testArgs(szlog.LevelError, 0, "", true, []string{
+			cv1,
+			cv2,
+			nov,
+			cv3,
+			cv4,
+			"--long-labels",
+			"--long-labels",
+		}),
+		chk.ErrChain(
+			szlog.ErrAmbiguousLongLabels,
+		),
+	)
+
+	chk.NoErr(
+		testArgs(szlog.LevelError, 0, "", true, []string{
+			cv1,
+			cv2,
+			nov,
+			cv3,
+			cv4,
+			"--long-labels",
+		}),
+	)
+
+	chk.Log(
+		"-v[v...] | --v[v...] | --verbose: Increase the logging level for each v provided.",
+		"--quiet: Sets the verbose level to -1 squashing all (non-logged) output.",
+		"--log <level | (levels)>: Set the level to log (or a custom combination of levels).",
+		"--language: Sets the local language used for formatting.",
+		"--long-labels: Use long labels in log output.",
+	)
 }
