@@ -673,10 +673,15 @@ func TestSzLog_LongLabelsArgumentAbsorption(t *testing.T) {
 	)
 
 	chk.Log(
-		"-v[v...] | --v[v...] | --verbose: Increase the logging level for each v provided.",
-		"--quiet: Sets the verbose level to -1 squashing all (non-logged) output.",
-		"--log <level | (levels)>: Set the level to log (or a custom combination of levels).",
-		"--language: Sets the local language used for formatting.",
-		"--long-labels: Use long labels in log output.",
+		"-v[v...] | --v[v...] | --verbose: "+
+			"Increase the logging level for each v provided.",
+		"--quiet: "+
+			"Sets the verbose level to -1 squashing all (non-logged) output.",
+		"--log <level | (levels)>: "+
+			"Set the level to log (or a custom combination of levels).",
+		"--language: "+
+			"Sets the local language used for formatting.",
+		"--long-labels: "+
+			"Use long labels in log output.",
 	)
 }
