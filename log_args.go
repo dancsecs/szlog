@@ -33,7 +33,8 @@ const (
 
 	LogLevelFlag     = "[--log <level | (levels)>]"
 	LogLevelFlagDesc = "Set the level to log (or a custom combination of " +
-		"levels)."
+		"levels).  Valid levels are: " +
+		"None, FATAL, ERROR, WARN, INFO, DEBUG,TRACE, ALL."
 
 	LanguageFlag     = "[--language <lang>]"
 	LanguageFlagDesc = "Sets the local language used for formatting."
