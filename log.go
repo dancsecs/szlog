@@ -28,6 +28,8 @@ import (
 type LogFunc func(msg ...any) bool
 
 // LogFuncf defines the signature of a formatted log function.
+//
+//go:printf
 type LogFuncf func(msgFmt string, msgArgs ...any) bool
 
 // Log represents a szlog logging object.
