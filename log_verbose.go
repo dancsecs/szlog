@@ -20,24 +20,12 @@ package szlog
 
 import (
 	"fmt"
-	"io"
 	"os"
 )
 
 // VerboseLevel indicates how much non-essential output is allowed.
 // Levels range from -1 (silent) to 5 (most verbose).
 type VerboseLevel = int
-
-// SetStdout sets the io.Writer used for verbose output. Passing nil restores
-// the default os.Stdout. To suppress all verbose output, use --quiet or
-// call SetVerbose(-1).
-func (l *Log) SetStdout(newWriter io.Writer) {
-	if newWriter == nil {
-		l.stdout = os.Stdout
-	} else {
-		l.stdout = newWriter
-	}
-}
 
 // Verbose reports the logger's current verbosity level.
 func (l *Log) Verbose() VerboseLevel {
@@ -86,9 +74,9 @@ func (l *Log) SetVerbose(newLevel VerboseLevel) VerboseLevel {
 
 func (l *Log) vPrint(msg ...any) bool {
 	if l.printer != nil {
-		_, _ = l.printer.Fprint(l.stdout, msg...)
+		_, _ = l.printer.Fprint(os.Stdout, msg...)
 	} else {
-		_, _ = fmt.Fprint(l.stdout, msg...)
+		_, _ = fmt.Fprint(os.Stdout, msg...)
 	}
 
 	return true
@@ -96,9 +84,9 @@ func (l *Log) vPrint(msg ...any) bool {
 
 func (l *Log) vPrintf(msgFmt string, msgArgs ...any) bool {
 	if l.printer != nil {
-		_, _ = l.printer.Fprintf(l.stdout, msgFmt, msgArgs...)
+		_, _ = l.printer.Fprintf(os.Stdout, msgFmt, msgArgs...)
 	} else {
-		_, _ = fmt.Fprintf(l.stdout, msgFmt, msgArgs...)
+		_, _ = fmt.Fprintf(os.Stdout, msgFmt, msgArgs...)
 	}
 
 	return true

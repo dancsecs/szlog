@@ -25,7 +25,7 @@ the standard log while adding:
     Tracef for formatting) layered on top of the standard log package
 
   - six independent verbosity levels (Say0–Say5 with Say0f–Say5f for
-    formatting) with settable output defaulting to ```os.Stdout```
+    formatting)
 
   - lazy evaluation with `func() DEFER` so expensive values are only
     computed when needed
@@ -115,8 +115,7 @@ and status messages:
 ### Verbose Output Levels
 
 Verbosity output is completely separate from logging providing 5 levels of
-plain or formatted messages in addition to normal program output written to
-a io.Writer defaulting to os.Stdout.
+plain or formatted messages in addition to normal program output.
 
 The verbose output functions provide fine-grained control over program
 messaging through six levels: Say0…Say5 and their formatted counterparts
@@ -217,7 +216,6 @@ functions.
 	|             | SetCustomLevels(levels ...LogLevel)  |
 	| Verbose     | Verbose()                            |
 	|             | SetVerbose(level VerboseLevel)       |
-	|             | SetStdout(newWriter io.Writer)       |
 	+-------------+--------------------------------------+
 
 implemented as follows:
@@ -271,13 +269,6 @@ func Verbose() VerboseLevel
 // all output, while higher levels progressively enable more detail.
 func (l *Log) SetVerbose(newLevel VerboseLevel) VerboseLevel
 func SetVerbose(level VerboseLevel) VerboseLevel
-
-// SetStdout sets the io.Writer used for verbose output. Passing nil restores
-// the default os.Stdout. To suppress all verbose output, use --quiet or
-// call SetVerbose(-1).
-func (l *Log) SetStdout(newWriter io.Writer) {
-func SetStdout(newWriter io.Writer) {
-
 ```
 
 ## Deferred Evaluation
@@ -299,13 +290,6 @@ about wasted work if the message is suppressed.
 ```
 
 If Info logging is disabled, generateReport is never executed.
-
-## Output Control
-
-Szlog maintains its own output pointer for verbosity, defaulting to os.Stdout
-and can be redirected to any io.Writer using SetStdout. Logging output is
-controlled through the built in log package and may be redirected using that
-package..
 
 ## Localization
 

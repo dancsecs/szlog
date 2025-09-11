@@ -19,8 +19,6 @@
 package szlog
 
 import (
-	"io"
-
 	"golang.org/x/text/message"
 )
 
@@ -40,7 +38,6 @@ type Log struct {
 	customLevelsEnabled int
 	longLabels          bool
 	printer             *message.Printer
-	stdout              io.Writer
 
 	LogFatal bool
 	LogError bool
@@ -92,5 +89,4 @@ func (l *Log) Reset() {
 	l.setEnvLevel()
 	l.setEnvLanguage()
 	l.setEnvVerbose()
-	l.SetStdout(nil)
 }

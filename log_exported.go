@@ -58,13 +58,6 @@ func Reset() {
 	defaultLog.Reset()
 }
 
-// SetStdout sets the io.Writer used for verbose output. Passing nil restores
-// the default os.Stdout. To suppress all verbose output, use --quiet or
-// call SetVerbose(-1).
-func SetStdout(newWriter io.Writer) {
-	defaultLog.SetStdout(newWriter)
-}
-
 // AbsorbArgs scans the provided argument list for logging-related flags.
 // It updates the log configuration (LogLevel, verbosity, quiet mode,
 // LongLabels, and Language) based on the flags encountered. Recognized
