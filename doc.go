@@ -230,7 +230,7 @@ Example usage:
 ```go
 
 // Only absorb verbosity and quiet flags, ignore all others.
-args, err := log.AbsorbArgs(os.Args[1:], EnableVerbose, EnableQuiet)
+args, err := szlog.AbsorbArgs(os.Args, EnableVerbose, EnableQuiet)
 
 ```
 
