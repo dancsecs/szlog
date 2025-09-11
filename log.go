@@ -38,6 +38,7 @@ type Log struct {
 	customLevelsEnabled int
 	longLabels          bool
 	printer             *message.Printer
+	argsEnabled         EnableArg
 
 	LogFatal bool
 	LogError bool
@@ -89,4 +90,5 @@ func (l *Log) Reset() {
 	l.setEnvLevel()
 	l.setEnvLanguage()
 	l.setEnvVerbose()
+	l.argsEnabled = 0
 }

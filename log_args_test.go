@@ -674,9 +674,258 @@ func TestSzLog_LongLabelsArgumentAbsorption(t *testing.T) {
 	chk.Log()
 }
 
-func TestSzLog_UsageInfo(t *testing.T) {
+func TestSzLog_UsageInfo_NoneEnabled(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()
+
+	szlog.Reset()
+
+	szlog.ArgUsageInfo(func(flag, desc string) {
+		log.Printf("%s: %s", flag, desc)
+	})
+
+	chk.Log()
+}
+
+func TestSzLog_UsageInfo_Verbose_Enabled(t *testing.T) {
+	chk := sztest.CaptureLog(t)
+	defer chk.Release()
+	defer szlog.Reset()
+
+	szlog.Reset()
+	cleanedArgs, err := szlog.AbsorbArgs([]string{
+		"-v",
+		"--verbose",
+		"--quiet",
+		"--log", "ALL",
+		"--language", "en",
+		"--long-labels",
+	}, szlog.EnableVerbose)
+
+	chk.NoErr(err)
+	chk.StrSlice(
+		cleanedArgs,
+		[]string{
+			"--quiet",
+			"--log", "ALL",
+			"--language", "en",
+			"--long-labels",
+		},
+	)
+
+	szlog.ArgUsageInfo(func(flag, desc string) {
+		log.Printf("%s: %s", flag, desc)
+	})
+
+	chk.Log(
+		"[-v | --verbose ...]: " +
+			"Increase the verbose level for each v provided.",
+	)
+}
+
+func TestSzLog_UsageInfo_Quiet_Enabled(t *testing.T) {
+	chk := sztest.CaptureLog(t)
+	defer chk.Release()
+	defer szlog.Reset()
+
+	szlog.Reset()
+	cleanedArgs, err := szlog.AbsorbArgs([]string{
+		"-v",
+		"--verbose",
+		"--quiet",
+		"--log", "ALL",
+		"--language", "en",
+		"--long-labels",
+	}, szlog.EnableQuiet)
+
+	chk.NoErr(err)
+	chk.StrSlice(
+		cleanedArgs,
+		[]string{
+			"-v",
+			"--verbose",
+			"--log", "ALL",
+			"--language", "en",
+			"--long-labels",
+		},
+	)
+
+	szlog.ArgUsageInfo(func(flag, desc string) {
+		log.Printf("%s: %s", flag, desc)
+	})
+
+	chk.Log(
+		"[--quiet]: " +
+			"Sets the verbose level to -1 squashing all (non-logged) output.",
+	)
+}
+
+func TestSzLog_UsageInfo_LogLevel_Enabled(t *testing.T) {
+	chk := sztest.CaptureLog(t)
+	defer chk.Release()
+	defer szlog.Reset()
+
+	szlog.Reset()
+	cleanedArgs, err := szlog.AbsorbArgs([]string{
+		"-v",
+		"--verbose",
+		"--quiet",
+		"--log", "ALL",
+		"--language", "en",
+		"--long-labels",
+	}, szlog.EnableLogLevel)
+
+	chk.NoErr(err)
+	chk.StrSlice(
+		cleanedArgs,
+		[]string{
+			"-v",
+			"--verbose",
+			"--quiet",
+			"--language", "en",
+			"--long-labels",
+		},
+	)
+
+	szlog.ArgUsageInfo(func(flag, desc string) {
+		log.Printf("%s: %s", flag, desc)
+	})
+
+	chk.Log(
+		"[--log <level | (levels)>]: " +
+			"Set the level to log (or a custom combination of levels).  " +
+			"Valid levels are: " +
+			"None, FATAL, ERROR, WARN, INFO, DEBUG,TRACE, ALL.",
+	)
+}
+
+func TestSzLog_UsageInfo_Language_Enabled(t *testing.T) {
+	chk := sztest.CaptureLog(t)
+	defer chk.Release()
+	defer szlog.Reset()
+
+	szlog.Reset()
+	cleanedArgs, err := szlog.AbsorbArgs([]string{
+		"-v",
+		"--verbose",
+		"--quiet",
+		"--log", "ALL",
+		"--language", "en",
+		"--long-labels",
+	}, szlog.EnableLanguage)
+
+	chk.NoErr(err)
+	chk.StrSlice(
+		cleanedArgs,
+		[]string{
+			"-v",
+			"--verbose",
+			"--quiet",
+			"--log", "ALL",
+			"--long-labels",
+		},
+	)
+
+	szlog.ArgUsageInfo(func(flag, desc string) {
+		log.Printf("%s: %s", flag, desc)
+	})
+
+	chk.Log(
+		"[--language <lang>]: " +
+			"Sets the local language used for formatting.",
+	)
+}
+
+func TestSzLog_UsageInfo_LongLabels_Enabled(t *testing.T) {
+	chk := sztest.CaptureLog(t)
+	defer chk.Release()
+	defer szlog.Reset()
+
+	szlog.Reset()
+	cleanedArgs, err := szlog.AbsorbArgs([]string{
+		"-v",
+		"--verbose",
+		"--quiet",
+		"--log", "ALL",
+		"--language", "en",
+		"--long-labels",
+	}, szlog.EnableLongLabels)
+
+	chk.NoErr(err)
+	chk.StrSlice(
+		cleanedArgs,
+		[]string{
+			"-v",
+			"--verbose",
+			"--quiet",
+			"--log", "ALL",
+			"--language", "en",
+		},
+	)
+
+	szlog.ArgUsageInfo(func(flag, desc string) {
+		log.Printf("%s: %s", flag, desc)
+	})
+
+	chk.Log(
+		"[--long-labels]: " +
+			"Use long labels in log output.",
+	)
+}
+
+func TestSzLog_UsageInfo_All_Enabled(t *testing.T) {
+	chk := sztest.CaptureLog(t)
+	defer chk.Release()
+	defer szlog.Reset()
+
+	szlog.Reset()
+	cleanedArgs, err := szlog.AbsorbArgs([]string{
+		"-v",
+		"--verbose",
+		"--log", "ALL",
+		"--language", "en",
+		"--long-labels",
+	}, szlog.EnableAll)
+
+	chk.NoErr(err)
+	chk.Int(len(cleanedArgs), 0)
+
+	szlog.ArgUsageInfo(func(flag, desc string) {
+		log.Printf("%s: %s", flag, desc)
+	})
+
+	chk.Log(
+		"[-v | --verbose ...]: "+
+			"Increase the verbose level for each v provided.",
+		"[--quiet]: "+
+			"Sets the verbose level to -1 squashing all (non-logged) output.",
+		"[--log <level | (levels)>]: "+
+			"Set the level to log (or a custom combination of levels).  "+
+			"Valid levels are: "+
+			"None, FATAL, ERROR, WARN, INFO, DEBUG,TRACE, ALL.",
+		"[--language <lang>]: "+
+			"Sets the local language used for formatting.",
+		"[--long-labels]: "+
+			"Use long labels in log output.",
+	)
+}
+
+func TestSzLog_UsageInfo_AllDefault_Enabled(t *testing.T) {
+	chk := sztest.CaptureLog(t)
+	defer chk.Release()
+	defer szlog.Reset()
+
+	szlog.Reset()
+	cleanedArgs, err := szlog.AbsorbArgs([]string{
+		"-v",
+		"--verbose",
+		"--log", "ALL",
+		"--language", "en",
+		"--long-labels",
+	})
+
+	chk.NoErr(err)
+	chk.Int(len(cleanedArgs), 0)
 
 	szlog.ArgUsageInfo(func(flag, desc string) {
 		log.Printf("%s: %s", flag, desc)

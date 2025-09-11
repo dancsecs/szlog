@@ -19,6 +19,7 @@
 package szlog
 
 import (
+	"math"
 	"strings"
 )
 
@@ -43,16 +44,44 @@ const (
 	LongLabelFlagDesc = "Use long labels in log output."
 )
 
-// AbsorbArgs scans the provided argument list for logging-related flags.
-// It updates the log configuration (LogLevel, verbosity, quiet mode,
-// LongLabels, and Language) based on the flags encountered. Recognized
-// flags are removed, and the cleaned argument slice is returned.
-// Multiple `-v` flags increment verbosity accordingly. If conflicting
-// or invalid flags are found (e.g., combining `-v` with `--quiet`),
-// an error is returned along with the original arguments.
+// EnableArg specifies which command-line arguments szlog should recognize
+// and process. These values can be combined and passed to AbsorbArgs to
+// restrict handling to a subset of arguments. If no values are provided,
+// EnableAll is assumed by default.
+type EnableArg int
+
+// EnableArg flags define which arguments are recognized by AbsorbArgs and
+// ArgUsageInfo. Multiple values can be provided (or combined with a
+// bitwise OR.)
 //
-//nolint:gocognit,cyclop,funlen // OK.
-func (l *Log) AbsorbArgs(argsIn []string) ([]string, error) {
+//	EnableVerbose    - enable verbosity flags (-v, --verbose)
+//	EnableQuiet      - enable quiet flag (--quiet)
+//	EnableLogLevel   - enable log level flag (--log <level>)
+//	EnableLanguage   - enable language/locale flag (--language <locale>)
+//	EnableLongLabels - enable long-labels flag (--long-labels)
+//	EnableAll        - enable all supported argument flags
+const (
+	EnableVerbose EnableArg = 1 << iota
+	EnableQuiet
+	EnableLogLevel
+	EnableLanguage
+	EnableLongLabels
+
+	EnableAll EnableArg = math.MaxInt
+)
+
+// AbsorbArgs scans the provided argument list for enabled logging-related
+// flags and updates the log configuration accordingly. Only arguments
+// specified in the enable set are recognized; all others are ignored.
+// Recognized flags are removed, and the cleaned argument slice is returned.
+// Multiple `-v` flags increment verbosity, while invalid or conflicting
+// combinations (e.g., `-v` with `--quiet`) return an error along with
+// the original arguments. If no enable set is provided, EnableAll is used.
+//
+//nolint:gocognit,cyclop,gocyclo,funlen // complexity is intentional.
+func (l *Log) AbsorbArgs(
+	argsIn []string, enable ...EnableArg,
+) ([]string, error) {
 	err := error(nil)
 	captureLogLevel := false
 	captureLanguage := false
@@ -62,12 +91,21 @@ func (l *Log) AbsorbArgs(argsIn []string) ([]string, error) {
 	vCount := VerboseLevel(0)
 	argsOut := make([]string, 0, len(argsIn))
 
+	if len(enable) == 0 {
+		l.argsEnabled = EnableAll
+	} else {
+		l.argsEnabled = 0
+		for _, enArg := range enable {
+			l.argsEnabled |= enArg
+		}
+	}
+
 	for _, rArg := range argsIn {
 		if err != nil {
 			break
 		}
 
-		if rArg == "--log" {
+		if rArg == "--log" && l.argsEnabled&EnableLogLevel > 0 {
 			if logLevelSet {
 				err = ErrAmbiguousLogLevel
 			} else {
@@ -85,7 +123,7 @@ func (l *Log) AbsorbArgs(argsIn []string) ([]string, error) {
 			continue
 		}
 
-		if rArg == "--language" {
+		if rArg == "--language" && l.argsEnabled&EnableLanguage > 0 {
 			captureLanguage = true
 
 			continue
@@ -104,7 +142,7 @@ func (l *Log) AbsorbArgs(argsIn []string) ([]string, error) {
 			continue
 		}
 
-		if rArg == "--quiet" {
+		if rArg == "--quiet" && l.argsEnabled&EnableQuiet > 0 {
 			if vCount > 0 { // Already processed a --quiet argument.
 				err = ErrAmbiguousVerboseAndQuiet
 			}
@@ -114,11 +152,11 @@ func (l *Log) AbsorbArgs(argsIn []string) ([]string, error) {
 			continue
 		}
 
-		if rArg == "--verbose" {
+		if rArg == "--verbose" && l.argsEnabled&EnableVerbose > 0 {
 			rArg = "-v"
 		}
 
-		if strings.HasPrefix(rArg, "-v") {
+		if strings.HasPrefix(rArg, "-v") && l.argsEnabled&EnableVerbose > 0 {
 			isVerbose := true
 			cleanArg := strings.TrimLeft(rArg, "-")
 
@@ -137,7 +175,7 @@ func (l *Log) AbsorbArgs(argsIn []string) ([]string, error) {
 			}
 		}
 
-		if rArg == "--long-labels" {
+		if rArg == "--long-labels" && l.argsEnabled&EnableLongLabels > 0 {
 			if longLabelsSet {
 				err = ErrAmbiguousLongLabels
 			} else {
@@ -159,10 +197,12 @@ func (l *Log) AbsorbArgs(argsIn []string) ([]string, error) {
 		err = ErrMissingLanguage
 	}
 
-	// Final reset level to adjust verbose settings.
-	l.SetVerbose(vCount)
+	if l.argsEnabled&EnableVerbose > 0 {
+		// Final reset level to adjust verbose settings.
+		l.SetVerbose(vCount)
+	}
 
-	if !logLevelSet {
+	if !logLevelSet && l.argsEnabled&EnableLogLevel > 0 {
 		l.SetLevel(LevelError)
 	}
 
@@ -173,12 +213,28 @@ func (l *Log) AbsorbArgs(argsIn []string) ([]string, error) {
 	return argsIn, err
 }
 
-// ArgUsageInfo invokes the provided callback function for all the arguments
-// szlog processes.  (Used to provide the usage information).
-func (l *Log) ArgUsageInfo(registerArgs func(string, string)) {
-	registerArgs(VerboseFlag, VerboseFlagDesc)
-	registerArgs(QuietFlag, QuietFlagDesc)
-	registerArgs(LogLevelFlag, LogLevelFlagDesc)
-	registerArgs(LanguageFlag, LanguageFlagDesc)
-	registerArgs(LongLabelFlag, LongLabelFlagDesc)
+// ArgUsageInfo reports usage information for all enabled arguments by
+// invoking the provided callback for each one. Only arguments permitted
+// in the enable set are included, allowing applications to present
+// accurate help/usage output tailored to their configuration.
+func (l *Log) ArgUsageInfo(registerArg func(string, string)) {
+	if l.argsEnabled&EnableVerbose > 0 {
+		registerArg(VerboseFlag, VerboseFlagDesc)
+	}
+
+	if l.argsEnabled&EnableQuiet > 0 {
+		registerArg(QuietFlag, QuietFlagDesc)
+	}
+
+	if l.argsEnabled&EnableLogLevel > 0 {
+		registerArg(LogLevelFlag, LogLevelFlagDesc)
+	}
+
+	if l.argsEnabled&EnableLanguage > 0 {
+		registerArg(LanguageFlag, LanguageFlagDesc)
+	}
+
+	if l.argsEnabled&EnableLongLabels > 0 {
+		registerArg(LongLabelFlag, LongLabelFlagDesc)
+	}
 }

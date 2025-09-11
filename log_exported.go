@@ -58,19 +58,21 @@ func Reset() {
 	defaultLog.Reset()
 }
 
-// AbsorbArgs scans the provided argument list for logging-related flags.
-// It updates the log configuration (LogLevel, verbosity, quiet mode,
-// LongLabels, and Language) based on the flags encountered. Recognized
-// flags are removed, and the cleaned argument slice is returned.
-// Multiple `-v` flags increment verbosity accordingly. If conflicting
-// or invalid flags are found (e.g., combining `-v` with `--quiet`),
-// an error is returned along with the original arguments.
-func AbsorbArgs(argsIn []string) ([]string, error) {
-	return defaultLog.AbsorbArgs(argsIn)
+// AbsorbArgs scans the provided argument list for enabled logging-related
+// flags and updates the log configuration accordingly. Only arguments
+// specified in the enable set are recognized; all others are ignored.
+// Recognized flags are removed, and the cleaned argument slice is returned.
+// Multiple `-v` flags increment verbosity, while invalid or conflicting
+// combinations (e.g., `-v` with `--quiet`) return an error along with
+// the original arguments. If no enable set is provided, EnableAll is used.
+func AbsorbArgs(argsIn []string, enable ...EnableArg) ([]string, error) {
+	return defaultLog.AbsorbArgs(argsIn, enable...)
 }
 
-// ArgUsageInfo invokes the provided callback function for all the arguments
-// szlog processes.  (Used to provide the usage information).
+// ArgUsageInfo reports usage information for all enabled arguments by
+// invoking the provided callback for each one. Only arguments permitted
+// in the enable set are included, allowing applications to present
+// accurate help/usage output tailored to their configuration.
 func ArgUsageInfo(registerArgs func(string, string)) {
 	defaultLog.ArgUsageInfo(registerArgs)
 }

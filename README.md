@@ -184,13 +184,13 @@ that are processed with the program functions:
 
 ```go
 
-// AbsorbArgs scans the provided argument list for logging-related flags.
-// It updates the log configuration (LogLevel, verbosity, quiet mode,
-// LongLabels, and Language) based on the flags encountered. Recognized
-// flags are removed, and the cleaned argument slice is returned.
-// Multiple `-v` flags increment verbosity accordingly. If conflicting
-// or invalid flags are found (e.g., combining `-v` with `--quiet`),
-// an error is returned along with the original arguments.
+// AbsorbArgs scans the provided argument list for enabled logging-related
+// flags and updates the log configuration accordingly. Only arguments
+// specified in the enable set are recognized; all others are ignored.
+// Recognized flags are removed, and the cleaned argument slice is returned.
+// Multiple `-v` flags increment verbosity, while invalid or conflicting
+// combinations (e.g., `-v` with `--quiet`) return an error along with
+// the original arguments. If no enable set is provided, EnableAll is used.
 func (l *Log) AbsorbArgs(argsIn []string) ([]string, error)
 func AbsorbArgs(argsIn []string) ([]string, error)
 
@@ -200,12 +200,66 @@ while usage information may be gathered with the program functions:
 
 ```go
 
-// ArgUsageInfo invokes the provided callback function for all the arguments
-// szlog processes.  (Used to provide the usage information).
+// ArgUsageInfo reports usage information for all enabled arguments by
+// invoking the provided callback for each one. Only arguments permitted
+// in the enable set are included, allowing applications to present
+// accurate help/usage output tailored to their configuration.
 func (l *Log) ArgUsageInfo(registerArgs func(string, string))
 func ArgUsageInfo(registerArgs func(string, string))
 
 ```
+
+### Selective Argument Enabling
+
+The `AbsorbArgs` function accepts an optional set of `EnableArg` constants
+to restrict which flags are recognized. This allows applications to
+individually enable or disable handling of built-in arguments.
+If no constants are provided, `EnableAll` is assumed.
+
+    +-----------------------|----------------------|-------------------------+
+    | Flag / Option         | `EnableArg` constant | Description             |
+    |-----------------------|----------------------|-------------------------|
+    | `-v`, `--verbose`     | `EnableVerbose`      | Increase verbosity      |
+    |                       |                      | (multiple `-v` allowed) |
+    | `--quiet`             | `EnableQuiet`        | Suppress output         |
+    | `--log <level>`       | `EnableLogLevel`     | Set log level (all,     |
+    |                       |                      | trace, debug, info,     |
+    |                       |                      | warn error, fatal,      |
+    |                       |                      | none)                   |
+    | `--language <locale>` | `EnableLanguage`     | Set message language    |
+    | `--long-labels`       | `EnableLongLabels`   | Use extended labels in  |
+    |                       |                      | log output              |
+    | *all of the above*    | `EnableAll`          | Default (recognize all  |
+    |                       |                      | arguments)              |
+    +-----------------------|----------------------|-------------------------+
+
+Example usage:
+
+```go
+
+// Only absorb verbosity and quiet flags, ignore all others.
+args, err := log.AbsorbArgs(os.Args[1:], EnableVerbose, EnableQuiet)
+
+```
+
+### When to Disable Arguments
+
+By default, `szlog` absorbs all supported flags.
+In some applications you may wish to disable certain arguments:
+
+  - **Custom flag parsing**: If your program already defines `--quiet` or
+    `--log`, you can prevent `szlog` from intercepting them by omitting
+    `EnableQuiet` or `EnableLogLevel`.
+  - **Minimal CLI surface**: Small utilities may only need `-v` for verbosity
+    and want to skip everything else.
+  - **Conflict avoidance**: If another library introduces overlapping flags,
+    selectively enabling arguments avoids collisions.
+  - **Explicit control**: Developers who prefer handling configuration
+    programmatically can turn off all arguments and manage `szlog` options
+    directly.
+
+This flexibility ensures that `szlog` integrates smoothly with a variety of
+command-line setups without forcing a fixed argument model.
 
 ### Program Functions
 
@@ -277,6 +331,7 @@ func Verbose() VerboseLevel
 // all output, while higher levels progressively enable more detail.
 func (l *Log) SetVerbose(newLevel VerboseLevel) VerboseLevel
 func SetVerbose(level VerboseLevel) VerboseLevel
+
 ```
 
 ## Deferred Evaluation
