@@ -356,9 +356,10 @@ translation.
 
 ```go
 
-// Close is a convenience method for safely closing any io.Closer.
-// If an error occurs during Close, it is logged as a warning.
-// This method is primarily intended for use in defer statements.
+// Close is a convenience method for safely closing any io.Closer. If an error
+// except os.ErrClosed (already closed) occurs during Close, it is logged as a
+// warning. This method is primarily intended for use in insurance defer
+// statements.
 func (l *Log) Close(area string, closeable io.Closer)
 func Close(area string, closeable io.Closer)
 

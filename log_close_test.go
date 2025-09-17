@@ -20,6 +20,7 @@ package szlog_test
 
 import (
 	"errors"
+	"os"
 	"testing"
 
 	"github.com/dancsecs/szlog"
@@ -55,6 +56,42 @@ func TestSzLog_Close(t *testing.T) {
 	szlog.Close("with error", errClose)
 
 	chk.Log(
-		"W:with error caused: close error",
+		"W:Closing: with error caused: close error",
 	)
+}
+
+func TestSzLog_AlreadyClosed(t *testing.T) {
+	chk := sztest.CaptureLog(t)
+	defer chk.Release()
+
+	szlog.SetLevel(szlog.LevelAll)
+
+	file := chk.CreateTmpFile(nil)
+
+	fHandle, err := os.Open(file) //nolint:gosec // Ok to test.
+	chk.NoErr(err)
+
+	chk.NoErr(fHandle.Close())
+
+	chk.Err(
+		fHandle.Close(),
+		chk.ErrChain(
+			"close "+file,
+			os.ErrClosed,
+		),
+	)
+
+	// do it again to make sure we still get the same error.
+	chk.Err(
+		fHandle.Close(),
+		chk.ErrChain(
+			"close "+file,
+			os.ErrClosed,
+		),
+	)
+
+	// Already closed error should be ignored.
+	szlog.Close("should not be displayed", fHandle)
+
+	chk.Log()
 }
