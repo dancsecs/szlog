@@ -718,7 +718,7 @@ func TestSzLog_UsageInfo_Verbose_Enabled(t *testing.T) {
 	})
 
 	chk.Log(
-		"[-v | --verbose ...]: " +
+		"[-v | --verbose]...: " +
 			"Increase the verbose level for each v provided.",
 	)
 }
@@ -895,7 +895,7 @@ func TestSzLog_UsageInfo_All_Enabled(t *testing.T) {
 	})
 
 	chk.Log(
-		"[-v | --verbose ...]: "+
+		"[-v | --verbose]...: "+
 			"Increase the verbose level for each v provided.",
 		"[--quiet]: "+
 			"Sets the verbose level to -1 squashing all (non-logged) output.",
@@ -932,7 +932,7 @@ func TestSzLog_UsageInfo_AllDefault_Enabled(t *testing.T) {
 	})
 
 	chk.Log(
-		"[-v | --verbose ...]: "+
+		"[-v | --verbose]...: "+
 			"Increase the verbose level for each v provided.",
 		"[--quiet]: "+
 			"Sets the verbose level to -1 squashing all (non-logged) output.",

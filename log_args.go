@@ -25,7 +25,7 @@ import (
 
 // Usage suitable strings for verbose argument absorption.
 const (
-	VerboseFlag     = "[-v | --verbose ...]"
+	VerboseFlag     = "[-v | --verbose]..."
 	VerboseFlagDesc = "Increase the verbose level for each v provided."
 
 	QuietFlag     = "[--quiet]"
