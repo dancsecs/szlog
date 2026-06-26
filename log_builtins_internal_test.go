@@ -52,13 +52,6 @@ func TestSzLog_Builtin_ExpandMsg(t *testing.T) {
 		printNon(nonDeferredFunc)+"cd",
 	)
 	chk.Str(tLog.expandMsg(deferredFunc, "cd"), "abcd")
-
-	// Local formatting
-
-	chk.Str(tLog.expandMsg(1234), "1234")
-	chk.NoErr(tLog.SetLanguage("en"))
-	chk.Str(tLog.expandMsg(1234), "1,234")
-	chk.NoErr(tLog.SetLanguage(""))
 	chk.Str(tLog.expandMsg(1234), "1234")
 }
 
@@ -89,13 +82,6 @@ func TestSzLog_Builtin_ExpandMsgf(t *testing.T) {
 		printNon(nonDeferredFunc)+"cd",
 	)
 	chk.Str(tLog.expandMsgf("%v%v", deferredFunc, "cd"), "abcd")
-
-	// Local formatting
-
-	chk.Str(tLog.expandMsgf("%d", 1234), "1234")
-	chk.NoErr(tLog.SetLanguage("en"))
-	chk.Str(tLog.expandMsgf("%d", 1234), "1,234")
-	chk.NoErr(tLog.SetLanguage(""))
 	chk.Str(tLog.expandMsgf("%d", 1234), "1234")
 }
 

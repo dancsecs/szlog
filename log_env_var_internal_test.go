@@ -145,30 +145,6 @@ func TestSzLog_EnvVar_getEnvVerbose(t *testing.T) {
 	)
 }
 
-func TestSzLog_EnvVar_getEnvLanguage(t *testing.T) {
-	chk := sztest.CaptureLog(t)
-	defer chk.Release()
-
-	tstLog := New()
-
-	chk.DelEnv(EnvLogLanguage)
-	tstLog.setEnvLanguage()
-	chk.Str(tstLog.Language(), "")
-
-	chk.SetEnv(EnvLogLanguage, "en")
-	tstLog.setEnvLanguage()
-	chk.Str(tstLog.Language(), "en")
-
-	chk.SetEnv(EnvLogLanguage, "unknown")
-	tstLog.setEnvLanguage()
-	chk.Str(tstLog.Language(), "")
-
-	chk.Log(
-		"W:szlog initialization: invalid environment override " +
-			"SZLOG_LANGUAGE=\"unknown\": invalid language: 'unknown'",
-	)
-}
-
 func TestSzLog_EnvVar_getEnvLongLabels(t *testing.T) {
 	chk := sztest.CaptureLog(t)
 	defer chk.Release()

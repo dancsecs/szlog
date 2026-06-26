@@ -26,7 +26,6 @@ import (
 // Environment variable default overrides.
 const (
 	EnvLogLevel      = "SZLOG_LEVEL"
-	EnvLogLanguage   = "SZLOG_LANGUAGE"
 	EnvVerbose       = "SZLOG_VERBOSE"
 	EnvLogLongLabels = "SZLOG_LONG_LABELS"
 )
@@ -76,23 +75,6 @@ func (l *Log) setEnvVerbose() {
 	}
 
 	l.SetVerbose(lvl)
-}
-
-func (l *Log) setEnvLanguage() {
-	rawLanguage, ok := os.LookupEnv(EnvLogLanguage)
-
-	if ok {
-		err := l.SetLanguage(rawLanguage)
-		if err != nil {
-			l.logEnvErrorMessage(
-				EnvLogLanguage,
-				rawLanguage,
-				err.Error(),
-			)
-		}
-	} else {
-		_ = l.SetLanguage("")
-	}
 }
 
 func (l *Log) setEnvLevel() {

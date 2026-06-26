@@ -37,9 +37,6 @@ const (
 		"levels).  Valid levels are: " +
 		"None, FATAL, ERROR, WARN, INFO, DEBUG,TRACE, ALL."
 
-	LanguageFlag     = "[--language <lang>]"
-	LanguageFlagDesc = "Sets the local language used for formatting."
-
 	LongLabelFlag     = "[--long-labels]"
 	LongLabelFlagDesc = "Use long labels in log output."
 )
@@ -57,14 +54,12 @@ type EnableArg int
 //	EnableVerbose    - enable verbosity flags (-v, --verbose)
 //	EnableQuiet      - enable quiet flag (--quiet)
 //	EnableLogLevel   - enable log level flag (--log <level>)
-//	EnableLanguage   - enable language/locale flag (--language <locale>)
 //	EnableLongLabels - enable long-labels flag (--long-labels)
 //	EnableAll        - enable all supported argument flags
 const (
 	EnableVerbose EnableArg = 1 << iota
 	EnableQuiet
 	EnableLogLevel
-	EnableLanguage
 	EnableLongLabels
 
 	EnableAll EnableArg = math.MaxInt
@@ -78,15 +73,13 @@ const (
 // combinations (e.g., `-v` with `--quiet`) return an error along with
 // the original arguments. If no enable set is provided, EnableAll is used.
 //
-//nolint:gocognit,cyclop,gocyclo,funlen // complexity is intentional.
+//nolint:gocognit,cyclop,funlen // complexity is intentional.
 func (l *Log) AbsorbArgs(
 	argsIn []string, enable ...EnableArg,
 ) ([]string, error) {
 	err := error(nil)
 	captureLogLevel := false
-	captureLanguage := false
 	logLevelSet := false
-	languageSet := false
 	longLabelsSet := false
 	vCount := VerboseLevel(0)
 	argsOut := make([]string, 0, len(argsIn))
@@ -119,25 +112,6 @@ func (l *Log) AbsorbArgs(
 		if captureLogLevel {
 			captureLogLevel = false
 			err = l.parseAndSetLevel(rArg, LevelError)
-
-			continue
-		}
-
-		if rArg == "--language" && l.argsEnabled&EnableLanguage > 0 {
-			captureLanguage = true
-
-			continue
-		}
-
-		if captureLanguage {
-			if languageSet {
-				err = ErrAmbiguousLanguage
-			} else {
-				languageSet = true
-				captureLanguage = false
-
-				err = l.SetLanguage(rArg)
-			}
 
 			continue
 		}
@@ -193,10 +167,6 @@ func (l *Log) AbsorbArgs(
 		err = ErrMissingLogLevel
 	}
 
-	if err == nil && captureLanguage {
-		err = ErrMissingLanguage
-	}
-
 	if l.argsEnabled&EnableVerbose > 0 {
 		// Final reset level to adjust verbose settings.
 		l.SetVerbose(vCount)
@@ -228,10 +198,6 @@ func (l *Log) ArgUsageInfo(registerArg func(string, string)) {
 
 	if l.argsEnabled&EnableLogLevel > 0 {
 		registerArg(LogLevelFlag, LogLevelFlagDesc)
-	}
-
-	if l.argsEnabled&EnableLanguage > 0 {
-		registerArg(LanguageFlag, LanguageFlagDesc)
 	}
 
 	if l.argsEnabled&EnableLongLabels > 0 {

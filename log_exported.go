@@ -245,19 +245,6 @@ func SetVerbose(level VerboseLevel) VerboseLevel {
 	return defaultLog.SetVerbose(level)
 }
 
-// Language returns the current language setting used for localized formatting.
-// An empty string indicates no localization is applied.
-func Language() string {
-	return defaultLog.Language()
-}
-
-// SetLanguage updates the language used for localized formatting.
-// Passing an empty string ("") disables localization. It returns any
-// error encountered while setting the language.
-func SetLanguage(language string) error {
-	return defaultLog.SetLanguage(language)
-}
-
 // S0 Invokes the default verbose corresponding method.
 func S0(msg ...any) bool {
 	return defaultLog.S0(msg...)

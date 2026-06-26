@@ -73,21 +73,13 @@ func (l *Log) SetVerbose(newLevel VerboseLevel) VerboseLevel {
 }
 
 func (l *Log) vPrint(msg ...any) bool {
-	if l.printer != nil {
-		_, _ = l.printer.Fprint(os.Stdout, msg...)
-	} else {
-		_, _ = fmt.Fprint(os.Stdout, msg...)
-	}
+	_, _ = fmt.Fprint(os.Stdout, msg...)
 
 	return true
 }
 
 func (l *Log) vPrintf(msgFmt string, msgArgs ...any) bool {
-	if l.printer != nil {
-		_, _ = l.printer.Fprintf(os.Stdout, msgFmt, msgArgs...)
-	} else {
-		_, _ = fmt.Fprintf(os.Stdout, msgFmt, msgArgs...)
-	}
+	_, _ = fmt.Fprintf(os.Stdout, msgFmt, msgArgs...)
 
 	return true
 }

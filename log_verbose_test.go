@@ -102,21 +102,12 @@ func TestSzLog_Verbose_Default(t *testing.T) {
 	tLog.Say4f("Long Formatted Hello: %d\n", 4)
 	tLog.Say5f("Long Formatted Hello: %d\n", 5)
 
-	tLog.S0("A Short Local Test: ", 1234, "\n")
-	tLog.S0f("A Short Local Formatted Test: %d\n", 2345)
-	tLog.Say0("A Long Local Test: ", 3456, "\n")
-	tLog.Say0f("A Long Local Formatted Test: %d\n", 4567)
-
 	chk.Log()
 	chk.Stdout(
 		"Short Hello: 0",
 		"Long Hello: 0",
 		"Short Formatted Hello: 0",
 		"Long Formatted Hello: 0",
-		"A Short Local Test: 1234",
-		"A Short Local Formatted Test: 2345",
-		"A Long Local Test: 3456",
-		"A Long Local Formatted Test: 4567",
 	)
 }
 
@@ -126,7 +117,6 @@ func TestSzLog_Verbose_V1(t *testing.T) {
 
 	szlog.Reset()
 	szlog.SetVerbose(1)
-	chk.NoErr(szlog.SetLanguage("en"))
 
 	szlog.S0("Short Hello: 0\n")
 	szlog.S1("Short Hello: 1\n")
@@ -155,11 +145,6 @@ func TestSzLog_Verbose_V1(t *testing.T) {
 	szlog.Say3f("Long Formatted Hello: %d\n", 3)
 	szlog.Say4f("Long Formatted Hello: %d\n", 4)
 	szlog.Say5f("Long Formatted Hello: %d\n", 5)
-
-	szlog.S0("A Short Local Test: ", 1234, "\n")
-	szlog.S0f("A Short Local Formatted Test: %d\n", 2345)
-	szlog.Say0("A Long Local Test: ", 3456, "\n")
-	szlog.Say0f("A Long Local Formatted Test: %d\n", 4567)
 
 	chk.Log()
 	chk.Stdout(
@@ -171,10 +156,6 @@ func TestSzLog_Verbose_V1(t *testing.T) {
 		"Short Formatted Hello: 1",
 		"Long Formatted Hello: 0",
 		"Long Formatted Hello: 1",
-		"A Short Local Test: 1,234",
-		"A Short Local Formatted Test: 2,345",
-		"A Long Local Test: 3,456",
-		"A Long Local Formatted Test: 4,567",
 	)
 }
 
@@ -184,7 +165,6 @@ func TestSzLog_Verbose_V2(t *testing.T) {
 
 	szlog.Reset()
 	szlog.SetVerbose(2)
-	chk.NoErr(szlog.SetLanguage("en"))
 
 	szlog.S0("Short Hello: 0\n")
 	szlog.S1("Short Hello: 1\n")
@@ -213,11 +193,6 @@ func TestSzLog_Verbose_V2(t *testing.T) {
 	szlog.Say3f("Long Formatted Hello: %d\n", 3)
 	szlog.Say4f("Long Formatted Hello: %d\n", 4)
 	szlog.Say5f("Long Formatted Hello: %d\n", 5)
-
-	szlog.S0("A Short Local Test: ", 1234, "\n")
-	szlog.S0f("A Short Local Formatted Test: %d\n", 2345)
-	szlog.Say0("A Long Local Test: ", 3456, "\n")
-	szlog.Say0f("A Long Local Formatted Test: %d\n", 4567)
 
 	chk.Log()
 	chk.Stdout(
@@ -233,10 +208,6 @@ func TestSzLog_Verbose_V2(t *testing.T) {
 		"Long Formatted Hello: 0",
 		"Long Formatted Hello: 1",
 		"Long Formatted Hello: 2",
-		"A Short Local Test: 1,234",
-		"A Short Local Formatted Test: 2,345",
-		"A Long Local Test: 3,456",
-		"A Long Local Formatted Test: 4,567",
 	)
 }
 
@@ -247,7 +218,6 @@ func TestSzLog_Verbose_V3(t *testing.T) {
 
 	szlog.Reset()
 	szlog.SetVerbose(3)
-	chk.NoErr(szlog.SetLanguage("en"))
 
 	szlog.S0("Short Hello: 0\n")
 	szlog.S1("Short Hello: 1\n")
@@ -276,11 +246,6 @@ func TestSzLog_Verbose_V3(t *testing.T) {
 	szlog.Say3f("Long Formatted Hello: %d\n", 3)
 	szlog.Say4f("Long Formatted Hello: %d\n", 4)
 	szlog.Say5f("Long Formatted Hello: %d\n", 5)
-
-	szlog.S0("A Short Local Test: ", 1234, "\n")
-	szlog.S0f("A Short Local Formatted Test: %d\n", 2345)
-	szlog.Say0("A Long Local Test: ", 3456, "\n")
-	szlog.Say0f("A Long Local Formatted Test: %d\n", 4567)
 
 	chk.Log()
 	chk.Stdout(
@@ -300,10 +265,6 @@ func TestSzLog_Verbose_V3(t *testing.T) {
 		"Long Formatted Hello: 1",
 		"Long Formatted Hello: 2",
 		"Long Formatted Hello: 3",
-		"A Short Local Test: 1,234",
-		"A Short Local Formatted Test: 2,345",
-		"A Long Local Test: 3,456",
-		"A Long Local Formatted Test: 4,567",
 	)
 }
 
@@ -314,7 +275,6 @@ func TestSzLog_Verbose_V4(t *testing.T) {
 
 	szlog.Reset()
 	szlog.SetVerbose(4)
-	chk.NoErr(szlog.SetLanguage("en"))
 
 	szlog.S0("Short Hello: 0\n")
 	szlog.S1("Short Hello: 1\n")
@@ -343,11 +303,6 @@ func TestSzLog_Verbose_V4(t *testing.T) {
 	szlog.Say3f("Long Formatted Hello: %d\n", 3)
 	szlog.Say4f("Long Formatted Hello: %d\n", 4)
 	szlog.Say5f("Long Formatted Hello: %d\n", 5)
-
-	szlog.S0("A Short Local Test: ", 1234, "\n")
-	szlog.S0f("A Short Local Formatted Test: %d\n", 2345)
-	szlog.Say0("A Long Local Test: ", 3456, "\n")
-	szlog.Say0f("A Long Local Formatted Test: %d\n", 4567)
 
 	chk.Log()
 	chk.Stdout(
@@ -371,10 +326,6 @@ func TestSzLog_Verbose_V4(t *testing.T) {
 		"Long Formatted Hello: 2",
 		"Long Formatted Hello: 3",
 		"Long Formatted Hello: 4",
-		"A Short Local Test: 1,234",
-		"A Short Local Formatted Test: 2,345",
-		"A Long Local Test: 3,456",
-		"A Long Local Formatted Test: 4,567",
 	)
 }
 
@@ -385,7 +336,6 @@ func TestSzLog_Verbose_V5(t *testing.T) {
 
 	szlog.Reset()
 	szlog.SetVerbose(5)
-	chk.NoErr(szlog.SetLanguage("en"))
 
 	szlog.S0("Short Hello: 0\n")
 	szlog.S1("Short Hello: 1\n")
@@ -414,11 +364,6 @@ func TestSzLog_Verbose_V5(t *testing.T) {
 	szlog.Say3f("Long Formatted Hello: %d\n", 3)
 	szlog.Say4f("Long Formatted Hello: %d\n", 4)
 	szlog.Say5f("Long Formatted Hello: %d\n", 5)
-
-	szlog.S0("A Short Local Test: ", 1234, "\n")
-	szlog.S0f("A Short Local Formatted Test: %d\n", 2345)
-	szlog.Say0("A Long Local Test: ", 3456, "\n")
-	szlog.Say0f("A Long Local Formatted Test: %d\n", 4567)
 
 	chk.Log()
 	chk.Stdout(
@@ -446,9 +391,5 @@ func TestSzLog_Verbose_V5(t *testing.T) {
 		"Long Formatted Hello: 3",
 		"Long Formatted Hello: 4",
 		"Long Formatted Hello: 5",
-		"A Short Local Test: 1,234",
-		"A Short Local Formatted Test: 2,345",
-		"A Long Local Test: 3,456",
-		"A Long Local Formatted Test: 4,567",
 	)
 }

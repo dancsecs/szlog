@@ -1,4 +1,6 @@
-<!--- gotomd::Auto:: See github.com/dancsecs/gotomd **DO NOT MODIFY** -->
+<!---             *****  AUTO GENERATED:  DO NOT MODIFY  ***** -->
+<!---                   MODIFY TEMPLATE: '.README.gtm.md' -->
+<!---               See: 'https://github.com/dancsecs/gotomd' -->
 
 <!---
    Szerszam alarm manager: szalarm.
@@ -20,7 +22,6 @@
 
 # Package szlog
 
-<!--- gotomd::Bgn::doc::./package -->
 ```go
 package szlog
 ```
@@ -39,9 +40,6 @@ the standard log while adding:
     computed when needed
 
   - efficient function swapping so disabled functions are minimal
-
-  - local formatting through the Go text package by setting a locale string
-    ("en", "en-CA", "fr", etc.)
 
 ## Overview
 
@@ -163,7 +161,6 @@ Settings have defaults which can be overridden by an environment variables.
     |-------------|-------------|-------------------------------|
     | LongLabels  | false       | SZLOG_LONG_LABELS             |
     | LogLevel    | LevelError  | SZLOG_LEVEL                   |
-    | Language    | ""          | SZLOG_LANGUAGE                |
     | Verbose     | 0           | SZLOG_VERBOSE                 |
     +-------------+-------------+-------------------------------+
 
@@ -176,7 +173,6 @@ Settings may also be specified in command line arguments
     |-------------|-----------------------------------------------|
     | LongLabels  | --long-labels                                 |
     | LogLevel    | --log <level>                                 |
-    | Language    | --language <local>                            |
     | Verbose     | -v[v...] | --v[v...] | --verbose | --quiet    |
     +-------------+-----------------------------------------------+
 
@@ -226,7 +222,6 @@ If no constants are provided, `EnableAll` is assumed.
     |                       |                      | trace, debug, info,     |
     |                       |                      | warn error, fatal,      |
     |                       |                      | none)                   |
-    | `--language <locale>` | `EnableLanguage`     | Set message language    |
     | `--long-labels`       | `EnableLongLabels`   | Use extended labels in  |
     |                       |                      | log output              |
     | *all of the above*    | `EnableAll`          | Default (recognize all  |
@@ -269,8 +264,6 @@ functions.
     +-------------+--------------------------------------+
     | Area        | Function(s)                          |
     |-------------|--------------------------------------|
-    | Language    | Language()                           |
-    |             | SetLanguage(language string)         |
     | LongLabels  | LongLabels()                         |
     |             | SetLongLabels(enable bool)           |
     | LogLevel    | Level()                              |
@@ -283,17 +276,6 @@ functions.
 implemented as follows:
 
 ```go
-
-// Language returns the current language setting used for localized formatting.
-// An empty string indicates no localization is applied.
-func (l *Log) Language() string
-func Language() string
-
-// SetLanguage updates the language used for localized formatting.
-// Passing an empty string ("") disables localization. It returns any
-// error encountered while setting the language.
-func (l *Log) SetLanguage(langStr string) error
-func SetLanguage(language string) error
 
 // LongLabels reports whether long labels (FATAL, ERROR, WARN, INFO, DEBUG,
 // TRACE) are currently enabled instead of their short forms (F, E, W, I, D,
@@ -353,12 +335,6 @@ about wasted work if the message is suppressed.
 ```
 
 If Info logging is disabled, generateReport is never executed.
-
-## Localization
-
-Szlog can bind to the Go text package for message localization. SetLanguage
-accepts a locale string such as "en" or "fr" to select the appropriate
-translation.
 
 ## Convenience Function(s)
 
@@ -422,4 +398,3 @@ life.
 
 NOTE: Documentation reviewed and polished with the assistance of ChatGPT from
 OpenAI.
-<!--- gotomd::End::doc::./package -->
